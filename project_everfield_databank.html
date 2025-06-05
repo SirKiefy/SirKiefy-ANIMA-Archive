@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiegan - Databank // Project Everfield</title>
+    <title>Sirkiefy's Portfolio Terminal v5.1 - DB: Everfield</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Base CSS (Copy ALL from index.html) --- */
         :root {
             --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
@@ -22,7 +21,6 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
-            --accent-green: #39ff14;
             --sidebar-width: 280px;
             --sidebar-width-collapsed: 0px; 
         }
@@ -37,14 +35,42 @@
         .bg-accent-orange { background-color: var(--accent-orange); }
         .text-accent-cyan { color: var(--accent-cyan); }
         .border-accent-cyan { border-color: var(--accent-cyan); }
-        .text-accent-green { color: var(--accent-green); }
         .block-element { border-radius: 0px !important; }
+
+        #standby-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-darkest);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10001; text-align: center; padding: 20px;
+        }
+        #standby-title {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange); margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--accent-orange-dark);
+        }
+        #standby-message {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary); margin-bottom: 40px;
+        }
+        #logon-button {
+            font-family: 'Share Tech Mono', monospace; background-color: var(--accent-cyan);
+            color: var(--bg-darkest); border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px; font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
+        }
+        #logon-button:hover {
+            background-color: var(--accent-cyan-dark); color: var(--bg-darkest);
+            box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
+        }
 
         #initial-logon-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10000;
-            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
+            background-color: #000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10000; padding: 20px; box-sizing: border-box; 
+            font-family: 'Share Tech Mono', monospace;
         }
         #logon-content-container {
             display: flex; flex-direction: column; align-items: center;
@@ -57,14 +83,11 @@
             width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
             background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
         }
-        #initial-log-output .log-line.system { color: var(--text-primary); font-weight: bold;}
+        #initial-log-output .log-line.system { color: var(--text-primary); }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
-        #initial-log-output .log-line.user-quirk { 
-            color: var(--accent-orange); font-style: italic;
-            opacity: 0.8; animation: subtle-flicker 2s infinite alternate;
-        }
-        @keyframes subtle-flicker { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.6; } }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        
         #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
             border: 1px solid var(--border-subtle); padding: 10px; display: flex;
@@ -72,7 +95,15 @@
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
 
-        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
+
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
+        
+        body.loaded #standby-screen { display: none; } 
+        body.loaded #initial-logon-screen { display: none; } 
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
@@ -151,38 +182,45 @@
             color: var(--text-muted); margin-top: 32px;
         }
         #security-status-text { 
-            display: inline-block; animation: glow-security-text 3s infinite alternate ease-in-out;
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
         @keyframes glow-security-text { 
-            0% { color: var(--accent-green); text-shadow: 0 0 3px var(--accent-green), 0 0 6px var(--accent-green); }
-            50% { color: var(--accent-cyan); text-shadow: 0 0 4px var(--accent-cyan), 0 0 8px var(--accent-cyan-dark); }
-            100% { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange); }
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
         /* Databank specific styles */
-        .interactive-card { /* Reusing class for databank entries */
+        .databank-entry { 
+            margin-bottom: 1.5rem; line-height: 1.7;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            border: 1px solid var(--border-subtle); 
+            padding: 1rem; 
             background-color: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-            padding: 1rem;
-            margin-bottom: 1rem;
         }
-        .interactive-card:hover {
+        .databank-entry:hover {
             background-color: var(--bg-panel); 
-            border-color: var(--accent-cyan);
-            transform: translateY(-3px);
-            cursor: pointer;
+            border-color: var(--accent-cyan); 
         }
-        .interactive-card-title {
+        .databank-entry h3 {
             font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
             font-size: 1.4rem; margin-bottom: 0.75rem;
-            text-decoration: none; display: block;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
         }
-        .interactive-card-title:hover { color: var(--accent-orange); }
-        .interactive-card p { margin-bottom: 0.5rem; color: var(--text-secondary); line-height: 1.7; }
-        .interactive-card ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
-        .interactive-card li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
-        .interactive-card li::before {
-            content: '>'; position: absolute; left: 0; color: var(--accent-orange);
+        .databank-entry h3 a { 
+            text-decoration: none; color: inherit; display: block; 
+        }
+        .databank-entry h3 a:hover {
+            color: var(--accent-orange); text-decoration: underline;
+        }
+        .databank-entry h4 {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
+            font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.25rem;
+        }
+        .databank-entry p { margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .databank-entry ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
+        .databank-entry li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
+        .databank-entry li::before {
+            content: '>'; 
+            position: absolute; left: 0; color: var(--accent-orange);
             font-family: 'Share Tech Mono', monospace;
         }
         .code-block {
@@ -190,15 +228,17 @@
             padding: 1rem; margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace;
             font-size: 0.85rem; color: var(--accent-cyan); white-space: pre-wrap; overflow-x: auto;
         }
-        .filter-tags span {
-            display: inline-block;
-            background-color: var(--border-subtle);
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            padding: 0.1rem 0.5rem;
-            margin-right: 0.3rem;
-            margin-bottom: 0.3rem;
-            font-family: 'Share Tech Mono', monospace;
+        .back-button {
+            display: inline-block; padding: 8px 16px; margin-bottom: 20px; 
+            background-color: var(--accent-orange); color: var(--bg-darkest);
+            font-family: 'Share Tech Mono', monospace; text-transform: uppercase;
+            letter-spacing: 1px; border: 1px solid var(--accent-orange-dark);
+            cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background-color: var(--accent-orange-dark); color: var(--bg-darkest);
+            text-decoration: none;
         }
         @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
@@ -206,10 +246,22 @@
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
             #main-content { padding: 16px; }
             #sidebar-toggle { display: none; }
+            #logon-content-container { height: 90%; max-height: none; gap: 10px;}
+            #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
+            #logon-graph-container { height: 30%; }
+            #standby-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            #standby-message { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+            #logon-button { font-size: clamp(1rem, 2.5vw, 1.5rem); padding: 12px 25px; }
         }
     </style>
 </head>
 <body>
+    <div id="standby-screen">
+        <h1 id="standby-title" class="block-element">SIRKIEFY PORTFOLIO</h1>
+        <p id="standby-message" class="block-element">SYSTEM STANDBY // AWAITING USER AUTHENTICATION</p>
+        <button id="logon-button" class="block-element">ACCESS TERMINAL</button>
+    </div>
+
     <div id="initial-logon-screen">
         <div id="logon-content-container" class="block-element">
             <div id="initial-log-output" class="block-element"></div>
@@ -221,98 +273,130 @@
 
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
 
-     <aside id="sidebar" class="block-element">
-        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
+    <aside id="sidebar" class="block-element">
+        <div class="sidebar-title font-terminal">SIRKIEFY_CONSOLE</div> 
         <nav class="main-nav font-terminal">
             <a href="index.html" class="block-element">Home_Interface</a>
-            <a href="about.html" class="block-element">Auth_Logs // About</a>
-            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
-            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="about.html" class="block-element">User_Profile // About</a> 
+            <a href="projects.html" class="block-element">Project_Files // Portfolio</a> 
+            <a href="hobbies.html" class="block-element">Personal_Logs // Hobbies</a> 
             <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
             <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PORTFOLIO_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Site Content...">
+            <h3>// ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Archives...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
                 <option value="sfx">SFX</option>
-                <option value="3d-modelling">3D Modelling</option>
+                <option value="3d-model">3D Modelling</option>
+                <option value="pixel-art">Pixel Art</option> 
                 <option value="game-dev">Game Development</option>
-                <option value="world-building">World Building</option>
-                <option value="esports">Esports</option>
+                <option value="world-build">World Building</option>
             </select>
         </div>
     </aside>
 
     <div id="main-content-wrapper">
         <main id="main-content">
+            <!-- Go Back Button -->
+            <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button>
+
             <section id="everfield-data" class="section-panel block-element">
                 <h2 class="section-title text-accent-orange font-terminal">// DATABANK_ACCESS :: PROJECT_EVERFIELD_GDD_v2.0</h2>
+                 <p class="mb-6 text-text-secondary">
+                    Project Everfield is an Action RPG set in a high-fantasy world. This databank contains excerpts from the Game Design Document, detailing its world, mechanics, and lore. Click on entry titles to (eventually) view detailed logs.
+                </p>
 
-                <div class="interactive-card block-element filterable-item" data-title="Project Everfield Core Concept" data-category="game-dev world-building" onclick="window.location.href='everfield_core_concept_detail.html';">
-                    <h3 class="interactive-card-title">Core Concept & Overview</h3>
-                    <p>Project Everfield is an Action RPG set in a high-fantasy world. It features souls-like combat, diverse magical biomes, and an intricate spell-crafting system. The primary platform is PC, utilizing the Unity engine.</p>
-                    <div class="filter-tags"><span>Game Dev</span><span>World Building</span><span>RPG</span></div>
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_core_concept_details.html">Core Concept & Overview</a></h3>
+                    <p><strong>Game Name:</strong> Project Everfield</p>
+                    <p><strong>Genre:</strong> Action RPG</p>
+                    <p>Focuses on souls-like combat, elemental magic, dynamic spell interactions, and deep character progression within the richly detailed world of Everfield.</p>
                 </div>
 
-                <div class="interactive-card block-element filterable-item" data-title="Everfield World Biomes" data-category="world-building" onclick="window.location.href='everfield_biomes_detail.html';">
-                    <h3 class="interactive-card-title">World of Everfield: Biomes</h3>
-                    <p>Explore diverse regions such as the Crystal Oasis Desert, Blossom Valley, the colossal Forest of the World Tree (and its dead counterpart), the surreal Fragmented Lands, Flooded Forests, Volcanic Ranges, Giant Ice Shards, a World of Bioluminescence, and the Cradle of Lakes.</p>
-                     <div class="filter-tags"><span>World Building</span><span>Environment</span></div>
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_world_biomes_details.html">World of Everfield: Biomes</a></h3>
+                    <p>Everfield features diverse magical biomes including the Crystal Oasis Desert, Blossom Valley, Forest of the World Tree, Fragmented Lands, Volcanic Mountain Range, Giant Ice Shards, World of Bioluminescence, Cradle of Lakes, and the ominous Dead Forest of the World Tree, each with unique characteristics and materials.</p>
                 </div>
                 
-                <div class="interactive-card block-element filterable-item" data-title="Everfield Races and Creatures" data-category="world-building" onclick="window.location.href='everfield_races_detail.html';">
-                    <h3 class="interactive-card-title">Inhabitants: Races & Creatures</h3>
-                    <p>Everfield is populated by a multitude of races including Humans, Dragons, Angels, Elves, Kitsune, Mechanoids, Golems, Vampires, and Dwarfs, alongside various unique creatures like Gnomes.</p>
-                    <div class="filter-tags"><span>World Building</span><span>Character Design</span></div>
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_races_creatures_details.html">Inhabitants: Races & Creatures</a></h3>
+                    <p>Populated by numerous races like Humans, Dragons, Angels, Elves, Kitsune, Mechanoids, Golems, Vampires, Ents, Dwarfs, Bharons, Chitarin, Lyssandra, Homunculus, Beast folk, Flugals, and Tenguuru. Various creatures, such as Gnomes, also inhabit the lands. (Detailed list in full document).</p>
                 </div>
 
-                <div class="interactive-card block-element filterable-item" data-title="Everfield Gameplay Mechanics Combat Magic" data-category="game-dev" onclick="window.location.href='everfield_gameplay_detail.html';">
-                    <h3 class="interactive-card-title">Gameplay Mechanics: Combat & Magic</h3>
-                    <p>Features third-person, souls-like combat with stance switching and diverse weapon types. The magic system involves elemental matchups, affinity bonuses, dynamic spell interactions, and a comprehensive spell crafting system based on components, energy types, and modifiers.</p>
-                    <pre class="code-block block-element">
-Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Affinity Multiplier * Crafting Bonus)
-                    </pre>
-                    <div class="filter-tags"><span>Game Dev</span><span>Combat Design</span><span>Magic System</span></div>
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_player_stats_details.html">Player Attributes (Stats)</a></h3>
+                    <p>Characters develop through stats such as Strength (Melee Prowess, Carry Capacity), Finesse (Precision Aim, Stealth), Agility (Parkour, Evasion), Endurance (Toughness, Stamina), Charisma (Leadership, Persuasion), Arcane (Spellcasting, Mana Control), Mind (Perception, Focus), and Soul (Mana Reservoir, Spiritual Resilience).</p>
+                </div>
+
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_combat_system_details.html">Combat System Mechanics</a></h3>
+                    <p>Features third-person, souls-like combat with stamina management. Melee combat includes stance switching, directional attacks, blocking, and parrying. Weapon categories range from Light (daggers, rapiers) to Ultra Heavy (scythes, ultra greatswords). Ranged combat involves an over-the-shoulder view with weapons like bows, crossbows, and firearms.</p>
                 </div>
                 
-                <div class="interactive-card block-element filterable-item" data-title="Everfield Player Progression Features" data-category="game-dev rpg" onclick="window.location.href='everfield_progression_detail.html';">
-                    <h3 class="interactive-card-title">Player Progression & Other Features</h3>
-                    <p>Players can climb, swim, jump, and manage stamina. Death mechanics include EXP loss. Exploration involves secrets and puzzles. NPC interactions offer dialogue, quests, and factions. Crafting allows upgrades for weapons, armor, and consumables.</p>
-                    <div class="filter-tags"><span>Game Dev</span><span>RPG Mechanics</span><span>Player Systems</span></div>
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_magic_spellcrafting_details.html">Magic & Spellcrafting System</a></h3>
+                    <p>An advanced system with elemental matchups (Fire vs. Earth, etc.), affinity bonuses, environmental interactions (e.g., Fire + Grass = Wildfire), combo spells (e.g., Fire + Air = Firestorm), and customizable spell crafting using various components and materials to define power, duration, and special effects.</p>
                 </div>
 
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_gameplay_mechanics_details.html">Core Gameplay Mechanics</a></h3>
+                    <p>Includes detailed player movement (climbing, swimming, dodging), skill systems, exploration mechanics with hidden paths and puzzles, and specific death penalties (EXP loss, potential character deletion based on mode).</p>
+                </div>
+
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_npc_interaction_details.html">NPC Interactions & Factions</a></h3>
+                    <p>Dynamic NPC interactions featuring dialogue choices, quest mechanics, a faction system, trading, pickpocketing, and NPC recruitment/training possibilities.</p>
+                </div>
+
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_crafting_upgrading_details.html">Crafting & Upgrading Systems</a></h3>
+                    <p>A comprehensive system for crafting and upgrading weapons, armor, and consumables, utilizing materials found throughout the world and recipes discovered or learned by the player.</p>
+                </div>
+
+                <div class="databank-entry block-element">
+                    <h3><a href="everfield_bosses_ui_details.html">Boss Encounters & User Interface</a></h3>
+                    <p>Bosses will feature unique abilities, multiple phases, and specific weaknesses. The UI will include standard HUD elements (health, stamina), menu navigation, inventory management, a map system, and tutorials.</p>
+                </div>
             </section>
             <footer class="footer-terminal block-element">
-                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">Portfolio Interface v3.4 // Last System Update: <span id="lastScanTime"></span></p>
+                <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- JS from index.html ---
+        // --- Paste ENTIRE SCRIPT from index.html (portfolio_website_final_index_v4_back_button) here ---
+        const standbyScreen = document.getElementById('standby-screen');
+        const logonButton = document.getElementById('logon-button');
         const initialLogonScreen = document.getElementById('initial-logon-screen');
         const initialLogOutput = document.getElementById('initial-log-output');
         const logonGraphCanvas = document.getElementById('logon-graph-canvas');
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
+        // Go back button will be fetched dynamically within initializePageFunctions
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT INITIATED...", class: "system" },
-            { text: "Accessing Databank: Project Everfield...", class: "info" },
-            { text: "Operator: Kiegan. Profile Verified.", class: "system" },
-            { text: "// System Quirk Logged: Mi-Hwa Interaction Protocol Active", class: "user-quirk" },
-            { text: "Databank Interface Online.", class: "system" },
+            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
+            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
+            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
+            { text: "Establishing secure link to user profile...", class: "system" },
+            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v5.1...", class: "info" },
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
+            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
-        const typingSpeed = 25; 
-        const linePause = 150; 
-        const graphAnimationDuration = 2500; 
-        const totalIntroDuration = 3500; 
+
+        const typingSpeed = 10; 
+        const linePause = 70; 
+        const graphAnimationDuration = 3500; 
+        const totalIntroDuration = 5000; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; 
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -327,39 +411,34 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
             const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
             gradient.addColorStop(0, 'var(--accent-cyan)');
-            gradient.addColorStop(0.3, 'var(--accent-green)');
-            gradient.addColorStop(0.7, 'var(--accent-orange)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
             gradient.addColorStop(1, 'var(--accent-cyan-dark)');
             
             graphCtx.strokeStyle = gradient;
-            graphCtx.lineWidth = 3;
+            graphCtx.lineWidth = 3; 
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight / 2 + Math.sin(elapsedTime * 0.001) * 10);
+            graphCtx.moveTo(0, graphHeight / 2);
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const wave1 = Math.sin(x * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
-                const wave2 = Math.cos(x * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
-                const y = graphHeight / 2 + wave1 + wave2;
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            if (progress > 0.1) {
-                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', 'var(--accent-green)', '#FF69B4'];
-                for(let i = 0; i < 7; i++) { 
-                    if (Math.random() < progress * 0.7) { 
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
+                for(let i = 0; i < 5; i++) { 
+                    if (Math.random() < progress * 0.6) { 
                         graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const yPosWave1 = Math.sin(spikeX * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
-                        const yPosWave2 = Math.cos(spikeX * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
-                        const spikeYBase = graphHeight / 2 + yPosWave1 + yPosWave2;
-                        const spikeHeight = (Math.random() * 20 * progress + 5) * (Math.random() > 0.5 ? 1 : -0.6);
-                        graphCtx.fillRect(spikeX - 1, spikeYBase - (spikeHeight / 2), 2, spikeHeight);
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.15)';
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
             graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
@@ -382,7 +461,7 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
                 requestAnimationFrame(drawAnimatedGraph);
             }
         }
-        
+
         function typeLogLine(text, className, outputContainer, callback) {
             if (!outputContainer) return;
             const lineElem = document.createElement('div'); 
@@ -404,13 +483,13 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
             typeChar();
         }
 
-        function runInitialLogonSequence() {
-            if (sessionStorage.getItem('introPlayedThisSession')) {
-                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                bodyElement.classList.add('loaded');
-                initializePageFunctions();
-                return; 
+        function playIntroAnimation() {
+            if (!initialLogonScreen) { 
+                console.warn("Initial logon screen not found. Cannot play intro.");
+                loadMainInterfaceDirectly();
+                return;
             }
+            initialLogonScreen.style.display = 'flex';
 
             let currentLineIndex = 0;
             function nextInitialLine() {
@@ -426,23 +505,50 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
                 nextInitialLine();
                 setupGraphCanvas(); 
             } else {
-                 console.error("Initial log output element not found.");
+                 console.error("Initial log output element not found for intro animation.");
             }
 
             setTimeout(() => {
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                bodyElement.classList.add('loaded');
+                bodyElement.classList.add('loaded'); 
                 initializePageFunctions(); 
-                sessionStorage.setItem('introPlayedThisSession', 'true'); 
+                localStorage.setItem(introKey, 'true'); 
             }, totalIntroDuration);
+        }
+
+        function loadMainInterfaceDirectly() {
+            if (standbyScreen) standbyScreen.style.display = 'none';
+            if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+            bodyElement.classList.add('loaded');
+            initializePageFunctions();
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            filterContent(); 
+            filterProjects(); 
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
+
+            const contactForm = document.querySelector('#main-content form'); 
+            if (contactForm && contactForm.closest('section[id="contact"]')) { 
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert("Message submitted. (This is a demo feature)");
+                    this.reset();
+                });
+            }
+
+            const pageSpecificGoBackButton = document.getElementById('go-back-button');
+            if (pageSpecificGoBackButton) {
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || history.length <= 1) {
+                    pageSpecificGoBackButton.style.display = 'none';
+                } else {
+                    pageSpecificGoBackButton.addEventListener('click', () => {
+                        history.back();
+                    });
+                }
+            }
         }
         
         function setActiveNavLink() {
@@ -451,7 +557,10 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
-                const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                let linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                if (linkPath === "" && (linkHref === "./" || linkHref === "index.html" || linkHref === "")) {
+                    linkPath = "index.html";
+                }
                 if (linkPath === currentPageName) {
                     link.classList.add('active');
                 }
@@ -460,25 +569,13 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
 
         const searchInput = document.getElementById('search-input');
         const categoryFilter = document.getElementById('category-filter');
-        function filterContent() {
-            const itemsToFilter = document.querySelectorAll('.filterable-item');
-            if (!itemsToFilter.length) return;
-
-            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
-            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
-
-            itemsToFilter.forEach(card => {
-                const title = (card.dataset.title || '').toLowerCase();
-                const category = (card.dataset.category || '').toLowerCase();
-                
-                const matchesSearch = searchTerm === "" || title.includes(searchTerm);
-                const matchesCategory = selectedCategory === 'all' || category.split(' ').includes(selectedCategory);
-                
-                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
-            });
+        function filterProjects() {
+            const projectGrid = document.getElementById('project-grid'); 
+            if (!projectGrid) return; 
+            // No project cards on this specific page, so filter logic won't run for them
         }
-        if (searchInput) searchInput.addEventListener('keyup', filterContent);
-        if (categoryFilter) categoryFilter.addEventListener('change', filterContent);
+        if (searchInput) searchInput.addEventListener('keyup', filterProjects); // Keep for global consistency
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects); // Keep for global consistency
 
 
         if(document.getElementById('currentYear')) {
@@ -495,9 +592,9 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
         }
         
         const securityStatusMessages = [
-            "SYSTEM INTEGRITY: OPTIMAL", "ALL CHANNELS SECURED",
-            "THREAT ANALYSIS: NOMINAL", "ENCRYPTION STRENGTH: MAXIMUM",
-            "NETWORK VIGILANCE: ACTIVE"
+            "System Integrity: Optimal", "Network Channels: Secure",
+            "Threat Analysis: Nominal", "Data Encryption: Maximum",
+            "Perimeter Monitoring: Active" 
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
@@ -515,14 +612,33 @@ Final Spell Power = Base Power * (Scaling Stat Mod * Energy Type Multiplier * Af
             sidebarToggle.addEventListener('click', () => {
                 bodyElement.classList.toggle('sidebar-collapsed');
                 if (bodyElement.classList.contains('sidebar-collapsed')) {
-                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
+                    sidebarToggle.innerHTML = 'C<br>N<br>S<br>L'; 
                 } else {
                     sidebarToggle.innerHTML = 'CONSOLE';
                 }
             });
         }
         
-        window.onload = runInitialLogonSequence;
+        window.onload = () => {
+            if (standbyScreen && logonButton) {
+                if (localStorage.getItem(introKey)) { 
+                    loadMainInterfaceDirectly();
+                } else {
+                    logonButton.addEventListener('click', () => {
+                        if (standbyScreen) standbyScreen.style.display = 'none';
+                        playIntroAnimation();
+                    });
+                }
+            } else {
+                if (localStorage.getItem(introKey)) {
+                     loadMainInterfaceDirectly();
+                } else {
+                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
+                    loadMainInterfaceDirectly();
+                     localStorage.setItem(introKey, 'true'); 
+                }
+            }
+        };
     </script>
 </body>
 </html>
