@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SirKiefy's Portfolio Terminal v4.2</title>
+    <title>Sirkiefy's Portfolio Terminal v5.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -37,9 +37,53 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
+        /* Standby Screen */
+        #standby-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-darkest);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10001; /* Highest z-index */
+            text-align: center;
+            padding: 20px;
+        }
+        #standby-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--accent-orange-dark);
+        }
+        #standby-message {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+        #logon-button {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--accent-cyan);
+            color: var(--bg-darkest);
+            border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
+        }
+        #logon-button:hover {
+            background-color: var(--accent-cyan-dark);
+            color: var(--bg-darkest);
+            box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
+        }
+
+        /* Initial Full-Screen Log-on Animation (Played AFTER button click) */
         #initial-logon-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; display: flex; flex-direction: column;
+            background-color: #000; 
+            display: none; /* Initially hidden, shown by JS */
+            flex-direction: column;
             align-items: center; justify-content: center; z-index: 10000;
             padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
         }
@@ -71,9 +115,11 @@
             to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
         }
 
-        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } /* Initially hidden */
+        /* Main UI Elements (Initially hidden until body.loaded) */
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
         
-        body.loaded #initial-logon-screen { display: none; } /* Hide logon screen when loaded */
+        body.loaded #standby-screen { display: none; } /* Hide standby when loaded */
+        body.loaded #initial-logon-screen { display: none; } /* Hide logon animation when fully loaded */
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
@@ -193,7 +239,6 @@
             from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
             to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-        /* General content block styling for other pages */
         .content-block { margin-bottom: 1.5rem; line-height: 1.7; }
         .content-block h3 { font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 1.25rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.25rem;}
         .content-block ul { list-style: none; padding-left: 0; }
@@ -203,19 +248,18 @@
             position: absolute; left: 0; color: var(--accent-orange);
             font-family: 'Share Tech Mono', monospace;
         }
-        /* Databank and Project Card Styles (shared styling where applicable) */
         .interactive-card, .databank-entry, .project-card { 
             margin-bottom: 1.5rem; line-height: 1.7;
             transition: background-color 0.2s ease, border-color 0.2s ease;
             border: 1px solid var(--border-subtle); 
             padding: 1rem; 
-            background-color: var(--bg-card); /* Default card background */
+            background-color: var(--bg-card); 
         }
         .interactive-card:hover, .databank-entry:hover, .project-card:hover {
-            background-color: var(--bg-panel); /* Slightly lighter on hover */
+            background-color: var(--bg-panel); 
             border-color: var(--accent-cyan); 
         }
-        .interactive-card h3, .databank-entry h3, .project-card h3 { /* Includes .project-title */
+        .interactive-card h3, .databank-entry h3, .project-card h3 { 
             font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
             font-size: 1.4rem; margin-bottom: 0.75rem;
             border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
@@ -226,7 +270,7 @@
         .interactive-card h3 a:hover, .databank-entry h3 a:hover, .project-card h3 a:hover {
             color: var(--accent-orange); text-decoration: underline;
         }
-        .interactive-card h4, .databank-entry h4 { /* Not typically used in project-card directly */
+        .interactive-card h4, .databank-entry h4 { 
             font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
             font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.25rem;
         }
@@ -251,23 +295,21 @@
             text-decoration: none; font-family: 'Share Tech Mono', monospace;
         }
         .back-link:hover { text-decoration: underline; color: var(--accent-orange-dark); }
-        .project-image-placeholder { /* From projects.html, keep for consistency */
+        .project-image-placeholder { 
             background-color: #252a31; height: 180px; display: flex;
             align-items: center; justify-content: center; color: #565c64;
             font-family: 'Share Tech Mono', monospace;
         }
-        .project-categories span { /* From projects.html */
+        .project-categories span { 
             display: inline-block; background-color: var(--bg-panel); 
             border: 1px solid var(--border-subtle); 
             font-family: 'Share Tech Mono', monospace; 
-            font-size: 0.75rem; /* text-xs */
+            font-size: 0.75rem; 
             color: var(--text-secondary); 
             padding: 0.125rem 0.5rem; 
             margin-right: 0.25rem; 
             margin-bottom: 0.25rem; 
         }
-
-
         @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
@@ -277,11 +319,21 @@
             #logon-content-container { height: 90%; max-height: none; gap: 10px;}
             #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
             #logon-graph-container { height: 30%; }
+            #standby-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            #standby-message { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+            #logon-button { font-size: clamp(1rem, 2.5vw, 1.5rem); padding: 12px 25px; }
         }
     </style>
 </head>
 <body>
-    <!-- Initial Full-Screen Log-on Screen with Graph -->
+    <!-- Standby Screen (Initially Visible) -->
+    <div id="standby-screen">
+        <h1 id="standby-title" class="block-element">SIRKIEFY PORTFOLIO</h1>
+        <p id="standby-message" class="block-element">SYSTEM STANDBY // AWAITING USER AUTHENTICATION</p>
+        <button id="logon-button" class="block-element">ACCESS TERMINAL</button>
+    </div>
+
+    <!-- Initial Full-Screen Log-on Screen with Graph (Hidden initially) -->
     <div id="initial-logon-screen">
         <div id="logon-content-container" class="block-element">
             <div id="initial-log-output" class="block-element"></div>
@@ -294,7 +346,7 @@
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
 
     <aside id="sidebar" class="block-element">
-        <div class="sidebar-title font-terminal">SirKiefy_CONSOLE</div> 
+        <div class="sidebar-title font-terminal">SIRKIEFY_CONSOLE</div> 
         <nav class="main-nav font-terminal">
             <a href="index.html" class="block-element">Home_Interface</a>
             <a href="about.html" class="block-element">User_Profile // About</a> 
@@ -327,13 +379,13 @@
                     <span class="status-indicator block-element"></span>SYSTEM_ONLINE
                 </h1>
                 <p class="hero-subtitle font-terminal">
-                    SirKiefy's Portfolio Interface. <br> Specializations: SFX, 3D Modelling, Pixel Art. Status: Active.
+                    Sirkiefy's Portfolio Interface. <br> Specializations: SFX, 3D Modelling, Pixel Art. Status: Active.
                 </p>
                 <div class="mt-8">
                     <a href="projects.html" class="btn btn-primary block-element font-terminal">View Portfolio</a>
                 </div>
                  <p class="mt-12 font-terminal text-sm text-text-secondary">
-                    Welcome to SirKiefy's professional data interface. Utilize the console for navigation through project archives, skill assessments, and personal logs.
+                    Welcome to Sirkiefy's professional data interface. Utilize the console for navigation through project archives, skill assessments, and personal logs.
                 </p>
             </section>
             <section class="section-panel block-element">
@@ -353,13 +405,15 @@
             </section>
             <!-- End Page Specific Content -->
             <footer class="footer-terminal block-element">
-                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v4.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
+                <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.0 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
+        const standbyScreen = document.getElementById('standby-screen');
+        const logonButton = document.getElementById('logon-button');
         const initialLogonScreen = document.getElementById('initial-logon-screen');
         const initialLogOutput = document.getElementById('initial-log-output');
         const logonGraphCanvas = document.getElementById('logon-graph-canvas');
@@ -372,16 +426,17 @@
             { text: "Memory diagnostics: ALL CLEAR", class: "info" },
             { text: "CPU calibration sequence: INITIALIZED", class: "info" },
             { text: "Establishing secure link to user profile...", class: "system" },
-            { text: "User: Kiegan. Profile authenticated.", class: "system" },
-            { text: "Loading portfolio interface v4.1...", class: "info" },
-            { text: "[ Monitoring Mi-hwa's activities... ]", class: "mihwa" },
-            { text: "Interface loaded. Welcome, Kiegan.", class: "system" },
+            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v5.0...", class: "info" },
+            { text: "[ Monitoring Mi-hwa's activities... ]", class: "mihwa" }, // Keeping this as per previous context
+            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
 
         const typingSpeed = 15; 
         const linePause = 100; 
         const graphAnimationDuration = 3000; 
         const totalIntroDuration = 4500; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_0'; // Unique key for localStorage
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -468,21 +523,9 @@
             typeChar();
         }
 
-        function runInitialLogonSequence() {
-            const introKey = 'portfolioIntroPlayed_Kiegan_v4_2'; 
-            if (localStorage.getItem(introKey)) { 
-                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                bodyElement.classList.add('loaded');
-                initializePageFunctions();
-                return; 
-            }
-
-            if (!initialLogonScreen) {
-                 bodyElement.classList.add('loaded');
-                 initializePageFunctions();
-                 return;
-            }
-            initialLogonScreen.style.display = 'flex';
+        function playIntroAnimation() {
+            if (!initialLogonScreen) return;
+            initialLogonScreen.style.display = 'flex'; // Show the animation screen
 
             let currentLineIndex = 0;
             function nextInitialLine() {
@@ -498,15 +541,22 @@
                 nextInitialLine();
                 setupGraphCanvas(); 
             } else {
-                 console.error("Initial log output element not found.");
+                 console.error("Initial log output element not found for intro animation.");
             }
 
             setTimeout(() => {
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                bodyElement.classList.add('loaded');
+                bodyElement.classList.add('loaded'); // Show main content
                 initializePageFunctions(); 
-                localStorage.setItem(introKey, 'true'); 
+                localStorage.setItem(introKey, 'true'); // Mark intro as played
             }, totalIntroDuration);
+        }
+
+        function loadMainInterfaceDirectly() {
+            if (standbyScreen) standbyScreen.style.display = 'none';
+            if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+            bodyElement.classList.add('loaded');
+            initializePageFunctions();
         }
         
         function initializePageFunctions() {
@@ -536,8 +586,6 @@
                 if (linkPath === "" && (linkHref === "./" || linkHref === "index.html" || linkHref === "")) {
                     linkPath = "index.html";
                 }
-
-
                 if (linkPath === currentPageName) {
                     link.classList.add('active');
                 }
@@ -607,7 +655,39 @@
             });
         }
         
-        window.onload = runInitialLogonSequence;
+        // Initial Page Load Logic
+        window.onload = () => {
+            if (logonButton) {
+                logonButton.addEventListener('click', () => {
+                    if (standbyScreen) standbyScreen.style.display = 'none'; // Hide standby screen
+                    playIntroAnimation();
+                });
+            } else {
+                // Fallback if logon button isn't found (e.g. direct navigation to an internal page after initial logon)
+                // This part needs to be robust. If a user bookmarks an internal page,
+                // they shouldn't see the standby screen.
+                // The 'loaded' class would typically be set after the intro.
+                // If we are on an internal page and the intro hasn't been marked as played "ever",
+                // we might want to still force the standby screen or a quick redirect to index.html.
+                // For simplicity now, if no logon button, load directly IF intro has been played.
+                // Otherwise, user might be stuck on a blank internal page.
+                // A better approach for direct internal page access might be needed if intro is mandatory first.
+                if (localStorage.getItem(introKey)) {
+                    loadMainInterfaceDirectly();
+                } else {
+                    // If intro hasn't been played EVER and they land on an internal page,
+                    // they are at the standby screen by default, so logonButton listener should handle it.
+                    // If standbyScreen is not visible, it implies an issue.
+                    if (standbyScreen && standbyScreen.style.display !== 'none') {
+                        // Standby is visible, do nothing, wait for button click.
+                    } else {
+                         // Fallback: If somehow standby is not shown and intro not played, load main.
+                         console.warn("Fallback: Loading main interface without intro due to unexpected state.");
+                         loadMainInterfaceDirectly();
+                    }
+                }
+            }
+        };
     </script>
 </body>
 </html>
