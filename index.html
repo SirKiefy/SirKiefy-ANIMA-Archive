@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator [Your Name] - Portfolio Terminal v3.1</title>
+    <title>Operator Kiegan - Portfolio Terminal v3.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -21,13 +21,15 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 0px; /* Can be non-zero for a sliver */
         }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-primary);
             margin: 0; padding: 0; box-sizing: border-box;
-            /* overflow: hidden; Still useful if pop-up is present, otherwise can be managed by .loaded */
+            overflow-x: hidden; /* Prevent horizontal scroll when sidebar moves */
         }
         .font-terminal { font-family: 'Share Tech Mono', monospace; }
         .text-accent-orange { color: var(--accent-orange); }
@@ -37,67 +39,60 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        /* Welcome Pop-up */
+        /* Initial Welcome Pop-up */
         #welcome-popup {
             position: fixed;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background-color: var(--bg-panel);
             color: var(--text-primary);
             padding: 30px 40px;
-            border: 1px solid var(--accent-orange);
-            box-shadow: 0 0 25px rgba(240, 124, 58, 0.3);
+            border: 2px solid var(--accent-orange); /* Thicker border */
+            box-shadow: 0 0 30px rgba(240, 124, 58, 0.4); /* More pronounced shadow */
             z-index: 10000;
             text-align: center;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem;
+            font-size: 1.3rem; /* Slightly larger */
         }
-        #welcome-popup.show {
-            opacity: 1;
-            visibility: visible;
-        }
+        #welcome-popup.show { opacity: 1; visibility: visible; }
         #welcome-popup .mihwa-line {
-            color: var(--accent-orange);
-            font-weight: bold;
-            display: block; /* Ensure it's on its own line if needed */
-            margin-top: 10px;
-            animation: subtle-pulse 1.5s infinite;
+            color: var(--accent-orange); font-weight: bold; display: block;
+            margin-top: 12px; animation: subtle-pulse 1.5s infinite alternate;
         }
         @keyframes subtle-pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            from { opacity: 0.7; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1.02); }
         }
-
 
         /* Hide main content initially */
-        #sidebar, #main-content {
-            display: none;
-        }
-        body.loaded {
-            overflow: visible; /* Restore scrollbars after load */
-        }
-        body.loaded #sidebar { /* Keep flex for sidebar layout */
-            display: flex;
-        }
-        body.loaded #main-content {
-            display: block;
-        }
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
+        body.loaded #main-content-wrapper { display: block; }
+        body.loaded #sidebar-toggle { display: block; /* Or flex if it's a flex item */ }
 
 
-        /* Sidebar (Common to all pages) */
+        /* Sidebar */
         #sidebar {
-            width: 280px; background-color: var(--bg-darkest);
+            width: var(--sidebar-width);
+            background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px;
             height: 100vh; position: fixed; top: 0; left: 0;
             flex-direction: column; overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(0);
+            z-index: 1000; /* Ensure sidebar is above main content for overlap if any */
+        }
+        body.sidebar-collapsed #sidebar {
+            transform: translateX(-100%);
         }
         .sidebar-title {
-            font-size: 1.5rem; letter-spacing: 2px;
+            font-size: 1.6rem; letter-spacing: 2px; /* Slightly larger */
             margin-bottom: 24px; text-align: center;
+            color: var(--accent-orange); /* Explicitly color title */
+            font-weight: bold;
         }
         .main-nav a {
             display: block; padding: 10px 15px; margin-bottom: 6px;
@@ -114,19 +109,12 @@
             background-color: var(--bg-card); font-weight: bold;
         }
 
-        #animated-log-screen { /* Sidebar log */
-            background-color: #000; border: 1px solid var(--border-medium);
-            padding: 12px; height: 150px; overflow-y: auto;
-            margin-top: 24px; margin-bottom: 24px; font-size: 0.8rem;
-            line-height: 1.5; white-space: pre-wrap;
-        }
-        #animated-log-screen .log-line.jargon { color: var(--accent-cyan); }
-        #animated-log-screen .log-line.mihwa { color: var(--accent-orange); font-weight: bold; }
-        .sidebar-controls { margin-top: auto; }
+        /* Removed #animated-log-screen as per request */
+
+        .sidebar-controls { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle); }
         .sidebar-controls h3 {
             font-family: 'Share Tech Mono', monospace; font-size: 1rem;
             color: var(--text-secondary); margin-bottom: 8px;
-            border-top: 1px solid var(--border-subtle); padding-top: 16px;
         }
         #search-input, #category-filter {
             width: 100%; padding: 8px; background-color: var(--bg-panel);
@@ -137,10 +125,50 @@
             outline: none; border-color: var(--accent-orange);
         }
 
-        #main-content {
-            margin-left: 280px; padding: 32px;
-            width: calc(100% - 280px); overflow-y: auto; height: 100vh;
+        /* Sidebar Toggle Button */
+        #sidebar-toggle {
+            position: fixed;
+            top: 15px;
+            left: var(--sidebar-width); /* Initial position next to sidebar */
+            z-index: 1001; /* Above sidebar */
+            background-color: var(--accent-orange);
+            color: var(--bg-darkest);
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            transition: left 0.3s ease-in-out, background-color 0.2s ease;
+            border-top-right-radius: 0px; /* Sharp edges */
+            border-bottom-right-radius: 0px;
+            writing-mode: vertical-rl; /* Vertical text */
+            text-orientation: mixed;
+            transform: rotate(180deg); /* Flip text to read correctly */
+            height: auto; /* Adjust height based on content */
+            line-height: 1;
         }
+         #sidebar-toggle:hover {
+            background-color: var(--accent-orange-dark);
+        }
+        body.sidebar-collapsed #sidebar-toggle {
+            left: var(--sidebar-width-collapsed); /* Position at edge when collapsed */
+        }
+
+
+        /* Main Content Wrapper */
+        #main-content-wrapper {
+            margin-left: var(--sidebar-width);
+            padding: 0; /* Main content itself will have padding */
+            width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        body.sidebar-collapsed #main-content-wrapper {
+            margin-left: var(--sidebar-width-collapsed);
+            width: calc(100% - var(--sidebar-width-collapsed));
+        }
+        #main-content { padding: 32px; }
+
+
         .section-panel {
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
@@ -153,12 +181,18 @@
         .hero-section { text-align: center; border-bottom: 2px solid var(--accent-orange); }
         .hero-title { font-size: 2.5rem; letter-spacing: 3px; line-height: 1.2; }
         .hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-top: 8px; }
-        .status-indicator {
+        
+        .status-indicator { /* Re-added animation */
             display: inline-block; width: 12px; height: 12px;
             background-color: var(--accent-cyan); margin-right: 8px;
-            vertical-align: middle; animation: pulse-cyan 2s infinite;
+            vertical-align: middle;
+            animation: pulse-cyan 1.5s infinite ease-in-out;
         }
-        @keyframes pulse-cyan { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes pulse-cyan { 
+            0%, 100% { box-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan); opacity: 1; } 
+            50% { box-shadow: 0 0 8px var(--accent-cyan-dark), 0 0 12px var(--accent-cyan-dark); opacity: 0.6; } 
+        }
+
         .btn {
             padding: 12px 24px; text-transform: uppercase; letter-spacing: 1px;
             border: 1px solid; transition: background-color 0.2s ease, color 0.2s ease;
@@ -172,25 +206,35 @@
             background-color: var(--accent-orange-dark);
             border-color: var(--accent-orange-dark);
         }
+         .btn-secondary { /* Ensure secondary button style is present */
+            background-color: transparent;
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        .btn-secondary:hover {
+            background-color: var(--accent-cyan);
+            color: var(--bg-darkest);
+        }
         .footer-terminal {
             background-color: var(--bg-panel); text-align: center;
             padding: 24px; border-top: 1px solid var(--border-subtle);
             font-size: 0.875rem; color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text {
-            animation: glow-animation 2s infinite alternate;
+        #security-status-text { /* Re-added glow animation */
             display: inline-block;
+            animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
-        @keyframes glow-animation {
-            from { text-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan), 0 0 7px var(--accent-cyan-dark); }
-            to { text-shadow: 0 0 5px var(--accent-cyan-dark), 0 0 8px var(--accent-cyan-dark), 0 0 10px var(--accent-orange); }
+        @keyframes glow-security-text { /* Renamed to avoid conflict */
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
+
 
         .project-card {
             background-color: var(--bg-card); border: 1px solid var(--border-subtle);
             transition: border-color 0.3s ease; overflow: hidden; margin-bottom: 16px;
         }
-        .project-card.hidden { display: none; } /* Used by JS for filtering */
+        .project-card.hidden { display: none; } 
         .project-card:hover { border-color: var(--accent-orange); }
         .project-image-placeholder {
             background-color: #252a31; height: 180px; display: flex;
@@ -199,42 +243,49 @@
         .project-title { font-size: 1.25rem; }
 
         @media (max-width: 768px) {
-            body.loaded #sidebar {
+            #sidebar {
+                /* When sidebar is part of normal flow on mobile */
                 position: static; width: 100%; height: auto;
                 border-right: none; border-bottom: 1px solid var(--border-subtle);
-                overflow-y: visible;
+                transform: translateX(0) !important; /* Override fixed positioning transform */
             }
-            body.loaded #main-content { margin-left: 0; width: 100%; height: auto; padding: 16px; }
+            body.sidebar-collapsed #sidebar { /* Still allow collapse if toggle shown on mobile */
+                display: none; /* Or transform if you have a mobile-specific toggle */
+            }
+            #main-content-wrapper {
+                 margin-left: 0 !important; width: 100% !important;
+            }
+            #main-content { padding: 16px; }
+            #sidebar-toggle { display: none; } /* Hide toggle on mobile by default, can be changed */
             
-            #welcome-popup { font-size: 1rem; padding: 20px; width: 80%;}
             .sidebar-title { font-size: 1.25rem; margin-bottom: 16px; }
             .main-nav a { padding: 10px 12px; }
-            #animated-log-screen { height: 100px; font-size: 0.75rem;}
             .hero-title { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Welcome Pop-up -->
+    <!-- Initial Welcome Pop-up -->
     <div id="welcome-popup" class="block-element">
-        SYSTEM ONLINE. OPERATOR: [Your Name]
+        INITIALIZING CONNECTION... OPERATOR: KIEGAN
         <span class="mihwa-line">Bullying Mi-hwa the beloved &lt;3</span>
     </div>
 
+    <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
+
     <!-- Sidebar (Common to all pages) -->
     <aside id="sidebar" class="block-element">
-        <div class="sidebar-title font-terminal text-accent-orange">OPERATOR CONSOLE</div>
+        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
         <nav class="main-nav font-terminal">
             <a href="index.html" class="block-element">Home_Interface</a>
             <a href="about.html" class="block-element">Auth_Logs // About</a>
             <a href="projects.html" class="block-element">Data_Streams // Projects</a>
-            <a href="skills.html" class="block-element">Core_Matrix // Skills</a>
             <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
+            <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
-        <div id="animated-log-screen" class="font-terminal block-element">
-            <!-- Sidebar log will appear here -->
-        </div>
+        <!-- Log screen removed from sidebar -->
         <div class="sidebar-controls">
             <h3>// PROJECT_ARCHIVE_QUERY</h3>
             <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
@@ -242,136 +293,82 @@
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
                 <option value="web-dev">Web Development</option>
-                <option value="data-vis">Data Visualization</option>
-                <option value="ui-ux">UI/UX Design</option>
-                <option value="cyber-sec">Cyber Security</option>
+                <option value="sfx">SFX</option>
+                <option value="3d-model">3D Modelling</option>
+                <option value="game-dev">Game Development</option>
+                <option value="world-build">World Building</option>
             </select>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main id="main-content">
-        <section id="hero" class="hero-section section-panel block-element">
-            <h1 class="hero-title font-terminal text-accent-orange">
-                <span class="status-indicator block-element"></span>SYSTEM ACCESS GRANTED
-            </h1>
-            <p class="hero-subtitle font-terminal">
-                Portfolio Interface Initialized. Operator: [Your Name]. <br> Specializing in [Your Main Skill/Field]. Core OS: DataCore v3.2
-            </p>
-            <div class="mt-8">
-                <a href="projects.html" class="btn btn-primary block-element font-terminal">Access Project Archives</a>
-            </div>
-             <p class="mt-12 font-terminal text-sm text-text-secondary">
-                This terminal grants access to declassified operational records and skill assessments for Operator [Your Name].<br>
-                Navigate via the console on the left. All transmissions are monitored.
-            </p>
-        </section>
-        <section class="section-panel block-element">
-            <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_OVERVIEW :: QUICK_ACCESS</h2>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-bg-card p-6 block-element border border-border-subtle">
-                    <h3 class="font-terminal text-accent-orange text-lg mb-2">Latest Intel // About</h3>
-                    <p class="text-sm mb-4">Access background information, mission statement, and operational history of Operator [Your Name].</p>
-                    <a href="about.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">View About Page &gt;&gt;</a>
+    <!-- Main Content Wrapper for margin adjustment -->
+    <div id="main-content-wrapper">
+        <main id="main-content">
+            <section id="hero" class="hero-section section-panel block-element">
+                <h1 class="hero-title font-terminal text-accent-orange">
+                    <span class="status-indicator block-element"></span>SYSTEM ACCESS GRANTED
+                </h1>
+                <p class="hero-subtitle font-terminal">
+                    Portfolio Interface Initialized. Operator: Kiegan. <br> Specializing in SFX & 3D Modelling. Core OS: DataCore v3.3
+                </p>
+                <div class="mt-8">
+                    <a href="projects.html" class="btn btn-primary block-element font-terminal">Access Project Archives</a>
                 </div>
-                <div class="bg-bg-card p-6 block-element border border-border-subtle">
-                    <h3 class="font-terminal text-accent-orange text-lg mb-2">Project Databanks</h3>
-                    <p class="text-sm mb-4">Browse a curated list of completed missions, system developments, and classified project files.</p>
-                    <a href="projects.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">View Projects Page &gt;&gt;</a>
+                 <p class="mt-12 font-terminal text-sm text-text-secondary">
+                    This terminal grants access to declassified operational records and skill assessments for Operator Kiegan.<br>
+                    Navigate via the console. All transmissions are monitored.
+                </p>
+            </section>
+            <section class="section-panel block-element">
+                <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_OVERVIEW :: QUICK_ACCESS</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-bg-card p-6 block-element border border-border-subtle">
+                        <h3 class="font-terminal text-accent-orange text-lg mb-2">Intel // About Kiegan</h3>
+                        <p class="text-sm mb-4">Access background information, mission statement, and operational history.</p>
+                        <a href="about.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">View Operator File &gt;&gt;</a>
+                    </div>
+                    <div class="bg-bg-card p-6 block-element border border-border-subtle">
+                        <h3 class="font-terminal text-accent-orange text-lg mb-2">Hobby Logs // World Building</h3>
+                        <p class="text-sm mb-4">Explore personal logs detailing created universes and ongoing narrative projects.</p>
+                        <a href="hobbies.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">Access Personal Logs &gt;&gt;</a>
+                    </div>
                 </div>
-            </div>
-        </section>
-        <footer class="footer-terminal block-element">
-            <p>&copy; <span id="currentYear"></span> [Your Name/Alias]. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-            <p class="font-terminal text-xs">DATA CORE INTERFACE v3.2 // LAST SCAN: <span id="lastScanTime"></span></p>
-        </footer>
-    </main>
+            </section>
+            <footer class="footer-terminal block-element">
+                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+            </footer>
+        </main>
+    </div>
 
     <script>
         const welcomePopup = document.getElementById('welcome-popup');
-        const sidebarLogScreen = document.getElementById('animated-log-screen');
         const bodyElement = document.body;
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const mainContentWrapper = document.getElementById('main-content-wrapper');
 
-        const sidebarLogJargon = [
-            "Monitoring network traffic...", "Analyzing threat vectors...",
-            "System performance optimal.", "Data integrity verified.",
-            "Quantum entanglement stable.", "No anomalies detected."
-        ];
-        const sidebarMihwaLine = "Bullying Mi-hwa the beloved <3";
-
-        const typingSpeed = 40; // General typing speed for sidebar log
-        const linePause = 300; // General pause for sidebar log
-
-        // Function to type lines in the sidebar log
-        function typeLineForSidebar(text, className, outputContainer, callback) {
-            if (!outputContainer) return;
-            const lineElem = document.createElement('span');
-            lineElem.className = `log-line ${className}`;
-            outputContainer.appendChild(lineElem);
-            let charIndex = 0;
-
-            function typeChar() {
-                if (charIndex < text.length) {
-                    lineElem.textContent += text.charAt(charIndex);
-                    charIndex++;
-                    outputContainer.scrollTop = outputContainer.scrollHeight;
-                    setTimeout(typeChar, typingSpeed);
-                } else {
-                    outputContainer.scrollTop = outputContainer.scrollHeight;
-                    if (callback) setTimeout(callback, linePause + Math.random() * 500); // Vary pause for sidebar
-                }
-            }
-            typeChar();
-        }
-        
         function showWelcomePopup() {
             if (welcomePopup) {
-                // Make Your Name dynamic in popup if needed, e.g. welcomePopup.innerHTML = welcomePopup.innerHTML.replace("[Your Name]", "Actual Name");
                 welcomePopup.classList.add('show');
-
                 setTimeout(() => {
                     welcomePopup.classList.remove('show');
-                    // Wait for fade out transition to complete
                     setTimeout(() => {
-                         if(welcomePopup) welcomePopup.style.display = 'none'; // Hide it completely
+                         if(welcomePopup) welcomePopup.style.display = 'none';
                          bodyElement.classList.add('loaded');
-                         startSidebarLogAnimation();
                          initializePageFunctions();
-                    }, 500); // Matches CSS transition duration
-                }, 3000); // Pop-up visible for 3 seconds, then starts fade out
+                    }, 500); 
+                }, 3000); 
             } else {
-                // Fallback if pop-up element isn't found
-                console.error("Welcome pop-up element not found. Loading main content directly.");
                 bodyElement.classList.add('loaded');
-                startSidebarLogAnimation();
                 initializePageFunctions();
             }
         }
         
-        let sidebarJargonIndex = 0;
-        function startSidebarLogAnimation() {
-            if (!sidebarLogScreen) return;
-            sidebarLogScreen.innerHTML = ''; 
-
-            function nextSidebarLine() {
-                let text, className;
-                if (sidebarJargonIndex % 4 === 2) { 
-                    text = sidebarMihwaLine;
-                    className = 'mihwa';
-                } else {
-                    text = sidebarLogJargon[sidebarJargonIndex % sidebarLogJargon.length];
-                    className = 'jargon';
-                }
-                typeLineForSidebar(text, className, sidebarLogScreen, nextSidebarLine);
-                sidebarJargonIndex++;
-            }
-            nextSidebarLine();
-        }
-
         function initializePageFunctions() {
             setActiveNavLink();
             filterProjects(); 
-            startFooterStatusCycle();
+            startFooterStatusCycle(); // Re-added
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
 
@@ -390,9 +387,7 @@
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
-                // Handle cases where href might be just "index.html" or "./index.html"
                 const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
-
                 if (linkPath === currentPath || (currentPath === "" && linkPath === "index.html") ) {
                     link.classList.add('active');
                 }
@@ -415,7 +410,6 @@
                 
                 const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
                 const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
-
                 card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
             });
         }
@@ -435,10 +429,11 @@
             }
         }
         
+        // Re-added Footer Security Status Cycling
         const securityStatusMessages = [
-            "System integrity maintained.", "All channels secure. No breaches detected.",
-            "Threat matrix nominal. Vigilance protocols active.", "Data encryption at maximum strength.",
-            "Network monitored. Perimeter holding strong."
+            "System integrity maintained.", "All channels secure.",
+            "Threat matrix nominal.", "Data encryption: MAX.",
+            "Network vigilance active."
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
@@ -449,6 +444,19 @@
                     statusElement.textContent = securityStatusMessages[currentStatusIndex];
                 }, 30000); 
             }
+        }
+
+        // Sidebar Toggle Logic
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                bodyElement.classList.toggle('sidebar-collapsed');
+                // Update toggle button text (optional)
+                if (bodyElement.classList.contains('sidebar-collapsed')) {
+                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; // Example text for collapsed
+                } else {
+                    sidebarToggle.innerHTML = 'CONSOLE';
+                }
+            });
         }
         
         window.onload = showWelcomePopup;
