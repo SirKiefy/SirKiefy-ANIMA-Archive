@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiegan - Projects Portfolio // SFX & 3D</title>
+    <title>Sirkiefy's Portfolio Terminal v5.0 - Projects</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Base CSS (Copy ALL from index.html) --- */
         :root {
             --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
@@ -22,7 +21,6 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
-            --accent-green: #39ff14;
             --sidebar-width: 280px;
             --sidebar-width-collapsed: 0px; 
         }
@@ -37,14 +35,42 @@
         .bg-accent-orange { background-color: var(--accent-orange); }
         .text-accent-cyan { color: var(--accent-cyan); }
         .border-accent-cyan { border-color: var(--accent-cyan); }
-        .text-accent-green { color: var(--accent-green); }
         .block-element { border-radius: 0px !important; }
+
+        #standby-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-darkest);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10001; text-align: center; padding: 20px;
+        }
+        #standby-title {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange); margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--accent-orange-dark);
+        }
+        #standby-message {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary); margin-bottom: 40px;
+        }
+        #logon-button {
+            font-family: 'Share Tech Mono', monospace; background-color: var(--accent-cyan);
+            color: var(--bg-darkest); border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px; font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
+        }
+        #logon-button:hover {
+            background-color: var(--accent-cyan-dark); color: var(--bg-darkest);
+            box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
+        }
 
         #initial-logon-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10000;
-            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
+            background-color: #000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10000; padding: 20px; box-sizing: border-box; 
+            font-family: 'Share Tech Mono', monospace;
         }
         #logon-content-container {
             display: flex; flex-direction: column; align-items: center;
@@ -57,14 +83,11 @@
             width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
             background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
         }
-        #initial-log-output .log-line.system { color: var(--text-primary); font-weight: bold;}
+        #initial-log-output .log-line.system { color: var(--text-primary); }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
-        #initial-log-output .log-line.user-quirk { 
-            color: var(--accent-orange); font-style: italic;
-            opacity: 0.8; animation: subtle-flicker 2s infinite alternate;
-        }
-        @keyframes subtle-flicker { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.6; } }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        
         #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
             border: 1px solid var(--border-subtle); padding: 10px; display: flex;
@@ -72,7 +95,15 @@
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
 
-        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
+
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
+        
+        body.loaded #standby-screen { display: none; } 
+        body.loaded #initial-logon-screen { display: none; } 
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
@@ -145,91 +176,91 @@
             font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
             margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
+        .status-indicator { 
+            display: inline-block; width: 12px; height: 12px;
+            background-color: var(--accent-cyan); margin-right: 8px;
+            vertical-align: middle;
+            animation: pulse-cyan 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-cyan { 
+            0%, 100% { box-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan); opacity: 1; } 
+            50% { box-shadow: 0 0 8px var(--accent-cyan-dark), 0 0 12px var(--accent-cyan-dark); opacity: 0.6; } 
+        }
         .footer-terminal { 
             background-color: var(--bg-panel); text-align: center; padding: 24px;
             border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
             color: var(--text-muted); margin-top: 32px;
         }
         #security-status-text { 
-            display: inline-block; animation: glow-security-text 3s infinite alternate ease-in-out;
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
         @keyframes glow-security-text { 
-            0% { color: var(--accent-green); text-shadow: 0 0 3px var(--accent-green), 0 0 6px var(--accent-green); }
-            50% { color: var(--accent-cyan); text-shadow: 0 0 4px var(--accent-cyan), 0 0 8px var(--accent-cyan-dark); }
-            100% { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange); }
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-        /* Project Card Styles */
-        .interactive-card { /* Using the same class for consistency */
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-            padding: 1.5rem; /* More padding for project cards */
-            margin-bottom: 1.5rem; /* More spacing */
-            display: flex; /* For image and text layout */
-            flex-direction: column; /* Stack image and text on small screens */
+        .project-card { 
+            margin-bottom: 1.5rem; line-height: 1.7;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            border: 1px solid var(--border-subtle); 
+            padding: 1rem; 
+            background-color: var(--bg-card); 
         }
-        .interactive-card:hover {
+        .project-card:hover {
             background-color: var(--bg-panel); 
-            border-color: var(--accent-cyan);
-            transform: translateY(-3px);
-            cursor: pointer;
+            border-color: var(--accent-cyan); 
         }
-        .project-image-placeholder {
-            width: 100%;
-            height: 200px; /* Adjust as needed */
-            background-color: #252a31;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-family: 'Share Tech Mono', monospace;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .interactive-card-content {
-            flex-grow: 1;
-        }
-        .interactive-card-title {
+        .project-card h3 { 
             font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
-            font-size: 1.4rem; margin-bottom: 0.5rem;
-            text-decoration: none; display: block;
+            font-size: 1.4rem; margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
         }
-        .interactive-card-title:hover { color: var(--accent-orange); }
-        .interactive-card p { margin-bottom: 0.75rem; color: var(--text-secondary); line-height: 1.6;}
-        .filter-tags span {
-            display: inline-block; background-color: var(--border-subtle);
-            color: var(--text-muted); font-size: 0.75rem; padding: 0.1rem 0.5rem;
-            margin-right: 0.3rem; margin-bottom: 0.3rem; font-family: 'Share Tech Mono', monospace;
+        .project-card h3 a { 
+            text-decoration: none; color: inherit; display: block; 
         }
-        /* Grid for projects */
-        #project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
-            gap: 1.5rem;
+        .project-card h3 a:hover {
+            color: var(--accent-orange); text-decoration: underline;
         }
-
-        @media (min-width: 768px) {
-            .interactive-card.project-layout { /* For wider screens, image beside text */
-                flex-direction: row;
-                gap: 1.5rem;
-            }
-            .project-layout .project-image-placeholder {
-                width: 200px; /* Fixed width for image placeholder */
-                height: auto; /* Auto height */
-                margin-bottom: 0;
-            }
+        .project-card p { 
+            margin-bottom: 0.5rem; color: var(--text-secondary); 
+            font-size: 0.9rem; /* Slightly smaller text for cards */
         }
-
+        .project-image-placeholder { 
+            background-color: #252a31; height: 180px; display: flex;
+            align-items: center; justify-content: center; color: #565c64;
+            font-family: 'Share Tech Mono', monospace; margin-bottom: 1rem;
+        }
+        .project-categories span { 
+            display: inline-block; background-color: var(--bg-darkest); /* Darker background for tags */
+            border: 1px solid var(--border-subtle); 
+            font-family: 'Share Tech Mono', monospace; 
+            font-size: 0.75rem; 
+            color: var(--text-muted); /* Muted color for tags */
+            padding: 0.125rem 0.5rem; 
+            margin-right: 0.25rem; 
+            margin-bottom: 0.5rem; /* Increased bottom margin for tags */
+        }
         @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
             #main-content { padding: 16px; }
             #sidebar-toggle { display: none; }
+            #logon-content-container { height: 90%; max-height: none; gap: 10px;}
+            #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
+            #logon-graph-container { height: 30%; }
+            #standby-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            #standby-message { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+            #logon-button { font-size: clamp(1rem, 2.5vw, 1.5rem); padding: 12px 25px; }
         }
     </style>
 </head>
 <body>
+    <div id="standby-screen">
+        <h1 id="standby-title" class="block-element">SIRKIEFY PORTFOLIO</h1>
+        <p id="standby-message" class="block-element">SYSTEM STANDBY // AWAITING USER AUTHENTICATION</p>
+        <button id="logon-button" class="block-element">ACCESS TERMINAL</button>
+    </div>
+
     <div id="initial-logon-screen">
         <div id="logon-content-container" class="block-element">
             <div id="initial-log-output" class="block-element"></div>
@@ -242,104 +273,130 @@
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
 
     <aside id="sidebar" class="block-element">
-        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
+        <div class="sidebar-title font-terminal">SIRKIEFY_CONSOLE</div> 
         <nav class="main-nav font-terminal">
             <a href="index.html" class="block-element">Home_Interface</a>
-            <a href="about.html" class="block-element">Auth_Logs // About</a>
-            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
-            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="about.html" class="block-element">User_Profile // About</a> 
+            <a href="projects.html" class="block-element">Project_Files // Portfolio</a> 
+            <a href="hobbies.html" class="block-element">Personal_Logs // Hobbies</a> 
             <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
             <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PORTFOLIO_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Archives...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
                 <option value="sfx">SFX</option>
-                <option value="3d-modelling">3D Modelling</option>
+                <option value="3d-model">3D Modelling</option>
+                <option value="pixel-art">Pixel Art</option> 
                 <option value="game-dev">Game Development</option>
-                <option value="world-building">World Building</option>
-                <option value="esports">Esports</option>
+                <option value="world-build">World Building</option>
             </select>
         </div>
     </aside>
 
     <div id="main-content-wrapper">
         <main id="main-content">
-            <section id="projects-showcase" class="section-panel block-element">
-                <h2 class="section-title text-accent-orange font-terminal">// DATA_STREAMS :: PROJECT_PORTFOLIO_ACCESS</h2>
-                <p class="text-text-secondary mb-6">Below is a selection of projects showcasing capabilities in SFX, 3D Modelling, and Game Development concepts. Use the sidebar controls to filter by category or search by keyword.</p>
-
-                <div id="project-grid">
-                    <!-- Example Project Card 1: SFX -->
-                    <div class="interactive-card project-layout block-element filterable-item" data-title="Cinematic Explosion SFX" data-description="High-impact explosion sound design for game trailer, layered audio, debris effects." data-category="sfx" onclick="window.location.href='project_sfx_explosion_detail.html';">
-                        <div class="project-image-placeholder font-terminal">SFX_VISUALIZATION // EXPLOSION_WAVEFORM</div>
-                        <div class="interactive-card-content">
-                            <h3 class="interactive-card-title">Project // Cinematic Explosion SFX</h3>
-                            <p>Sound design for a high-impact cinematic explosion. Features layered audio components including initial blast, debris, and environmental reverb. Designed for a game trailer sequence.</p>
-                            <div class="filter-tags"><span>SFX</span><span>Game Audio</span><span>Cinematic</span></div>
-                             <p class="mt-2 font-terminal text-accent-orange text-sm">View Details & Audio Sample &gt;&gt;</p>
+            <!-- Page Specific Content for projects.html -->
+            <section id="projects-archive" class="section-panel block-element">
+                <h2 class="section-title text-accent-orange font-terminal">// PROJECT_FILES :: PORTFOLIO_SHOWCASE</h2>
+                <p class="mb-6 text-text-secondary">
+                    This archive contains records of various projects, showcasing skills in SFX, 3D Modelling, Pixel Art, Game Development concepts, and World Building. Utilize the sidebar console to search or filter by category.
+                </p>
+                <div id="project-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Project Card 1: Game Dev Concept - Starfall -->
+                    <div class="project-card block-element" data-title="Project Starfall Game Concept Design" data-description="FPS Tower Defense Survival Base Building Space False Void Generator Unity Game Design Document" data-category="game-dev world-build">
+                        <div class="project-image-placeholder h-48 block-element">
+                            &lt;STARFALL_CONCEPT_ART&gt;
+                        </div>
+                        <div class="p-4"> <!-- Adjusted padding -->
+                            <h3 class="project-title"><a href="project_starfall_databank.html">Project Starfall: GDD</a></h3>
+                            <div class="project-categories mt-2 mb-2">
+                                <span class="block-element">Game Design</span>
+                                <span class="block-element">World Building</span>
+                            </div>
+                            <p>A single-player FPS survival tower defense game. Players repair a ship and defend the critical "False Void Generator" against alien and human threats.</p>
+                            <a href="project_starfall_databank.html" class="font-terminal text-accent-orange hover:underline text-sm mt-3 inline-block">View Databank Entry &gt;&gt;</a>
                         </div>
                     </div>
 
-                    <!-- Example Project Card 2: 3D Model -->
-                    <div class="interactive-card project-layout block-element filterable-item" data-title="Sci-Fi Grenade 3D Model" data-description="High-poly 3D model of a futuristic fragmentation grenade, PBR textures, game-ready asset." data-category="3d-modelling game-dev" onclick="window.location.href='project_3d_grenade_detail.html';">
-                        <div class="project-image-placeholder font-terminal">3D_MODEL_RENDER // FRAG_GRENADE_MK7</div>
-                        <div class="interactive-card-content">
-                            <h3 class="interactive-card-title">Asset // Sci-Fi Grenade Model</h3>
-                            <p>A high-fidelity 3D model of a futuristic fragmentation grenade. Modelled, UV mapped, and textured using PBR workflow. Optimized as a game-ready asset.</p>
-                            <div class="filter-tags"><span>3D Modelling</span><span>Game Asset</span><span>Sci-Fi</span></div>
-                            <p class="mt-2 font-terminal text-accent-orange text-sm">View Model & Renders &gt;&gt;</p>
+                    <!-- Project Card 2: Game Dev Concept - Everfield -->
+                    <div class="project-card block-element" data-title="Project Everfield Game Design Document Concept" data-description="Action RPG Fantasy Magic Spell Crafting Biomes Unity Game Design" data-category="game-dev world-build">
+                        <div class="project-image-placeholder h-48 block-element">
+                            &lt;EVERFIELD_VISUAL_ID&gt;
+                        </div>
+                        <div class="p-4">
+                            <h3 class="project-title"><a href="project_everfield_databank.html">Project Everfield: GDD</a></h3>
+                            <div class="project-categories mt-2 mb-2">
+                                <span class="block-element">Game Design</span>
+                                <span class="block-element">World Building</span>
+                            </div>
+                            <p>An action RPG set in a high-fantasy world with diverse biomes, deep elemental magic, and extensive spell-crafting systems.</p>
+                            <a href="project_everfield_databank.html" class="font-terminal text-accent-orange hover:underline text-sm mt-3 inline-block">View Databank Entry &gt;&gt;</a>
                         </div>
                     </div>
                     
-                    <!-- Example Project Card 3: Game Concept (Link to Databank) -->
-                    <div class="interactive-card project-layout block-element filterable-item" data-title="Project Starfall Game Concept" data-description="Game design document for a first-person survival tower defense game in space." data-category="game-dev world-building" onclick="window.location.href='project_starfall_databank.html';">
-                        <div class="project-image-placeholder font-terminal">GDD_ICON // PROJECT_STARFALL</div>
-                        <div class="interactive-card-content">
-                            <h3 class="interactive-card-title">Concept // Project Starfall</h3>
-                            <p>A detailed game design concept for "Project Starfall," a single-player FPS survival tower defense game. Includes lore, gameplay mechanics, and feature outlines.</p>
-                            <div class="filter-tags"><span>Game Dev</span><span>World Building</span><span>Concept</span></div>
-                            <p class="mt-2 font-terminal text-accent-orange text-sm">Access Databank Entry &gt;&gt;</p>
+                    <!-- Project Card 3: SFX Showcase (Placeholder) -->
+                    <div class="project-card block-element" data-title="SFX Demo Reel Sound Design Audio" data-description="Sound effects showcase reel featuring explosions magical effects sci-fi ambiances and creature vocalizations" data-category="sfx">
+                        <div class="project-image-placeholder h-48 block-element">
+                            &lt;SFX_REEL_WAVEFORM&gt;
+                        </div>
+                        <div class="p-4">
+                            <h3 class="project-title"><a href="#">SFX Design Reel 2025</a></h3>
+                             <div class="project-categories mt-2 mb-2">
+                                <span class="block-element">SFX</span>
+                            </div>
+                            <p>A collection of sound effects demonstrating proficiency in creating impactful audio for combat, magic, environments, and character actions.</p>
+                            <a href="#" class="font-terminal text-accent-orange hover:underline text-sm mt-3 inline-block">[View Reel - Link Pending] &gt;&gt;</a>
                         </div>
                     </div>
 
-                     <!-- Example Project Card 4: Game Concept (Link to Databank) -->
-                    <div class="interactive-card project-layout block-element filterable-item" data-title="Project Everfield Game Concept" data-description="Game design document for an action RPG with souls-like combat and magic." data-category="game-dev world-building rpg" onclick="window.location.href='project_everfield_databank.html';">
-                        <div class="project-image-placeholder font-terminal">GDD_ICON // PROJECT_EVERFIELD</div>
-                        <div class="interactive-card-content">
-                            <h3 class="interactive-card-title">Concept // Project Everfield</h3>
-                            <p>An action RPG concept, "Project Everfield," set in a high-fantasy world. Features souls-like combat, diverse biomes, and an intricate spell-crafting system.</p>
-                            <div class="filter-tags"><span>Game Dev</span><span>World Building</span><span>RPG</span></div>
-                             <p class="mt-2 font-terminal text-accent-orange text-sm">Access Databank Entry &gt;&gt;</p>
+                    <!-- Project Card 4: 3D Model (Placeholder) -->
+                    <div class="project-card block-element" data-title="Cybernetic Enforcer 3D Character Model SciFi" data-description="High-poly science fiction character model 'Cybernetic Enforcer' created using ZBrush Blender 3ds Max and textured in Substance Painter" data-category="3d-model">
+                        <div class="project-image-placeholder h-48 block-element">
+                            &lt;3D_MODEL_HOLOGRAM&gt;
+                        </div>
+                        <div class="p-4">
+                            <h3 class="project-title"><a href="#">"Cybernetic Enforcer" 3D Model</a></h3>
+                             <div class="project-categories mt-2 mb-2">
+                                <span class="block-element">3D Modelling</span>
+                            </div>
+                            <p>A detailed sci-fi character concept, sculpted and modelled, then textured for PBR workflows. Showcases hard-surface and organic modelling techniques.</p>
+                            <a href="#" class="font-terminal text-accent-orange hover:underline text-sm mt-3 inline-block">[ArtStation/Sketchfab - Link Pending] &gt;&gt;</a>
                         </div>
                     </div>
 
+                     <!-- Project Card 5: Pixel Art (Placeholder) -->
+                    <div class="project-card block-element" data-title="Pixel Art Collection Sprites Tilesets Animation" data-description="A collection of pixel art assets including character sprites animated effects and environmental tilesets for retro-style games" data-category="pixel-art">
+                        <div class="project-image-placeholder h-48 block-element">
+                            &lt;PIXEL_GRID_DISPLAY&gt;
+                        </div>
+                        <div class="p-4">
+                            <h3 class="project-title"><a href="#">Pixel Art Showcase</a></h3>
+                             <div class="project-categories mt-2 mb-2">
+                                <span class="block-element">Pixel Art</span>
+                            </div>
+                            <p>A showcase of various pixel art creations, including character animations, environment tiles, and UI elements with a retro aesthetic.</p>
+                            <a href="#" class="font-terminal text-accent-orange hover:underline text-sm mt-3 inline-block">[Pixel Art Gallery - Link Pending] &gt;&gt;</a>
+                        </div>
+                    </div>
                     <!-- Add more project cards here -->
-                    <div class="interactive-card project-layout block-element filterable-item" data-title="Placeholder Project Example" data-description="Description for another example project showcasing different skills." data-category="sfx 3d-modelling" onclick="alert('Placeholder: Link to detail page for this project.');">
-                         <div class="project-image-placeholder font-terminal">VISUAL_DATA_PENDING</div>
-                         <div class="interactive-card-content">
-                            <h3 class="interactive-card-title">Placeholder // Example Project</h3>
-                            <p>This is a placeholder for another project. Replace with actual content, image placeholder text, and a link to its detail page.</p>
-                            <div class="filter-tags"><span>SFX</span><span>3D Modelling</span><span>Placeholder</span></div>
-                            <p class="mt-2 font-terminal text-accent-orange text-sm">View Details &gt;&gt;</p>
-                        </div>
-                    </div>
-
                 </div>
             </section>
+            <!-- End Page Specific Content -->
             <footer class="footer-terminal block-element">
-                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">Portfolio Interface v3.4 // Last System Update: <span id="lastScanTime"></span></p>
+                <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.0 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- JS from index.html ---
+        const standbyScreen = document.getElementById('standby-screen');
+        const logonButton = document.getElementById('logon-button');
         const initialLogonScreen = document.getElementById('initial-logon-screen');
         const initialLogOutput = document.getElementById('initial-log-output');
         const logonGraphCanvas = document.getElementById('logon-graph-canvas');
@@ -348,16 +405,21 @@
         const sidebarToggle = document.getElementById('sidebar-toggle');
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT INITIATED...", class: "system" },
-            { text: "Accessing Project Portfolio Archives...", class: "info" },
-            { text: "Operator: Kiegan. Profile Verified.", class: "system" },
-            { text: "// System Quirk Logged: Mi-Hwa Interaction Protocol Active", class: "user-quirk" },
-            { text: "Project Data Streams Online.", class: "system" },
+            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
+            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
+            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
+            { text: "Establishing secure link to user profile...", class: "system" },
+            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v5.0...", class: "info" },
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, // Updated "cringe" line
+            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
-        const typingSpeed = 25; 
-        const linePause = 150; 
-        const graphAnimationDuration = 2500; 
-        const totalIntroDuration = 3500; 
+
+        const typingSpeed = 15; 
+        const linePause = 100; 
+        const graphAnimationDuration = 3000; 
+        const totalIntroDuration = 4500; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_0'; 
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -372,36 +434,238 @@
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
             const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
             gradient.addColorStop(0, 'var(--accent-cyan)');
-            gradient.addColorStop(0.3, 'var(--accent-green)');
-            gradient.addColorStop(0.7, 'var(--accent-orange)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
             gradient.addColorStop(1, 'var(--accent-cyan-dark)');
             
             graphCtx.strokeStyle = gradient;
-            graphCtx.lineWidth = 3;
+            graphCtx.lineWidth = 3; 
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight / 2 + Math.sin(elapsedTime * 0.001) * 10);
+            graphCtx.moveTo(0, graphHeight / 2);
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const wave1 = Math.sin(x * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
-                const wave2 = Math.cos(x * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
-                const y = graphHeight / 2 + wave1 + wave2;
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            if (progress > 0.1) {
-                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', 'var(--accent-green)', '#FF69B4'];
-                for(let i = 0; i < 7; i++) { 
-                    if (Math.random() < progress * 0.7) { 
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
+                for(let i = 0; i < 5; i++) { 
+                    if (Math.random() < progress * 0.6) { 
                         graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const yPosWave1 = Math.sin(spikeX * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
-                        const yPosWave2 = Math.cos(spikeX * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
-                        const spikeYBase = graphHeight / 2 + yPosWave1 + yPosWave2;
-                        const spikeHeight = (Math.random() * 20 * progress + 5) * (Math.random() > 0.5 ? 1 : -0.6);
-                        graphCtx.fillRect(spikeX - 1, spikeYBase - (spikeHeight / 2), 2, spikeHeight);
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.15
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
+            graphCtx.stroke();
+
+            if (progress < 1) {
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function setupGraphCanvas() {
+            if (logonGraphCanvas) {
+                const container = logonGraphCanvas.parentElement;
+                logonGraphCanvas.width = container.clientWidth - 20; 
+                logonGraphCanvas.height = container.clientHeight - 20;
+                graphWidth = logonGraphCanvas.width;
+                graphHeight = logonGraphCanvas.height;
+                graphCtx = logonGraphCanvas.getContext('2d');
+                document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function typeLogLine(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
+            const lineElem = document.createElement('div'); 
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem);
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
+                } else {
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, linePause);
+                }
+            }
+            typeChar();
+        }
+
+        function playIntroAnimation() {
+            if (!initialLogonScreen) return;
+            initialLogonScreen.style.display = 'flex';
+
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (initialLogOutput && currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    typeLogLine(line.text, line.class, initialLogOutput, nextInitialLine);
+                    currentLineIndex++;
+                } 
+            }
+
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; 
+                nextInitialLine();
+                setupGraphCanvas(); 
+            } else {
+                 console.error("Initial log output element not found for intro animation.");
+            }
+
+            setTimeout(() => {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded'); 
+                initializePageFunctions(); 
+                localStorage.setItem(introKey, 'true'); 
+            }, totalIntroDuration);
+        }
+
+        function loadMainInterfaceDirectly() {
+            if (standbyScreen) standbyScreen.style.display = 'none';
+            if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+            bodyElement.classList.add('loaded');
+            initializePageFunctions();
+        }
+        
+        function initializePageFunctions() {
+            setActiveNavLink();
+            filterProjects(); 
+            startFooterStatusCycle(); 
+            updateScanTime(); 
+            setInterval(updateScanTime, 1000 * 60);
+
+            const contactForm = document.querySelector('#main-content form'); 
+            if (contactForm && contactForm.closest('section[id="contact"]')) { 
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert("Message submitted. (This is a demo feature)");
+                    this.reset();
+                });
+            }
+        }
+        
+        function setActiveNavLink() {
+            const currentPath = window.location.pathname.split("/").pop() || "index.html";
+            const currentPageName = currentPath === "" ? "index.html" : currentPath;
+            document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
+                link.classList.remove('active');
+                const linkHref = link.getAttribute('href');
+                let linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                if (linkPath === "" && (linkHref === "./" || linkHref === "index.html" || linkHref === "")) {
+                    linkPath = "index.html";
+                }
+                if (linkPath === currentPageName) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+        function filterProjects() {
+            const projectGrid = document.getElementById('project-grid'); 
+            if (!projectGrid) return; 
+            const projectCards = projectGrid.querySelectorAll('.project-card'); 
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
+
+            projectCards.forEach(card => {
+                const title = (card.dataset.title || '').toLowerCase();
+                const description = (card.dataset.description || '').toLowerCase(); 
+                const category = (card.dataset.category || '').toLowerCase();
+                
+                const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
+                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+            });
+        }
+        if (searchInput) searchInput.addEventListener('keyup', filterProjects);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
+
+        if(document.getElementById('currentYear')) {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+        function updateScanTime() {
+            const scanTimeElem = document.getElementById('lastScanTime');
+            if (scanTimeElem) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+                const dateString = now.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC'});
+                scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
+            }
+        }
+        
+        const securityStatusMessages = [
+            "System Integrity: Optimal", "Network Channels: Secure",
+            "Threat Analysis: Nominal", "Data Encryption: Maximum",
+            "Perimeter Monitoring: Active" 
+        ];
+        let currentStatusIndex = 0;
+        function startFooterStatusCycle() {
+            const statusElement = document.getElementById('security-status-text');
+            if (statusElement) {
+                statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                setInterval(() => {
+                    currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
+                    statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                }, 30000); 
+            }
+        }
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                bodyElement.classList.toggle('sidebar-collapsed');
+                if (bodyElement.classList.contains('sidebar-collapsed')) {
+                    sidebarToggle.innerHTML = 'C<br>N<br>S<br>L'; 
+                } else {
+                    sidebarToggle.innerHTML = 'CONSOLE';
+                }
+            });
+        }
+        
+        window.onload = () => {
+            // Check if standby screen and logon button exist
+            if (standbyScreen && logonButton) {
+                 // If intro has already been played EVER, skip standby and logon button, load main interface.
+                if (localStorage.getItem(introKey)) {
+                    loadMainInterfaceDirectly();
+                } else {
+                    // Otherwise, standby screen is visible by default (due to no 'loaded' class on body yet).
+                    // Add listener to logon button.
+                    logonButton.addEventListener('click', () => {
+                        if (standbyScreen) standbyScreen.style.display = 'none';
+                        playIntroAnimation();
+                    });
+                }
+            } else {
+                // Fallback: If standby screen elements are not found (e.g. user manually removed them from an internal page)
+                // And intro has been played, load directly. Otherwise, something is wrong with template.
+                if (localStorage.getItem(introKey)) {
+                     loadMainInterfaceDirectly();
+                } else {
+                    // This case implies the template is broken if standby screen is missing AND intro hasn't played.
+                    // For robustness, try to load main content anyway.
+                    console.warn("Standby screen or logon button not found, and intro not played. Attempting to load main content directly.");
+                    loadMainInterfaceDirectly();
+                     localStorage.setItem(introKey, 'true'); // Mark as played to avoid loops if possible.
+                }
+            }
+        };
+    </script>
+</body>
+</html>
