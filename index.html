@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiegan [Your Last Name/Alias] - SFX & 3D Portfolio</title>
+    <title>Operator Kiegan - Portfolio Terminal v4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -21,7 +21,6 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
-            --accent-green: #39ff14; /* Neon Green for system status */
             --sidebar-width: 280px;
             --sidebar-width-collapsed: 0px; 
         }
@@ -36,10 +35,8 @@
         .bg-accent-orange { background-color: var(--accent-orange); }
         .text-accent-cyan { color: var(--accent-cyan); }
         .border-accent-cyan { border-color: var(--accent-cyan); }
-        .text-accent-green { color: var(--accent-green); }
         .block-element { border-radius: 0px !important; }
 
-        /* Initial Full-Screen Log-on Animation */
         #initial-logon-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000; display: flex; flex-direction: column;
@@ -57,20 +54,10 @@
             width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
             background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
         }
-        #initial-log-output .log-line.system { color: var(--text-primary); font-weight: bold; }
+        #initial-log-output .log-line.system { color: var(--text-primary); }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
-        /* User's specific line - subtle styling */
-        #initial-log-output .log-line.user-quirk { 
-            color: var(--accent-orange); 
-            font-style: italic;
-            opacity: 0.8; /* Make it slightly less prominent */
-            animation: subtle-flicker 2s infinite alternate;
-        }
-        @keyframes subtle-flicker {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 0.6; }
-        }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
         
         #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
@@ -78,6 +65,11 @@
             align-items: center; justify-content: center;
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
+
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
 
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
@@ -157,14 +149,13 @@
         .hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-top: 8px; }
         .status-indicator { 
             display: inline-block; width: 12px; height: 12px;
-            background-color: var(--accent-green); /* Changed to green */
-            margin-right: 8px; vertical-align: middle;
-            animation: pulse-status 1.5s infinite ease-in-out;
-            box-shadow: 0 0 5px var(--accent-green), 0 0 10px var(--accent-green); /* Green glow */
+            background-color: var(--accent-cyan); margin-right: 8px;
+            vertical-align: middle;
+            animation: pulse-cyan 1.5s infinite ease-in-out;
         }
-        @keyframes pulse-status { 
-            0%, 100% { opacity: 1; transform: scale(1.1); } 
-            50% { opacity: 0.6; transform: scale(0.9); } 
+        @keyframes pulse-cyan { 
+            0%, 100% { box-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan); opacity: 1; } 
+            50% { box-shadow: 0 0 8px var(--accent-cyan-dark), 0 0 12px var(--accent-cyan-dark); opacity: 0.6; } 
         }
         .btn {
             padding: 12px 24px; text-transform: uppercase; letter-spacing: 1px;
@@ -180,11 +171,13 @@
             border-color: var(--accent-orange-dark);
         }
          .btn-secondary { 
-            background-color: transparent; border-color: var(--accent-cyan);
+            background-color: transparent;
+            border-color: var(--accent-cyan);
             color: var(--accent-cyan);
         }
         .btn-secondary:hover {
-            background-color: var(--accent-cyan); color: var(--bg-darkest);
+            background-color: var(--accent-cyan);
+            color: var(--bg-darkest);
         }
         .footer-terminal { 
             background-color: var(--bg-panel); text-align: center; padding: 24px;
@@ -192,39 +185,64 @@
             color: var(--text-muted); margin-top: 32px;
         }
         #security-status-text { 
-            display: inline-block;
-            animation: glow-security-text 3s infinite alternate ease-in-out; /* Slightly slower cycle */
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
         @keyframes glow-security-text { 
-            0% { color: var(--accent-green); text-shadow: 0 0 3px var(--accent-green), 0 0 6px var(--accent-green); }
-            50% { color: var(--accent-cyan); text-shadow: 0 0 4px var(--accent-cyan), 0 0 8px var(--accent-cyan-dark); }
-            100% { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange); }
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-        
-        /* Databank Entry and Project Card Interactivity */
-        .interactive-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-            padding: 1rem;
-            margin-bottom: 1rem;
+        /* General content block styling for other pages */
+        .content-block { margin-bottom: 1.5rem; line-height: 1.7; }
+        .content-block h3 { font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 1.25rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.25rem;}
+        .content-block ul { list-style: none; padding-left: 0; }
+        .content-block li { margin-bottom: 0.5rem; padding-left: 1.5em; position: relative; }
+        .content-block li::before {
+            content: '>>'; 
+            position: absolute; left: 0; color: var(--accent-orange);
+            font-family: 'Share Tech Mono', monospace;
         }
-        .interactive-card:hover {
-            background-color: var(--bg-panel); 
-            border-color: var(--accent-cyan);
-            transform: translateY(-3px); /* Slight lift effect */
-            cursor: pointer;
+        .databank-entry { 
+            margin-bottom: 1.5rem; line-height: 1.7;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            border: 1px solid var(--border-subtle); 
+            padding: 1rem; 
         }
-        .interactive-card-title {
+        .databank-entry:hover {
+            background-color: var(--bg-card); 
+            border-color: var(--accent-cyan); 
+        }
+        .databank-entry h3 {
             font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
-            font-size: 1.25rem; margin-bottom: 0.5rem;
-            text-decoration: none;
-            display: block;
+            font-size: 1.4rem; margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
         }
-        .interactive-card-title:hover {
-            color: var(--accent-orange);
+        .databank-entry h3 a { 
+            text-decoration: none; color: inherit; display: block; 
         }
-        .interactive-card p { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+        .databank-entry h3 a:hover {
+            color: var(--accent-orange); text-decoration: underline;
+        }
+        .databank-entry h4 {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
+            font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.25rem;
+        }
+        .databank-entry p { margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .databank-entry ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
+        .databank-entry li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
+        .databank-entry li::before {
+            content: '>'; position: absolute; left: 0; color: var(--accent-orange);
+            font-family: 'Share Tech Mono', monospace;
+        }
+         .document-view-content {
+            line-height: 1.8; font-size: 1rem; color: var(--text-secondary);
+        }
+        .document-view-content p { margin-bottom: 1rem; }
+        .document-view-content strong { color: var(--text-primary); font-weight: 600; }
+         .back-link {
+            display: inline-block; margin-bottom: 1.5rem; color: var(--accent-orange);
+            text-decoration: none; font-family: 'Share Tech Mono', monospace;
+        }
+        .back-link:hover { text-decoration: underline; color: var(--accent-orange-dark); }
 
 
         @media (max-width: 768px) { 
@@ -264,53 +282,56 @@
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PORTFOLIO_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Site Content...">
+            <h3>// ARCHIVE_QUERY</h3> <!-- Changed for brevity -->
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Archives...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
                 <option value="sfx">SFX</option>
-                <option value="3d-modelling">3D Modelling</option>
+                <option value="3d-model">3D Modelling</option>
                 <option value="game-dev">Game Development</option>
-                <option value="world-building">World Building</option>
-                <option value="esports">Esports</option>
+                <option value="world-build">World Building</option>
+                <!-- Add other relevant categories -->
             </select>
         </div>
     </aside>
 
     <div id="main-content-wrapper">
         <main id="main-content">
+            <!-- Page Specific Content for index.html -->
             <section id="hero" class="hero-section section-panel block-element">
                 <h1 class="hero-title font-terminal text-accent-orange">
-                    <span class="status-indicator block-element"></span>OPERATOR INTERFACE ONLINE
+                    <span class="status-indicator block-element"></span>SYSTEM ONLINE
                 </h1>
                 <p class="hero-subtitle font-terminal">
-                    Portfolio Systems Initialized. Operator: Kiegan. <br> Specializing in SFX & 3D Modelling. Current Status: Operational.
+                    Operator Profile: Kiegan. <br> Specializations: SFX & 3D Modelling. Current Status: Active.
                 </p>
                 <div class="mt-8">
                     <a href="projects.html" class="btn btn-primary block-element font-terminal">View Project Portfolio</a>
                 </div>
                  <p class="mt-12 font-terminal text-sm text-text-secondary">
-                    This terminal provides access to professional records, skill demonstrations, and personal creative endeavors of Operator Kiegan.<br>
-                    Navigate via the console interface. All data streams are optimized for clarity.
+                    Welcome to the Operator Kiegan data interface. Utilize the console for navigation through project archives, skill assessments, and personal logs.
                 </p>
             </section>
             <section class="section-panel block-element">
-                <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_DIRECTORIES :: QUICK_ACCESS</h2>
+                <h2 class="section-title text-accent-cyan font-terminal">// INTERFACE_OVERVIEW :: DIRECT_ACCESS_NODES</h2>
                 <div class="grid md:grid-cols-2 gap-6">
-                    <div class="interactive-card block-element" onclick="window.location.href='about.html';">
-                        <h3 class="interactive-card-title">Access Log // About Kiegan</h3>
-                        <p>Background, professional skills, and personal history of the operator.</p>
+                    <div class="bg-bg-card p-6 block-element border border-border-subtle hover:border-accent-orange transition-all duration-200">
+                        <h3 class="font-terminal text-accent-orange text-lg mb-2">Operator Profile // About</h3>
+                        <p class="text-sm mb-4 text-text-secondary">Detailed background, skill set, and operational history of Operator Kiegan.</p>
+                        <a href="about.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">Access Personnel File &gt;&gt;</a>
                     </div>
-                    <div class="interactive-card block-element" onclick="window.location.href='hobbies.html';">
-                        <h3 class="interactive-card-title">Personal Archives // Hobbies & Interests</h3>
-                        <p>Exploration of creative side-projects, including world-building and narrative design.</p>
+                    <div class="bg-bg-card p-6 block-element border border-border-subtle hover:border-accent-orange transition-all duration-200">
+                        <h3 class="font-terminal text-accent-orange text-lg mb-2">Creative Endeavors // Hobbies</h3>
+                        <p class="text-sm mb-4 text-text-secondary">Exploration of personal world-building projects and other recreational data logs.</p>
+                        <a href="hobbies.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">Access Personal Logs &gt;&gt;</a>
                     </div>
                 </div>
             </section>
+            <!-- End Page Specific Content -->
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">Portfolio Interface v3.4 // Last System Update: <span id="lastScanTime"></span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v4.0 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
@@ -324,14 +345,14 @@
         const sidebarToggle = document.getElementById('sidebar-toggle');
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT SEQUENCE INITIATED...", class: "system" },
-            { text: "MEMORY INTEGRITY CHECK: PASSED", class: "info" },
-            { text: "CORE PROCESSOR CALIBRATION: COMPLETE", class: "info" },
-            { text: "ESTABLISHING SECURE CONNECTION TO USER PROFILE...", class: "system" },
-            { text: "USER: Kiegan. AUTHENTICATION SUCCESSFUL.", class: "system" },
-            { text: "LOADING PORTFOLIO INTERFACE MODULES...", class: "info" },
-            { text: "// System Quirk Logged: Mi-Hwa Interaction Protocol Active", class: "user-quirk" }, 
-            { text: "INTERFACE PROTOCOLS ONLINE. WELCOME, OPERATOR.", class: "system" },
+            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
+            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
+            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
+            { text: "Establishing secure link to user profile...", class: "system" },
+            { text: "User: Kiegan. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v4.0...", class: "info" },
+            { text: "[ Monitoring Mi-hwa's activities... ]", class: "mihwa" }, // Adjusted "cringe" line
+            { text: "Interface loaded. Welcome, Kiegan.", class: "system" },
         ];
 
         const typingSpeed = 25; 
@@ -352,39 +373,34 @@
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
             const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
             gradient.addColorStop(0, 'var(--accent-cyan)');
-            gradient.addColorStop(0.3, 'var(--accent-green)');
-            gradient.addColorStop(0.7, 'var(--accent-orange)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
             gradient.addColorStop(1, 'var(--accent-cyan-dark)');
             
             graphCtx.strokeStyle = gradient;
-            graphCtx.lineWidth = 3;
+            graphCtx.lineWidth = 3; 
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight / 2 + Math.sin(elapsedTime * 0.001) * 10); // Subtle start y-offset
+            graphCtx.moveTo(0, graphHeight / 2);
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const wave1 = Math.sin(x * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
-                const wave2 = Math.cos(x * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
-                const y = graphHeight / 2 + wave1 + wave2;
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            if (progress > 0.1) {
-                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', 'var(--accent-green)', '#FF69B4'];
-                for(let i = 0; i < 7; i++) { 
-                    if (Math.random() < progress * 0.7) { 
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
+                for(let i = 0; i < 5; i++) { 
+                    if (Math.random() < progress * 0.6) { 
                         graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const yPosWave1 = Math.sin(spikeX * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
-                        const yPosWave2 = Math.cos(spikeX * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
-                        const spikeYBase = graphHeight / 2 + yPosWave1 + yPosWave2;
-                        const spikeHeight = (Math.random() * 20 * progress + 5) * (Math.random() > 0.5 ? 1 : -0.6); // Varied height/direction
-                        graphCtx.fillRect(spikeX - 1, spikeYBase - (spikeHeight / 2), 2, spikeHeight); // Thinner spikes
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.15)'; // Even softer axis
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
             graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
@@ -430,7 +446,7 @@
         }
 
         function runInitialLogonSequence() {
-            if (sessionStorage.getItem('introPlayedThisSession')) { // Updated key name
+            if (localStorage.getItem('introPlayedPortfolioKiegan')) { // Changed key for uniqueness
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded');
                 initializePageFunctions();
@@ -458,13 +474,13 @@
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded');
                 initializePageFunctions(); 
-                sessionStorage.setItem('introPlayedThisSession', 'true'); 
+                localStorage.setItem('introPlayedPortfolioKiegan', 'true'); // Use unique key
             }, totalIntroDuration);
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            filterContent(); // Renamed from filterProjects for broader use
+            filterProjects(); 
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
@@ -473,7 +489,7 @@
             if (contactForm && contactForm.closest('section[id="contact"]')) { 
                 contactForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    alert("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
+                    alert("Message submitted. (This is a demo feature)");
                     this.reset();
                 });
             }
@@ -494,29 +510,25 @@
 
         const searchInput = document.getElementById('search-input');
         const categoryFilter = document.getElementById('category-filter');
-        
-        // Generalized content filter
-        function filterContent() {
-            const itemsToFilter = document.querySelectorAll('.filterable-item'); // Add this class to items you want to filter
-            if (!itemsToFilter.length && !document.getElementById('project-grid')) return; // Exit if no filterable items
-
+        function filterProjects() {
+            const projectGrid = document.getElementById('project-grid'); // This ID will be on projects.html
+            if (!projectGrid) return; 
+            const projectCards = projectGrid.querySelectorAll('.project-card'); // Ensure this class is on project items
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
             const selectedCategory = categoryFilter ? categoryFilter.value : "all";
 
-            itemsToFilter.forEach(card => {
+            projectCards.forEach(card => {
                 const title = (card.dataset.title || '').toLowerCase();
-                const description = (card.dataset.description || '').toLowerCase(); // You can add short descriptions as data attributes
+                const description = (card.dataset.description || '').toLowerCase(); // If you want to search descriptions
                 const category = (card.dataset.category || '').toLowerCase();
                 
                 const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
-                const matchesCategory = selectedCategory === 'all' || category.split(' ').includes(selectedCategory);
-                
+                const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
                 card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
             });
         }
-        if (searchInput) searchInput.addEventListener('keyup', filterContent);
-        if (categoryFilter) categoryFilter.addEventListener('change', filterContent);
-
+        if (searchInput) searchInput.addEventListener('keyup', filterProjects);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
 
         if(document.getElementById('currentYear')) {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -532,9 +544,9 @@
         }
         
         const securityStatusMessages = [
-            "SYSTEM INTEGRITY: OPTIMAL", "ALL CHANNELS SECURED",
-            "THREAT ANALYSIS: NOMINAL", "ENCRYPTION STRENGTH: MAXIMUM",
-            "NETWORK VIGILANCE: ACTIVE" // More professional status messages
+            "System Integrity: Optimal", "Network Channels: Secure",
+            "Threat Analysis: Nominal", "Data Encryption: Maximum",
+            "Perimeter Monitoring: Active" // More professional phrasing
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
@@ -552,7 +564,7 @@
             sidebarToggle.addEventListener('click', () => {
                 bodyElement.classList.toggle('sidebar-collapsed');
                 if (bodyElement.classList.contains('sidebar-collapsed')) {
-                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
+                    sidebarToggle.innerHTML = 'C<br>N<br>S<br>L'; // Shorter for collapsed state
                 } else {
                     sidebarToggle.innerHTML = 'CONSOLE';
                 }
