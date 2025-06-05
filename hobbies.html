@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator Kiegan - Recreation Protocols // Hobbies</title>
+    <title>Kiegan - Hobbies // SFX & 3D Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Base CSS (Copy ALL from index.html or about.html) --- */
+        /* --- Base CSS (Copy ALL from index.html) --- */
         :root {
-            --bg-darkest: #050608; /* ... (copy all CSS variables from index.html) ... */
+            --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
             --bg-panel: #101419;
             --bg-card: #181c22;
@@ -22,13 +22,14 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
+            --accent-green: #39ff14;
             --sidebar-width: 280px;
-            --sidebar-width-collapsed: 0px;
+            --sidebar-width-collapsed: 0px; 
         }
         body {
             font-family: 'Inter', sans-serif; background-color: var(--bg-dark);
             color: var(--text-primary); margin: 0; padding: 0; box-sizing: border-box;
-            overflow-x: hidden;
+            overflow-x: hidden; 
         }
         .font-terminal { font-family: 'Share Tech Mono', monospace; }
         .text-accent-orange { color: var(--accent-orange); }
@@ -36,70 +37,85 @@
         .bg-accent-orange { background-color: var(--accent-orange); }
         .text-accent-cyan { color: var(--accent-cyan); }
         .border-accent-cyan { border-color: var(--accent-cyan); }
+        .text-accent-green { color: var(--accent-green); }
         .block-element { border-radius: 0px !important; }
 
-        #welcome-popup { /* Styles from index.html */
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background-color: var(--bg-panel); color: var(--text-primary); padding: 30px 40px;
-            border: 2px solid var(--accent-orange); box-shadow: 0 0 30px rgba(240, 124, 58, 0.4);
-            z-index: 10000; text-align: center; opacity: 0; visibility: hidden;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-            font-family: 'Share Tech Mono', monospace; font-size: 1.3rem;
+        #initial-logon-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10000;
+            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
         }
-        #welcome-popup.show { opacity: 1; visibility: visible; }
-        #welcome-popup .mihwa-line {
-            color: var(--accent-orange); font-weight: bold; display: block;
-            margin-top: 12px; animation: subtle-pulse 1.5s infinite alternate;
+        #logon-content-container {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 900px; height: 80%; max-height: 700px;
+            border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
+            padding: 20px; gap: 20px;
         }
-        @keyframes subtle-pulse {
-            from { opacity: 0.7; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1.02); }
+        #initial-log-output {
+            color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
+            width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
         }
+        #initial-log-output .log-line.system { color: var(--text-primary); font-weight: bold;}
+        #initial-log-output .log-line.info { color: var(--accent-cyan); }
+        #initial-log-output .log-line.warning { color: var(--accent-orange); }
+        #initial-log-output .log-line.user-quirk { 
+            color: var(--accent-orange); font-style: italic;
+            opacity: 0.8; animation: subtle-flicker 2s infinite alternate;
+        }
+        @keyframes subtle-flicker { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.6; } }
+        #logon-graph-container {
+            width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle); padding: 10px; display: flex;
+            align-items: center; justify-content: center;
+        }
+        #logon-graph-canvas { max-width: 100%; max-height: 100%; }
 
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
 
-        #sidebar { /* Styles from index.html */
+        #sidebar { 
             width: var(--sidebar-width); background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
             position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
             transition: transform 0.3s ease-in-out; transform: translateX(0); z-index: 1000;
         }
         body.sidebar-collapsed #sidebar { transform: translateX(-100%); }
-        .sidebar-title { /* Styles from index.html */
+        .sidebar-title { 
             font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 24px;
             text-align: center; color: var(--accent-orange); font-weight: bold;
         }
-        .main-nav a { /* Styles from index.html */
+        .main-nav a { 
             display: block; padding: 10px 15px; margin-bottom: 6px; text-transform: uppercase;
             border-left: 3px solid transparent; background-color: var(--bg-panel);
             color: var(--text-secondary);
             transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
         }
-        .main-nav a:hover { /* Styles from index.html */
+        .main-nav a:hover { 
             color: var(--accent-orange); border-left-color: var(--accent-orange);
             background-color: var(--bg-card);
         }
-        .main-nav a.active { /* Styles from index.html */
+        .main-nav a.active { 
             color: var(--accent-orange); border-left-color: var(--accent-orange);
             background-color: var(--bg-card); font-weight: bold;
         }
-        .sidebar-controls { /* Styles from index.html */
+        .sidebar-controls { 
             margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);
         }
-        .sidebar-controls h3 { /* Styles from index.html */
+        .sidebar-controls h3 { 
             font-family: 'Share Tech Mono', monospace; font-size: 1rem;
             color: var(--text-secondary); margin-bottom: 8px;
         }
-        #search-input, #category-filter { /* Styles from index.html */
+        #search-input, #category-filter { 
             width: 100%; padding: 8px; background-color: var(--bg-panel);
             border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
         }
         #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
 
-        #sidebar-toggle { /* Styles from index.html */
+        #sidebar-toggle { 
             position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
             background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
             padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
@@ -110,7 +126,7 @@
         #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
         body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
         
-        #main-content-wrapper { /* Styles from index.html */
+        #main-content-wrapper { 
             margin-left: var(--sidebar-width); padding: 0;
             width: calc(100% - var(--sidebar-width));
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -121,48 +137,60 @@
         }
         #main-content { padding: 32px; }
         
-        .section-panel { /* Styles from index.html */
+        .section-panel { 
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
         }
-        .section-title { /* Styles from index.html */
+        .section-title { 
             font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
             margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
-        .footer-terminal { /* Styles from index.html */
+        .footer-terminal { 
             background-color: var(--bg-panel); text-align: center; padding: 24px;
             border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
             color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text { /* Styles from index.html */
-            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
+        #security-status-text { 
+            display: inline-block; animation: glow-security-text 3s infinite alternate ease-in-out;
         }
-        @keyframes glow-security-text { /* Styles from index.html */
-            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
-            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
+        @keyframes glow-security-text { 
+            0% { color: var(--accent-green); text-shadow: 0 0 3px var(--accent-green), 0 0 6px var(--accent-green); }
+            50% { color: var(--accent-cyan); text-shadow: 0 0 4px var(--accent-cyan), 0 0 8px var(--accent-cyan-dark); }
+            100% { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange); }
         }
         /* Hobbies specific styles */
         .hobby-category { margin-bottom: 2rem; }
-        .hobby-category h3 {
+        .hobby-category-title { /* Changed class name for clarity */
             font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
             font-size: 1.5rem; margin-bottom: 1rem;
             border-left: 3px solid var(--accent-cyan); padding-left: 0.75rem;
         }
-        .hobby-entry {
-            background-color: var(--bg-card); padding: 1rem;
-            border: 1px solid var(--border-subtle); margin-bottom: 1rem;
+        .interactive-card { /* Using the same interactive card style */
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
-        .hobby-entry h4 {
-            font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
+        .interactive-card:hover {
+            background-color: var(--bg-panel); 
+            border-color: var(--accent-cyan);
+            transform: translateY(-3px);
+            cursor: pointer; /* Added cursor pointer */
+        }
+        .interactive-card-title { /* Using the same interactive card title style */
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
             font-size: 1.25rem; margin-bottom: 0.5rem;
+            text-decoration: none; display: block;
         }
-        .hobby-entry p { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
-        .hobby-entry blockquote {
+        .interactive-card-title:hover { color: var(--accent-orange); }
+        .interactive-card p { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+        .interactive-card blockquote {
             border-left: 3px solid var(--accent-orange);
             padding-left: 1rem; margin-left: 0; margin-top: 0.5rem; margin-bottom: 0.5rem;
             font-style: italic; color: var(--text-muted);
         }
-        @media (max-width: 768px) { /* Styles from index.html */
+        @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
@@ -170,10 +198,15 @@
             #sidebar-toggle { display: none; }
         }
     </style>
-</head><body>
-    <div id="welcome-popup" class="block-element">
-        ACCESSING RECREATION PROTOCOLS...
-        <span class="mihwa-line">Bullying Mi-hwa the beloved &lt;3</span>
+</head>
+<body>
+    <div id="initial-logon-screen">
+        <div id="logon-content-container" class="block-element">
+            <div id="initial-log-output" class="block-element"></div>
+            <div id="logon-graph-container" class="block-element">
+                <canvas id="logon-graph-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
@@ -190,16 +223,16 @@
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PROJECT_ARCHIVE_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// PORTFOLIO_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Site Content...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
-                <option value="web-dev">Web Development</option>
                 <option value="sfx">SFX</option>
-                <option value="3d-model">3D Modelling</option>
+                <option value="3d-modelling">3D Modelling</option>
                 <option value="game-dev">Game Development</option>
-                <option value="world-build">World Building</option>
+                <option value="world-building">World Building</option>
+                <option value="esports">Esports</option>
             </select>
         </div>
     </aside>
@@ -210,86 +243,204 @@
                 <h2 class="section-title text-accent-orange font-terminal">// RECREATION_PROTOCOLS :: PERSONAL_LOG_ENTRIES</h2>
                 
                 <div class="hobby-category">
-                    <h3>World Building :: Constructing Narratives</h3>
-                    <p class="mb-4 text-text-secondary">Compilation of personal projects involving the creation of fictional universes, characters, and overarching lore. These serve as creative outlets and exercises in narrative design.</p>
+                    <h3 class="hobby-category-title">World Building :: Constructing Narratives</h3>
+                    <p class="mb-4 text-text-secondary">A collection of personal world-building projects, exploring diverse themes, lore, and narrative structures. These projects are a primary creative focus, allowing for experimentation in storytelling and universe design.</p>
 
-                    <div class="hobby-entry">
-                        <h4>Echoes of Light and Shadow: A Universe Forged in Silence</h4>
-                        <p>This universe explores a galaxy fractured by the sudden disappearance of a god-like Core AI, plunging humanity into an "Age of Silence." Survivors cling to existence in isolated pockets, facing cosmic horrors from the "Outer Dark" and the remnants of a betrayed Golden Age. Themes include desperation, flawed heroism (Sentinels), and the terrifying allure of forbidden power (Divinity).</p>
+                    <div class="interactive-card block-element filterable-item" data-title="Echoes of Light and Shadow Universe" data-category="world-building" onclick="window.location.href='echoes_of_light_and_shadow_detail.html';">
+                        <h4 class="interactive-card-title">Universe // Echoes of Light and Shadow</h4>
+                        <p>This universe delves into a post-apocalyptic galaxy following the mysterious disappearance of a central AI. Humanity struggles for survival against cosmic entities and internal strife, with themes of lost technology, flawed heroism, and the corrupting influence of unknown powers.</p>
                         <blockquote>
-                            "The void here... it breathes. Not with air, not with life as we knew it, but with a silence that screams... The Outer Dark isn't just out there anymore. I think it's always been here, just beneath the skin of things, waiting for the Core to fall silent so it could finally begin to sing its awful, beautiful song." - Recovered Log, Derelict Scout Ship "Wanderer's Folly"
+                            "The void here... it breathes... with a silence that screams. The Outer Dark isn't just out there anymore. I think it's always been here..." - Recovered Log Fragment
                         </blockquote>
-                        <p>Key elements include the enigmatic "Heart" artifact, Divinity-warped metals, N.I.G.H.T.M.A.R.E. mechs, and the struggling Stewardship Coalition on the mobile fortress Sanctum.</p>
+                        <p class="mt-2 font-terminal text-accent-orange text-sm">Click to explore lore details &gt;&gt;</p>
                     </div>
 
-                    <div class="hobby-entry">
-                        <h4>Project Everfield Lore Fragment</h4>
-                        <p>Everfield is a high-fantasy world characterized by diverse and magical biomes, from the Crystal Oasis Desert with its giant mana gems to the serene Blossom Valley and the colossal Forest of the World Tree. It's a realm populated by varied races like Humans, Dragons, Angels, and Elves, and features a complex system of elemental magic and spell-crafting.</p>
+                    <div class="interactive-card block-element filterable-item" data-title="Project Everfield Lore" data-category="world-building game-dev" onclick="window.location.href='project_everfield_databank.html';"> 
+                        <!-- Links to the main databank page for Everfield -->
+                        <h4 class="interactive-card-title">World Setting // Project Everfield</h4>
+                        <p>Everfield is a high-fantasy realm characterized by diverse, magical biomes like the Crystal Oasis Desert and the Forest of the World Tree. It features an extensive history, unique races, and a deep system of elemental magic.</p>
                         <blockquote>
-                            "The Crystal Oasis Desert is a surreal landscape of dark-coloured sand dotted with towering rainbow-shining giant gems of mana. Ancient ruins of towering spires, once home to powerful mages, can be found scattered throughout..." - Everfield Biome Description
+                            "The Crystal Oasis Desert is a surreal landscape... towering rainbow-shining giant gems of mana." - Biome Excerpt
                         </blockquote>
-                        <p>The lore hints at a history of cataclysmic battles and powerful magical forces shaping the very land. Materials are often infused with fantasy properties, and the gameplay mechanics suggest a deep, action-RPG experience.</p>
+                        <p class="mt-2 font-terminal text-accent-orange text-sm">Access Everfield Databank &gt;&gt;</p>
                     </div>
                 </div>
 
-                <!-- Add other hobby categories if needed -->
-                 <div class="hobby-category">
-                    <h3>Competitive Gaming :: Tactical Engagements</h3>
-                     <div class="hobby-entry">
-                        <h4>Esports Background</h4>
-                        <p>Previously active in Tier 2 and Tier 3 competitive circuits. This experience honed strategic thinking, rapid decision-making under pressure, and teamwork. Familiarity with various genres including FPS (Halo, Call of Duty) and strategy titles has provided a broad understanding of game mechanics and player psychology.</p>
-                    </div>
-                </div>
-                 <div class="hobby-category">
-                    <h3>Classic & Indie Gaming :: Foundational Influences</h3>
-                     <div class="hobby-entry">
-                        <h4>A Love for the Classics</h4>
-                        <p>A long-standing passion for gaming, rooted in early experiences with Warhammer 40k tabletop, Dungeons & Dragons, and iconic console titles. The Xbox 360 Indie Store was a significant source of inspiration, showcasing unique and experimental game design.</p>
+                <div class="hobby-category">
+                    <h3 class="hobby-category-title">Competitive Gaming :: Tactical Analysis</h3>
+                     <div class="interactive-card block-element filterable-item" data-title="Esports Experience Competitive Gaming" data-category="esports game-dev">
+                        <h4 class="interactive-card-title">Background // Esports Participation</h4>
+                        <p>Experience in Tier 2 and Tier 3 competitive gaming circuits, primarily in [Specify Games/Genres if you wish, e.g., FPS, MOBA]. This involvement developed strategic thinking, team coordination, and performance under pressure.</p>
                     </div>
                 </div>
 
+                 <div class="hobby-category">
+                    <h3 class="hobby-category-title">Classic & Independent Gaming :: Design Influences</h3>
+                     <div class="interactive-card block-element filterable-item" data-title="Gaming Influences Classic Indie" data-category="game-dev">
+                        <h4 class="interactive-card-title">Foundations // Gaming Passion</h4>
+                        <p>A long-standing engagement with gaming, originating from Warhammer 40k, Dungeons & Dragons, and influential console titles (Halo, Call of Duty). The Xbox 360 Indie Store was a key source of inspiration, highlighting diverse and innovative game design approaches.</p>
+                    </div>
+                </div>
 
             </section>
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+                <p class="font-terminal text-xs">Portfolio Interface v3.4 // Last System Update: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
-        // This entire script block should be copied from the updated index.html
-        const welcomePopup = document.getElementById('welcome-popup');
+        // --- JS from index.html ---
+        const initialLogonScreen = document.getElementById('initial-logon-screen');
+        const initialLogOutput = document.getElementById('initial-log-output');
+        const logonGraphCanvas = document.getElementById('logon-graph-canvas');
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        // const mainContentWrapper = document.getElementById('main-content-wrapper'); // Already declared
 
-        function showWelcomePopup() {
-            if (welcomePopup) {
-                welcomePopup.classList.add('show');
-                setTimeout(() => {
-                    welcomePopup.classList.remove('show');
-                    setTimeout(() => {
-                         if(welcomePopup) welcomePopup.style.display = 'none';
-                         bodyElement.classList.add('loaded');
-                         initializePageFunctions();
-                    }, 500); 
-                }, 3000); 
-            } else {
+        const initialLogLines = [
+            { text: "SYSTEM BOOT INITIATED...", class: "system" },
+            { text: "Loading Personal Archives...", class: "info" },
+            { text: "Operator: Kiegan. Profile Verified.", class: "system" },
+            { text: "// System Quirk Logged: Mi-Hwa Interaction Protocol Active", class: "user-quirk" },
+            { text: "Recreation Protocols Online. Accessing Hobby Logs.", class: "system" },
+        ];
+
+        const typingSpeed = 25; 
+        const linePause = 150; 
+        const graphAnimationDuration = 2500; 
+        const totalIntroDuration = 3500; 
+
+        let graphCtx;
+        let graphWidth, graphHeight;
+        let graphStartTime;
+
+        function drawAnimatedGraph(timestamp) {
+            if (!graphCtx) return;
+            if (!graphStartTime) graphStartTime = timestamp;
+            const elapsedTime = timestamp - graphStartTime;
+            const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
+
+            graphCtx.clearRect(0, 0, graphWidth, graphHeight);
+            const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
+            gradient.addColorStop(0, 'var(--accent-cyan)');
+            gradient.addColorStop(0.3, 'var(--accent-green)');
+            gradient.addColorStop(0.7, 'var(--accent-orange)');
+            gradient.addColorStop(1, 'var(--accent-cyan-dark)');
+            
+            graphCtx.strokeStyle = gradient;
+            graphCtx.lineWidth = 3;
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight / 2 + Math.sin(elapsedTime * 0.001) * 10);
+
+            for (let x = 0; x < graphWidth * progress; x++) {
+                const wave1 = Math.sin(x * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
+                const wave2 = Math.cos(x * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
+                const y = graphHeight / 2 + wave1 + wave2;
+                graphCtx.lineTo(x, y);
+            }
+            graphCtx.stroke();
+
+            if (progress > 0.1) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', 'var(--accent-green)', '#FF69B4'];
+                for(let i = 0; i < 7; i++) { 
+                    if (Math.random() < progress * 0.7) { 
+                        graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
+                        const spikeX = Math.random() * graphWidth * progress;
+                        const yPosWave1 = Math.sin(spikeX * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
+                        const yPosWave2 = Math.cos(spikeX * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
+                        const spikeYBase = graphHeight / 2 + yPosWave1 + yPosWave2;
+                        const spikeHeight = (Math.random() * 20 * progress + 5) * (Math.random() > 0.5 ? 1 : -0.6);
+                        graphCtx.fillRect(spikeX - 1, spikeYBase - (spikeHeight / 2), 2, spikeHeight);
+                    }
+                }
+            }
+            
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.15)';
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
+            graphCtx.stroke();
+
+            if (progress < 1) {
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function setupGraphCanvas() {
+            if (logonGraphCanvas) {
+                const container = logonGraphCanvas.parentElement;
+                logonGraphCanvas.width = container.clientWidth - 20; 
+                logonGraphCanvas.height = container.clientHeight - 20;
+                graphWidth = logonGraphCanvas.width;
+                graphHeight = logonGraphCanvas.height;
+                graphCtx = logonGraphCanvas.getContext('2d');
+                document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+        
+        function typeLogLine(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
+            const lineElem = document.createElement('div'); 
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem);
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
+                } else {
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, linePause);
+                }
+            }
+            typeChar();
+        }
+
+        function runInitialLogonSequence() {
+            if (sessionStorage.getItem('introPlayedThisSession')) {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded');
                 initializePageFunctions();
+                return; 
             }
+
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (initialLogOutput && currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    typeLogLine(line.text, line.class, initialLogOutput, nextInitialLine);
+                    currentLineIndex++;
+                } 
+            }
+
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; 
+                nextInitialLine();
+                setupGraphCanvas(); 
+            } else {
+                 console.error("Initial log output element not found.");
+            }
+
+            setTimeout(() => {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded');
+                initializePageFunctions(); 
+                sessionStorage.setItem('introPlayedThisSession', 'true'); 
+            }, totalIntroDuration);
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            filterProjects(); 
+            filterContent(); 
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
-            // No contact form on this page
         }
         
         function setActiveNavLink() {
@@ -307,13 +458,26 @@
 
         const searchInput = document.getElementById('search-input');
         const categoryFilter = document.getElementById('category-filter');
-        function filterProjects() { // This function is generic for project pages
-            const projectGrid = document.getElementById('project-grid');
-            if (!projectGrid) return; 
-            // ... (Rest of filter logic - not used on hobbies page)
+        function filterContent() {
+            const itemsToFilter = document.querySelectorAll('.filterable-item');
+            if (!itemsToFilter.length) return;
+
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
+
+            itemsToFilter.forEach(card => {
+                const title = (card.dataset.title || '').toLowerCase();
+                const category = (card.dataset.category || '').toLowerCase();
+                
+                const matchesSearch = searchTerm === "" || title.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category.split(' ').includes(selectedCategory);
+                
+                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+            });
         }
-        if (searchInput) searchInput.addEventListener('keyup', filterProjects);
-        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
+        if (searchInput) searchInput.addEventListener('keyup', filterContent);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterContent);
+
 
         if(document.getElementById('currentYear')) {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -322,21 +486,22 @@
             const scanTimeElem = document.getElementById('lastScanTime');
             if (scanTimeElem) {
                 const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-                const dateString = now.toLocaleDateString([], {year: 'numeric', month: '2-digit', day: '2-digit'});
+                const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+                const dateString = now.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC'});
                 scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
             }
         }
         
         const securityStatusMessages = [
-            "System integrity maintained.", "All channels secure.",
-            "Threat matrix nominal.", "Data encryption: MAX.",
-            "Network vigilance active."
+            "SYSTEM INTEGRITY: OPTIMAL", "ALL CHANNELS SECURED",
+            "THREAT ANALYSIS: NOMINAL", "ENCRYPTION STRENGTH: MAXIMUM",
+            "NETWORK VIGILANCE: ACTIVE"
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
             const statusElement = document.getElementById('security-status-text');
             if (statusElement) {
+                statusElement.textContent = securityStatusMessages[currentStatusIndex];
                 setInterval(() => {
                     currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
                     statusElement.textContent = securityStatusMessages[currentStatusIndex];
@@ -355,7 +520,7 @@
             });
         }
         
-        window.onload = showWelcomePopup;
+        window.onload = runInitialLogonSequence;
     </script>
 </body>
 </html>
