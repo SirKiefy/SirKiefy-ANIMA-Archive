@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator SirKiefy - Starfall // Core Concept</title>
+    <title>Kiegan [Your Last Name/Alias] - SFX & 3D Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Base CSS (Copy ALL from index.html or the updated project_starfall_databank.html) --- */
         :root {
             --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
@@ -22,6 +21,7 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
+            --accent-green: #39ff14; /* Neon Green for system status */
             --sidebar-width: 280px;
             --sidebar-width-collapsed: 0px; 
         }
@@ -36,46 +36,55 @@
         .bg-accent-orange { background-color: var(--accent-orange); }
         .text-accent-cyan { color: var(--accent-cyan); }
         .border-accent-cyan { border-color: var(--accent-cyan); }
+        .text-accent-green { color: var(--accent-green); }
         .block-element { border-radius: 0px !important; }
 
-        #initial-logon-screen { /* Styles from index.html */
+        /* Initial Full-Screen Log-on Animation */
+        #initial-logon-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000; display: flex; flex-direction: column;
             align-items: center; justify-content: center; z-index: 10000;
             padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
         }
-        #logon-content-container { /* Styles from index.html */
+        #logon-content-container {
             display: flex; flex-direction: column; align-items: center;
             width: 100%; max-width: 900px; height: 80%; max-height: 700px;
             border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
             padding: 20px; gap: 20px;
         }
-        #initial-log-output { /* Styles from index.html */
+        #initial-log-output {
             color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
             width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
             background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
         }
-        #initial-log-output .log-line.system { color: var(--text-primary); }
+        #initial-log-output .log-line.system { color: var(--text-primary); font-weight: bold; }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
-        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
-        #logon-graph-container { /* Styles from index.html */
+        /* User's specific line - subtle styling */
+        #initial-log-output .log-line.user-quirk { 
+            color: var(--accent-orange); 
+            font-style: italic;
+            opacity: 0.8; /* Make it slightly less prominent */
+            animation: subtle-flicker 2s infinite alternate;
+        }
+        @keyframes subtle-flicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.6; }
+        }
+        
+        #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
             border: 1px solid var(--border-subtle); padding: 10px; display: flex;
             align-items: center; justify-content: center;
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
-        @keyframes subtle-pulse { /* Styles from index.html */
-            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
-            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
-        }
 
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
-        
-        #sidebar { /* All sidebar styles from index.html */
+
+        #sidebar { 
             width: var(--sidebar-width); background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
             position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
@@ -113,7 +122,7 @@
         }
         #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
 
-        #sidebar-toggle { /* Styles from index.html */
+        #sidebar-toggle { 
             position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
             background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
             padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
@@ -123,8 +132,8 @@
         }
         #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
         body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
-
-        #main-content-wrapper { /* Styles from index.html */
+        
+        #main-content-wrapper { 
             margin-left: var(--sidebar-width); padding: 0;
             width: calc(100% - var(--sidebar-width));
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -134,53 +143,91 @@
             width: calc(100% - var(--sidebar-width-collapsed));
         }
         #main-content { padding: 32px; }
-
-        .section-panel { /* Styles from index.html */
+        
+        .section-panel { 
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
         }
-        .section-title { /* Styles from index.html */
+        .section-title { 
             font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
             margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
-        .footer-terminal { /* Styles from index.html */
+        .hero-section { text-align: center; border-bottom: 2px solid var(--accent-orange); }
+        .hero-title { font-size: 2.5rem; letter-spacing: 3px; line-height: 1.2; }
+        .hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-top: 8px; }
+        .status-indicator { 
+            display: inline-block; width: 12px; height: 12px;
+            background-color: var(--accent-green); /* Changed to green */
+            margin-right: 8px; vertical-align: middle;
+            animation: pulse-status 1.5s infinite ease-in-out;
+            box-shadow: 0 0 5px var(--accent-green), 0 0 10px var(--accent-green); /* Green glow */
+        }
+        @keyframes pulse-status { 
+            0%, 100% { opacity: 1; transform: scale(1.1); } 
+            50% { opacity: 0.6; transform: scale(0.9); } 
+        }
+        .btn {
+            padding: 12px 24px; text-transform: uppercase; letter-spacing: 1px;
+            border: 1px solid; transition: background-color 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: var(--accent-orange); border-color: var(--accent-orange);
+            color: var(--bg-darkest);
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-orange-dark);
+            border-color: var(--accent-orange-dark);
+        }
+         .btn-secondary { 
+            background-color: transparent; border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        .btn-secondary:hover {
+            background-color: var(--accent-cyan); color: var(--bg-darkest);
+        }
+        .footer-terminal { 
             background-color: var(--bg-panel); text-align: center; padding: 24px;
             border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
             color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text { /* Styles from index.html */
-            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
+        #security-status-text { 
+            display: inline-block;
+            animation: glow-security-text 3s infinite alternate ease-in-out; /* Slightly slower cycle */
         }
-        @keyframes glow-security-text { /* Styles from index.html */
-            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
-            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
+        @keyframes glow-security-text { 
+            0% { color: var(--accent-green); text-shadow: 0 0 3px var(--accent-green), 0 0 6px var(--accent-green); }
+            50% { color: var(--accent-cyan); text-shadow: 0 0 4px var(--accent-cyan), 0 0 8px var(--accent-cyan-dark); }
+            100% { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange); }
         }
-        /* Styles for full document view */
-        .document-view-content {
-            line-height: 1.8;
-            font-size: 1rem;
-            color: var(--text-secondary);
-        }
-        .document-view-content p {
+        
+        /* Databank Entry and Project Card Interactivity */
+        .interactive-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            padding: 1rem;
             margin-bottom: 1rem;
         }
-        .document-view-content strong {
-            color: var(--text-primary);
-            font-weight: 600; /* From Inter font */
+        .interactive-card:hover {
+            background-color: var(--bg-panel); 
+            border-color: var(--accent-cyan);
+            transform: translateY(-3px); /* Slight lift effect */
+            cursor: pointer;
         }
-         .back-link {
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            color: var(--accent-orange);
+        .interactive-card-title {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
+            font-size: 1.25rem; margin-bottom: 0.5rem;
             text-decoration: none;
-            font-family: 'Share Tech Mono', monospace;
+            display: block;
         }
-        .back-link:hover {
-            text-decoration: underline;
-            color: var(--accent-orange-dark);
+        .interactive-card-title:hover {
+            color: var(--accent-orange);
         }
+        .interactive-card p { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
 
-        @media (max-width: 768px) { /* Styles from index.html */
+
+        @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
@@ -193,6 +240,7 @@
     </style>
 </head>
 <body>
+    <!-- Initial Full-Screen Log-on Screen with Graph -->
     <div id="initial-logon-screen">
         <div id="logon-content-container" class="block-element">
             <div id="initial-log-output" class="block-element"></div>
@@ -216,44 +264,58 @@
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PROJECT_ARCHIVE_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// PORTFOLIO_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Site Content...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
-                <option value="web-dev">Web Development</option>
                 <option value="sfx">SFX</option>
-                <option value="3d-model">3D Modelling</option>
+                <option value="3d-modelling">3D Modelling</option>
                 <option value="game-dev">Game Development</option>
-                <option value="world-build">World Building</option>
+                <option value="world-building">World Building</option>
+                <option value="esports">Esports</option>
             </select>
         </div>
     </aside>
 
     <div id="main-content-wrapper">
         <main id="main-content">
-            <section id="starfall-core-concept-full" class="section-panel block-element">
-                <a href="project_starfall_databank.html" class="back-link">&lt;&lt; Back to Project Starfall Databank</a>
-                <h2 class="section-title text-accent-cyan font-terminal">Project Starfall // Core Concept & Genre</h2>
-                
-                <div class="document-view-content">
-                    <p><strong>Title:</strong> Project Starfall</p>
-                    <p><strong>Genre:</strong> First-Person Shooter (FPS), Tower Defense, Survival, Action-Defense, Base Building</p>
-                    <p>Project Starfall is a single-player, first-person survival tower defense game set in space. The player takes on the role of a survivor who has crash-landed on a planet with a damaged spaceship and a critical piece of technology: the False Void Generator.</p>
-                    <p>The primary goal is to repair the ship and the generator while defending against relentless waves of alien robots and hostile human factions. Players will explore planets, mine resources, build and upgrade bases and defenses, and manage their ship to survive and potentially thrive across multiple planetary locations.</p>
-                    <p>The game emphasizes a challenging survival experience where strategic base construction, resource management, and proficient first-person combat are key to enduring the escalating threats. Each planetary expedition offers new opportunities and dangers, pushing the player to adapt and enhance their capabilities continually.</p>
+            <section id="hero" class="hero-section section-panel block-element">
+                <h1 class="hero-title font-terminal text-accent-orange">
+                    <span class="status-indicator block-element"></span>OPERATOR INTERFACE ONLINE
+                </h1>
+                <p class="hero-subtitle font-terminal">
+                    Portfolio Systems Initialized. Operator: Kiegan. <br> Specializing in SFX & 3D Modelling. Current Status: Operational.
+                </p>
+                <div class="mt-8">
+                    <a href="projects.html" class="btn btn-primary block-element font-terminal">View Project Portfolio</a>
                 </div>
-
+                 <p class="mt-12 font-terminal text-sm text-text-secondary">
+                    This terminal provides access to professional records, skill demonstrations, and personal creative endeavors of Operator Kiegan.<br>
+                    Navigate via the console interface. All data streams are optimized for clarity.
+                </p>
+            </section>
+            <section class="section-panel block-element">
+                <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_DIRECTORIES :: QUICK_ACCESS</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="interactive-card block-element" onclick="window.location.href='about.html';">
+                        <h3 class="interactive-card-title">Access Log // About Kiegan</h3>
+                        <p>Background, professional skills, and personal history of the operator.</p>
+                    </div>
+                    <div class="interactive-card block-element" onclick="window.location.href='hobbies.html';">
+                        <h3 class="interactive-card-title">Personal Archives // Hobbies & Interests</h3>
+                        <p>Exploration of creative side-projects, including world-building and narrative design.</p>
+                    </div>
+                </div>
             </section>
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+                <p class="font-terminal text-xs">Portfolio Interface v3.4 // Last System Update: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
         const initialLogonScreen = document.getElementById('initial-logon-screen');
         const initialLogOutput = document.getElementById('initial-log-output');
         const logonGraphCanvas = document.getElementById('logon-graph-canvas');
@@ -262,20 +324,20 @@
         const sidebarToggle = document.getElementById('sidebar-toggle');
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT INITIATED...", class: "system" },
-            { text: "Memory integrity check: PASSED", class: "info" },
-            { text: "Core processor calibration: COMPLETE", class: "info" },
-            { text: "Establishing secure connection to user profile...", class: "system" },
-            { text: "User: Kiegan. Authentication successful.", class: "system" },
-            { text: "Loading databank entry viewer...", class: "info" }, 
-            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" },
-            { text: "Interface protocols online. Welcome, Operator.", class: "system" },
+            { text: "SYSTEM BOOT SEQUENCE INITIATED...", class: "system" },
+            { text: "MEMORY INTEGRITY CHECK: PASSED", class: "info" },
+            { text: "CORE PROCESSOR CALIBRATION: COMPLETE", class: "info" },
+            { text: "ESTABLISHING SECURE CONNECTION TO USER PROFILE...", class: "system" },
+            { text: "USER: Kiegan. AUTHENTICATION SUCCESSFUL.", class: "system" },
+            { text: "LOADING PORTFOLIO INTERFACE MODULES...", class: "info" },
+            { text: "// System Quirk Logged: Mi-Hwa Interaction Protocol Active", class: "user-quirk" }, 
+            { text: "INTERFACE PROTOCOLS ONLINE. WELCOME, OPERATOR.", class: "system" },
         ];
 
-        const typingSpeed = 25; // Made text faster
-        const linePause = 150; // Reduced pause for faster overall sequence
-        const graphAnimationDuration = 2500; // Slightly longer for more visual effect
-        const totalIntroDuration = 3500; // Total time intro is visible
+        const typingSpeed = 25; 
+        const linePause = 150; 
+        const graphAnimationDuration = 2500; 
+        const totalIntroDuration = 3500; 
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -288,44 +350,44 @@
             const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
 
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
-
-            // Colorful animated line graph using a gradient
             const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
             gradient.addColorStop(0, 'var(--accent-cyan)');
-            gradient.addColorStop(0.5, 'var(--accent-orange)');
+            gradient.addColorStop(0.3, 'var(--accent-green)');
+            gradient.addColorStop(0.7, 'var(--accent-orange)');
             gradient.addColorStop(1, 'var(--accent-cyan-dark)');
             
             graphCtx.strokeStyle = gradient;
-            graphCtx.lineWidth = 3; // Slightly thicker line
+            graphCtx.lineWidth = 3;
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight / 2);
+            graphCtx.moveTo(0, graphHeight / 2 + Math.sin(elapsedTime * 0.001) * 10); // Subtle start y-offset
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001); // More dynamic wave
+                const wave1 = Math.sin(x * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
+                const wave2 = Math.cos(x * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
+                const y = graphHeight / 2 + wave1 + wave2;
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            // More colorful "activity spikes"
-            if (progress > 0.2) {
-                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700' /* Gold */, '#FF69B4' /* HotPink */];
-                for(let i = 0; i < 5; i++) { // More spikes
-                    if (Math.random() < progress * 0.6) { 
+            if (progress > 0.1) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', 'var(--accent-green)', '#FF69B4'];
+                for(let i = 0; i < 7; i++) { 
+                    if (Math.random() < progress * 0.7) { 
                         graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
-                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); // Spikes above and below
-                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
+                        const yPosWave1 = Math.sin(spikeX * 0.03 + elapsedTime * 0.002) * (graphHeight / 4);
+                        const yPosWave2 = Math.cos(spikeX * 0.07 + elapsedTime * 0.0015) * (graphHeight / 5);
+                        const spikeYBase = graphHeight / 2 + yPosWave1 + yPosWave2;
+                        const spikeHeight = (Math.random() * 20 * progress + 5) * (Math.random() > 0.5 ? 1 : -0.6); // Varied height/direction
+                        graphCtx.fillRect(spikeX - 1, spikeYBase - (spikeHeight / 2), 2, spikeHeight); // Thinner spikes
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)'; // Softer axis
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.15)'; // Even softer axis
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight);
-            graphCtx.lineTo(graphWidth, graphHeight);
-            graphCtx.moveTo(0, 0);
-            graphCtx.lineTo(0, graphHeight);
+            graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
             graphCtx.stroke();
 
             if (progress < 1) {
@@ -368,19 +430,18 @@
         }
 
         function runInitialLogonSequence() {
-            // Check if intro has played this session
-            if (sessionStorage.getItem('introPlayed')) {
+            if (sessionStorage.getItem('introPlayedThisSession')) { // Updated key name
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded');
                 initializePageFunctions();
-                return; // Skip intro
+                return; 
             }
 
             let currentLineIndex = 0;
             function nextInitialLine() {
                 if (initialLogOutput && currentLineIndex < initialLogLines.length) {
                     const line = initialLogLines[currentLineIndex];
-                    typeLogLine(line.text.replace("[Your Name]", "Kiegan"), line.class, initialLogOutput, nextInitialLine);
+                    typeLogLine(line.text, line.class, initialLogOutput, nextInitialLine);
                     currentLineIndex++;
                 } 
             }
@@ -397,30 +458,64 @@
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded');
                 initializePageFunctions(); 
-                sessionStorage.setItem('introPlayed', 'true'); // Mark intro as played for this session
+                sessionStorage.setItem('introPlayedThisSession', 'true'); 
             }, totalIntroDuration);
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            // filterProjects(); // No project grid on this page
+            filterContent(); // Renamed from filterProjects for broader use
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
-            // No contact form on this specific document page
+
+            const contactForm = document.querySelector('#main-content form'); 
+            if (contactForm && contactForm.closest('section[id="contact"]')) { 
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
+                    this.reset();
+                });
+            }
         }
         
         function setActiveNavLink() {
-            const parentPage = "project_starfall_databank.html"; 
+            const currentPath = window.location.pathname.split("/").pop() || "index.html";
+            const currentPageName = currentPath === "" ? "index.html" : currentPath;
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
                 const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
-                if (linkPath === parentPage) {
+                if (linkPath === currentPageName) {
                     link.classList.add('active');
                 }
             });
         }
+
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+        
+        // Generalized content filter
+        function filterContent() {
+            const itemsToFilter = document.querySelectorAll('.filterable-item'); // Add this class to items you want to filter
+            if (!itemsToFilter.length && !document.getElementById('project-grid')) return; // Exit if no filterable items
+
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
+
+            itemsToFilter.forEach(card => {
+                const title = (card.dataset.title || '').toLowerCase();
+                const description = (card.dataset.description || '').toLowerCase(); // You can add short descriptions as data attributes
+                const category = (card.dataset.category || '').toLowerCase();
+                
+                const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category.split(' ').includes(selectedCategory);
+                
+                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+            });
+        }
+        if (searchInput) searchInput.addEventListener('keyup', filterContent);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterContent);
 
 
         if(document.getElementById('currentYear')) {
@@ -437,9 +532,9 @@
         }
         
         const securityStatusMessages = [
-            "System integrity maintained.", "All channels secure.",
-            "Threat matrix nominal.", "Data encryption: MAX.",
-            "Network vigilance active."
+            "SYSTEM INTEGRITY: OPTIMAL", "ALL CHANNELS SECURED",
+            "THREAT ANALYSIS: NOMINAL", "ENCRYPTION STRENGTH: MAXIMUM",
+            "NETWORK VIGILANCE: ACTIVE" // More professional status messages
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
