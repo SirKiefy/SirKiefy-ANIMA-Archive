@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator [Your Name] - Portfolio Terminal v3</title>
+    <title>Operator [Your Name] - Portfolio Terminal v3.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -27,7 +27,7 @@
             background-color: var(--bg-dark);
             color: var(--text-primary);
             margin: 0; padding: 0; box-sizing: border-box;
-            overflow: hidden; /* Hide scrollbars during initial logon */
+            /* overflow: hidden; Still useful if pop-up is present, otherwise can be managed by .loaded */
         }
         .font-terminal { font-family: 'Share Tech Mono', monospace; }
         .text-accent-orange { color: var(--accent-orange); }
@@ -37,37 +37,36 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        /* Initial Full-Screen Log-on */
-        #initial-logon-screen {
+        /* Welcome Pop-up */
+        #welcome-popup {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; /* Pitch black for boot-up */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
+            padding: 30px 40px;
+            border: 1px solid var(--accent-orange);
+            box-shadow: 0 0 25px rgba(240, 124, 58, 0.3);
             z-index: 10000;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        #initial-log-output {
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
             font-family: 'Share Tech Mono', monospace;
-            color: var(--accent-cyan);
-            font-size: clamp(0.9rem, 2.5vw, 1.2rem); /* Responsive font size */
-            width: 100%;
-            max-width: 800px;
-            height: 80%;
-            max-height: 600px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            border: 1px solid var(--border-medium);
-            background-color: rgba(10,12,15,0.5); /* Slightly transparent dark bg */
-            padding: 15px;
+            font-size: 1.2rem;
         }
-        #initial-log-output .log-line.jargon { color: var(--accent-cyan); }
-        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite; }
-        #initial-log-output .log-line.system { color: #fff; font-weight: bold; }
-
+        #welcome-popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        #welcome-popup .mihwa-line {
+            color: var(--accent-orange);
+            font-weight: bold;
+            display: block; /* Ensure it's on its own line if needed */
+            margin-top: 10px;
+            animation: subtle-pulse 1.5s infinite;
+        }
         @keyframes subtle-pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -81,10 +80,12 @@
         body.loaded {
             overflow: visible; /* Restore scrollbars after load */
         }
-        body.loaded #sidebar, body.loaded #main-content {
-            display: flex; /* Or 'block' for main-content if not flex container itself */
+        body.loaded #sidebar { /* Keep flex for sidebar layout */
+            display: flex;
         }
-        body.loaded #main-content { display: block; } /* main-content is not a flex container */
+        body.loaded #main-content {
+            display: block;
+        }
 
 
         /* Sidebar (Common to all pages) */
@@ -92,33 +93,25 @@
             width: 280px; background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px;
             height: 100vh; position: fixed; top: 0; left: 0;
-            flex-direction: column; overflow-y: auto; /* display: flex already applied by .loaded */
+            flex-direction: column; overflow-y: auto;
         }
         .sidebar-title {
             font-size: 1.5rem; letter-spacing: 2px;
             margin-bottom: 24px; text-align: center;
         }
-        /* Modified Main Menu Appearance */
         .main-nav a {
-            display: block;
-            padding: 10px 15px; /* Adjusted padding */
-            margin-bottom: 6px; /* Slightly reduced margin */
-            text-transform: uppercase;
-            border-left: 3px solid transparent; /* Indicator bar */
-            background-color: var(--bg-panel); /* Base background for menu items */
-            color: var(--text-secondary);
+            display: block; padding: 10px 15px; margin-bottom: 6px;
+            text-transform: uppercase; border-left: 3px solid transparent;
+            background-color: var(--bg-panel); color: var(--text-secondary);
             transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
         }
         .main-nav a:hover {
-            color: var(--accent-orange);
-            border-left-color: var(--accent-orange);
-            background-color: var(--bg-card); /* Darker on hover */
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card);
         }
         .main-nav a.active {
-            color: var(--accent-orange);
-            border-left-color: var(--accent-orange);
-            background-color: var(--bg-card); /* Active state same as hover for consistency */
-            font-weight: bold; /* Make active link bolder */
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card); font-weight: bold;
         }
 
         #animated-log-screen { /* Sidebar log */
@@ -144,11 +137,9 @@
             outline: none; border-color: var(--accent-orange);
         }
 
-        /* Main Content Area (This part changes per page) */
         #main-content {
             margin-left: 280px; padding: 32px;
             width: calc(100% - 280px); overflow-y: auto; height: 100vh;
-             /* display: block applied by .loaded */
         }
         .section-panel {
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
@@ -186,21 +177,20 @@
             padding: 24px; border-top: 1px solid var(--border-subtle);
             font-size: 0.875rem; color: var(--text-muted); margin-top: 32px;
         }
-        /* Footer Text Glow & Change */
         #security-status-text {
             animation: glow-animation 2s infinite alternate;
-            display: inline-block; /* Needed for text-shadow to not break line */
+            display: inline-block;
         }
         @keyframes glow-animation {
             from { text-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan), 0 0 7px var(--accent-cyan-dark); }
             to { text-shadow: 0 0 5px var(--accent-cyan-dark), 0 0 8px var(--accent-cyan-dark), 0 0 10px var(--accent-orange); }
         }
 
-        .project-card { /* Styles for project cards if they appear on index.html */
+        .project-card {
             background-color: var(--bg-card); border: 1px solid var(--border-subtle);
             transition: border-color 0.3s ease; overflow: hidden; margin-bottom: 16px;
         }
-        .project-card.hidden { display: none; }
+        .project-card.hidden { display: none; } /* Used by JS for filtering */
         .project-card:hover { border-color: var(--accent-orange); }
         .project-image-placeholder {
             background-color: #252a31; height: 180px; display: flex;
@@ -209,14 +199,14 @@
         .project-title { font-size: 1.25rem; }
 
         @media (max-width: 768px) {
-            body.loaded #sidebar { /* Ensure sidebar specific style for loaded state */
+            body.loaded #sidebar {
                 position: static; width: 100%; height: auto;
                 border-right: none; border-bottom: 1px solid var(--border-subtle);
                 overflow-y: visible;
             }
             body.loaded #main-content { margin-left: 0; width: 100%; height: auto; padding: 16px; }
             
-            #initial-log-output { font-size: 0.8rem; padding: 10px; }
+            #welcome-popup { font-size: 1rem; padding: 20px; width: 80%;}
             .sidebar-title { font-size: 1.25rem; margin-bottom: 16px; }
             .main-nav a { padding: 10px 12px; }
             #animated-log-screen { height: 100px; font-size: 0.75rem;}
@@ -225,9 +215,10 @@
     </style>
 </head>
 <body>
-    <!-- Initial Full-Screen Log-on Screen -->
-    <div id="initial-logon-screen">
-        <div id="initial-log-output"></div>
+    <!-- Welcome Pop-up -->
+    <div id="welcome-popup" class="block-element">
+        SYSTEM ONLINE. OPERATOR: [Your Name]
+        <span class="mihwa-line">Bullying Mi-hwa the beloved &lt;3</span>
     </div>
 
     <!-- Sidebar (Common to all pages) -->
@@ -242,7 +233,7 @@
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div id="animated-log-screen" class="font-terminal block-element">
-            <!-- Sidebar log will appear here after initial logon -->
+            <!-- Sidebar log will appear here -->
         </div>
         <div class="sidebar-controls">
             <h3>// PROJECT_ARCHIVE_QUERY</h3>
@@ -258,11 +249,8 @@
         </div>
     </aside>
 
-    <!-- Main Content Area (This part changes per page) -->
+    <!-- Main Content Area -->
     <main id="main-content">
-        <!-- =============================================================== -->
-        <!-- START: Page Specific Content for index.html (Home Page)        -->
-        <!-- =============================================================== -->
         <section id="hero" class="hero-section section-panel block-element">
             <h1 class="hero-title font-terminal text-accent-orange">
                 <span class="status-indicator block-element"></span>SYSTEM ACCESS GRANTED
@@ -278,7 +266,6 @@
                 Navigate via the console on the left. All transmissions are monitored.
             </p>
         </section>
-
         <section class="section-panel block-element">
             <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_OVERVIEW :: QUICK_ACCESS</h2>
             <div class="grid md:grid-cols-2 gap-6">
@@ -294,11 +281,6 @@
                 </div>
             </div>
         </section>
-        <!-- =============================================================== -->
-        <!-- END: Page Specific Content for index.html (Home Page)          -->
-        <!-- =============================================================== -->
-
-        <!-- Footer (Common to all pages) -->
         <footer class="footer-terminal block-element">
             <p>&copy; <span id="currentYear"></span> [Your Name/Alias]. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
             <p class="font-terminal text-xs">DATA CORE INTERFACE v3.2 // LAST SCAN: <span id="lastScanTime"></span></p>
@@ -306,23 +288,9 @@
     </main>
 
     <script>
-        const initialLogonScreen = document.getElementById('initial-logon-screen');
-        const initialLogOutput = document.getElementById('initial-log-output');
+        const welcomePopup = document.getElementById('welcome-popup');
         const sidebarLogScreen = document.getElementById('animated-log-screen');
         const bodyElement = document.body;
-
-        const initialLogLines = [
-            { text: "INITIALIZING SYSTEM BOOT SEQUENCE...", class: "system" },
-            { text: "MEMORY CHECK: 64 ZETTABYTES OK", class: "jargon" },
-            { text: "QUANTUM CORE ALIGNMENT: IN PROGRESS...", class: "jargon" },
-            { text: "DECRYPTING PRIMARY DIRECTIVES...", class: "jargon" },
-            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" },
-            { text: "LOADING USER AUTHENTICATION MODULE...", class: "system" },
-            { text: "BIOMETRIC SCAN: MATCH FOUND - OPERATOR [YOUR NAME]", class: "system" },
-            { text: "ESTABLISHING SECURE DATALINK...", class: "jargon" },
-            { text: "INTERFACE PROTOCOLS ACTIVATED.", class: "system" },
-            { text: "WELCOME, OPERATOR.", class: "system" },
-        ];
 
         const sidebarLogJargon = [
             "Monitoring network traffic...", "Analyzing threat vectors...",
@@ -331,16 +299,15 @@
         ];
         const sidebarMihwaLine = "Bullying Mi-hwa the beloved <3";
 
-        const typingSpeed = 40;
-        const linePause = 300;
-        const initialSequenceLinePause = 500; // Slower for initial boot
+        const typingSpeed = 40; // General typing speed for sidebar log
+        const linePause = 300; // General pause for sidebar log
 
-        // Corrected function definition: removed 'element' parameter
-        function typeLine(text, className, outputContainer, callback, speed = typingSpeed, pause = linePause) {
-            if (!outputContainer) return; // Ensure outputContainer is a valid DOM element
+        // Function to type lines in the sidebar log
+        function typeLineForSidebar(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
             const lineElem = document.createElement('span');
             lineElem.className = `log-line ${className}`;
-            outputContainer.appendChild(lineElem); // This should now work
+            outputContainer.appendChild(lineElem);
             let charIndex = 0;
 
             function typeChar() {
@@ -348,68 +315,59 @@
                     lineElem.textContent += text.charAt(charIndex);
                     charIndex++;
                     outputContainer.scrollTop = outputContainer.scrollHeight;
-                    setTimeout(typeChar, speed);
+                    setTimeout(typeChar, typingSpeed);
                 } else {
                     outputContainer.scrollTop = outputContainer.scrollHeight;
-                    if (callback) setTimeout(callback, pause);
+                    if (callback) setTimeout(callback, linePause + Math.random() * 500); // Vary pause for sidebar
                 }
             }
             typeChar();
         }
+        
+        function showWelcomePopup() {
+            if (welcomePopup) {
+                // Make Your Name dynamic in popup if needed, e.g. welcomePopup.innerHTML = welcomePopup.innerHTML.replace("[Your Name]", "Actual Name");
+                welcomePopup.classList.add('show');
 
-        function runInitialLogon() {
-            let currentLineIndex = 0;
-            function nextInitialLine() {
-                if (currentLineIndex < initialLogLines.length) {
-                    const line = initialLogLines[currentLineIndex];
-                    // Call with corrected argument mapping for the modified typeLine
-                    typeLine(line.text.replace("[YOUR NAME]", "Operator"), line.class, initialLogOutput, nextInitialLine, typingSpeed, initialSequenceLinePause);
-                    currentLineIndex++;
-                } else {
-                    // Initial logon finished
+                setTimeout(() => {
+                    welcomePopup.classList.remove('show');
+                    // Wait for fade out transition to complete
                     setTimeout(() => {
-                        if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                        bodyElement.classList.add('loaded');
-                        startSidebarLogAnimation(); // Start the continuous sidebar log
-                        initializePageFunctions(); // Initialize other common page functions
-                    }, 1000); // Pause before revealing main content
-                }
-            }
-            if (initialLogOutput) {
-                initialLogOutput.innerHTML = ''; // Clear before starting
-                nextInitialLine();
-            } else { // Fallback if initial log output isn't there for some reason
-                 console.error("Initial log output element not found. Skipping initial log.");
-                 bodyElement.classList.add('loaded');
-                 startSidebarLogAnimation();
-                 initializePageFunctions();
+                         if(welcomePopup) welcomePopup.style.display = 'none'; // Hide it completely
+                         bodyElement.classList.add('loaded');
+                         startSidebarLogAnimation();
+                         initializePageFunctions();
+                    }, 500); // Matches CSS transition duration
+                }, 3000); // Pop-up visible for 3 seconds, then starts fade out
+            } else {
+                // Fallback if pop-up element isn't found
+                console.error("Welcome pop-up element not found. Loading main content directly.");
+                bodyElement.classList.add('loaded');
+                startSidebarLogAnimation();
+                initializePageFunctions();
             }
         }
         
         let sidebarJargonIndex = 0;
         function startSidebarLogAnimation() {
             if (!sidebarLogScreen) return;
-            sidebarLogScreen.innerHTML = ''; // Clear previous logs
+            sidebarLogScreen.innerHTML = ''; 
 
             function nextSidebarLine() {
-                let text, className, pause;
-                if (sidebarJargonIndex % 4 === 2) { // Show Mi-hwa line periodically
+                let text, className;
+                if (sidebarJargonIndex % 4 === 2) { 
                     text = sidebarMihwaLine;
                     className = 'mihwa';
-                    pause = 2000;
                 } else {
                     text = sidebarLogJargon[sidebarJargonIndex % sidebarLogJargon.length];
                     className = 'jargon';
-                    pause = 1500 + Math.random() * 1000; // Vary pause for sidebar
                 }
-                // Call with corrected argument mapping for the modified typeLine
-                typeLine(text, className, sidebarLogScreen, nextSidebarLine, 30, pause);
+                typeLineForSidebar(text, className, sidebarLogScreen, nextSidebarLine);
                 sidebarJargonIndex++;
             }
             nextSidebarLine();
         }
 
-        // --- Functions to be called AFTER initial logon ---
         function initializePageFunctions() {
             setActiveNavLink();
             filterProjects(); 
@@ -417,36 +375,30 @@
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
 
-            // Contact form listener (if present on the page)
-            // Ensure your contact form has id="contact-form" or adjust selector
             const contactForm = document.querySelector('#main-content form'); 
             if (contactForm && contactForm.closest('section[id="contact"]')) { 
                 contactForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    // Using custom message box logic if available, otherwise alert
-                    if (typeof showMessage === 'function') {
-                        showMessage("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
-                    } else {
-                        alert("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
-                    }
+                    alert("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
                     this.reset();
                 });
             }
         }
         
-        // --- Active Navigation Link ---
         function setActiveNavLink() {
             const currentPath = window.location.pathname.split("/").pop() || "index.html";
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
-                const linkPath = link.getAttribute('href').split("/").pop();
+                const linkHref = link.getAttribute('href');
+                // Handle cases where href might be just "index.html" or "./index.html"
+                const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+
                 if (linkPath === currentPath || (currentPath === "" && linkPath === "index.html") ) {
                     link.classList.add('active');
                 }
             });
         }
 
-        // --- Project Search and Category Filter ---
         const searchInput = document.getElementById('search-input');
         const categoryFilter = document.getElementById('category-filter');
         function filterProjects() {
@@ -464,14 +416,12 @@
                 const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
                 const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
 
-                // Using display style instead of class for simpler show/hide
                 card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
             });
         }
         if (searchInput) searchInput.addEventListener('keyup', filterProjects);
         if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
 
-        // --- Footer Dynamic Content ---
         if(document.getElementById('currentYear')) {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
         }
@@ -485,12 +435,9 @@
             }
         }
         
-        // --- Footer Security Status Cycling ---
         const securityStatusMessages = [
-            "System integrity maintained.",
-            "All channels secure. No breaches detected.",
-            "Threat matrix nominal. Vigilance protocols active.",
-            "Data encryption at maximum strength.",
+            "System integrity maintained.", "All channels secure. No breaches detected.",
+            "Threat matrix nominal. Vigilance protocols active.", "Data encryption at maximum strength.",
             "Network monitored. Perimeter holding strong."
         ];
         let currentStatusIndex = 0;
@@ -500,12 +447,11 @@
                 setInterval(() => {
                     currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
                     statusElement.textContent = securityStatusMessages[currentStatusIndex];
-                }, 30000); // Change every 30 seconds
+                }, 30000); 
             }
         }
         
-        // --- Initialize on Page Load ---
-        window.onload = runInitialLogon;
+        window.onload = showWelcomePopup;
     </script>
 </body>
 </html>
