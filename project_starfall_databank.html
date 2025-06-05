@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator Kiegan - Databank // Project Starfall</title>
+    <title>Sirkiefy's Portfolio Terminal v5.1 - DB: Starfall</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Base CSS (Copy ALL from index.html or about.html) --- */
+        /* --- Paste ALL CSS from index.html here --- */
         :root {
-            --bg-darkest: #050608; /* ... (copy all CSS variables from index.html) ... */
+            --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
             --bg-panel: #101419;
             --bg-card: #181c22;
@@ -23,12 +23,12 @@
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
             --sidebar-width: 280px;
-            --sidebar-width-collapsed: 0px;
+            --sidebar-width-collapsed: 0px; 
         }
         body {
             font-family: 'Inter', sans-serif; background-color: var(--bg-dark);
             color: var(--text-primary); margin: 0; padding: 0; box-sizing: border-box;
-            overflow-x: hidden;
+            overflow-x: hidden; 
         }
         .font-terminal { font-family: 'Share Tech Mono', monospace; }
         .text-accent-orange { color: var(--accent-orange); }
@@ -38,68 +38,116 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        #welcome-popup { /* Styles from index.html */
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background-color: var(--bg-panel); color: var(--text-primary); padding: 30px 40px;
-            border: 2px solid var(--accent-orange); box-shadow: 0 0 30px rgba(240, 124, 58, 0.4);
-            z-index: 10000; text-align: center; opacity: 0; visibility: hidden;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-            font-family: 'Share Tech Mono', monospace; font-size: 1.3rem;
+        #standby-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-darkest);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10001; text-align: center; padding: 20px;
         }
-        #welcome-popup.show { opacity: 1; visibility: visible; }
-        #welcome-popup .mihwa-line {
-            color: var(--accent-orange); font-weight: bold; display: block;
-            margin-top: 12px; animation: subtle-pulse 1.5s infinite alternate;
+        #standby-title {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange); margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--accent-orange-dark);
         }
-        @keyframes subtle-pulse {
-            from { opacity: 0.7; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1.02); }
+        #standby-message {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary); margin-bottom: 40px;
+        }
+        #logon-button {
+            font-family: 'Share Tech Mono', monospace; background-color: var(--accent-cyan);
+            color: var(--bg-darkest); border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px; font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
+        }
+        #logon-button:hover {
+            background-color: var(--accent-cyan-dark); color: var(--bg-darkest);
+            box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
         }
 
-        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        #initial-logon-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10000; padding: 20px; box-sizing: border-box; 
+            font-family: 'Share Tech Mono', monospace;
+        }
+        #logon-content-container {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 900px; height: 80%; max-height: 700px;
+            border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
+            padding: 20px; gap: 20px;
+        }
+        #initial-log-output {
+            color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
+            width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
+        }
+        #initial-log-output .log-line.system { color: var(--text-primary); }
+        #initial-log-output .log-line.info { color: var(--accent-cyan); }
+        #initial-log-output .log-line.warning { color: var(--accent-orange); }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        
+        #logon-graph-container {
+            width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle); padding: 10px; display: flex;
+            align-items: center; justify-content: center;
+        }
+        #logon-graph-canvas { max-width: 100%; max-height: 100%; }
+
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
+
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
+        
+        body.loaded #standby-screen { display: none; } 
+        body.loaded #initial-logon-screen { display: none; } 
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
 
-        #sidebar { /* Styles from index.html */
+        #sidebar { 
             width: var(--sidebar-width); background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
             position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
             transition: transform 0.3s ease-in-out; transform: translateX(0); z-index: 1000;
         }
         body.sidebar-collapsed #sidebar { transform: translateX(-100%); }
-        .sidebar-title { /* Styles from index.html */
+        .sidebar-title { 
             font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 24px;
             text-align: center; color: var(--accent-orange); font-weight: bold;
         }
-        .main-nav a { /* Styles from index.html */
+        .main-nav a { 
             display: block; padding: 10px 15px; margin-bottom: 6px; text-transform: uppercase;
             border-left: 3px solid transparent; background-color: var(--bg-panel);
             color: var(--text-secondary);
             transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
         }
-        .main-nav a:hover { /* Styles from index.html */
+        .main-nav a:hover { 
             color: var(--accent-orange); border-left-color: var(--accent-orange);
             background-color: var(--bg-card);
         }
-        .main-nav a.active { /* Styles from index.html */
+        .main-nav a.active { 
             color: var(--accent-orange); border-left-color: var(--accent-orange);
             background-color: var(--bg-card); font-weight: bold;
         }
-        .sidebar-controls { /* Styles from index.html */
+        .sidebar-controls { 
             margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);
         }
-        .sidebar-controls h3 { /* Styles from index.html */
+        .sidebar-controls h3 { 
             font-family: 'Share Tech Mono', monospace; font-size: 1rem;
             color: var(--text-secondary); margin-bottom: 8px;
         }
-        #search-input, #category-filter { /* Styles from index.html */
+        #search-input, #category-filter { 
             width: 100%; padding: 8px; background-color: var(--bg-panel);
             border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
         }
         #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
 
-        #sidebar-toggle { /* Styles from index.html */
+        #sidebar-toggle { 
             position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
             background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
             padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
@@ -110,7 +158,7 @@
         #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
         body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
         
-        #main-content-wrapper { /* Styles from index.html */
+        #main-content-wrapper { 
             margin-left: var(--sidebar-width); padding: 0;
             width: calc(100% - var(--sidebar-width));
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -121,32 +169,48 @@
         }
         #main-content { padding: 32px; }
         
-        .section-panel { /* Styles from index.html */
+        .section-panel { 
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
         }
-        .section-title { /* Styles from index.html */
+        .section-title { 
             font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
             margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
-        .footer-terminal { /* Styles from index.html */
+        .footer-terminal { 
             background-color: var(--bg-panel); text-align: center; padding: 24px;
             border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
             color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text { /* Styles from index.html */
+        #security-status-text { 
             display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
-        @keyframes glow-security-text { /* Styles from index.html */
+        @keyframes glow-security-text { 
             from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
             to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-        /* Databank specific styles from project_everfield_databank.html */
-        .databank-entry { margin-bottom: 1.5rem; line-height: 1.7; }
+        /* Databank specific styles */
+        .databank-entry { 
+            margin-bottom: 1.5rem; line-height: 1.7;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            border: 1px solid var(--border-subtle); 
+            padding: 1rem; 
+            background-color: var(--bg-card);
+        }
+        .databank-entry:hover {
+            background-color: var(--bg-panel); 
+            border-color: var(--accent-cyan); 
+        }
         .databank-entry h3 {
             font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
             font-size: 1.4rem; margin-bottom: 0.75rem;
             border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
+        }
+        .databank-entry h3 a { 
+            text-decoration: none; color: inherit; display: block; 
+        }
+        .databank-entry h3 a:hover {
+            color: var(--accent-orange); text-decoration: underline;
         }
         .databank-entry h4 {
             font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
@@ -156,46 +220,75 @@
         .databank-entry ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
         .databank-entry li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
         .databank-entry li::before {
-            content: '>'; position: absolute; left: 0; color: var(--accent-orange);
+            content: '>'; 
+            position: absolute; left: 0; color: var(--accent-orange);
             font-family: 'Share Tech Mono', monospace;
         }
-        @media (max-width: 768px) { /* Styles from index.html */
+        .back-button {
+            display: inline-block; padding: 8px 16px; margin-bottom: 20px; 
+            background-color: var(--accent-orange); color: var(--bg-darkest);
+            font-family: 'Share Tech Mono', monospace; text-transform: uppercase;
+            letter-spacing: 1px; border: 1px solid var(--accent-orange-dark);
+            cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background-color: var(--accent-orange-dark); color: var(--bg-darkest);
+            text-decoration: none;
+        }
+        @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
             #main-content { padding: 16px; }
             #sidebar-toggle { display: none; }
+            #logon-content-container { height: 90%; max-height: none; gap: 10px;}
+            #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
+            #logon-graph-container { height: 30%; }
+            #standby-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            #standby-message { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+            #logon-button { font-size: clamp(1rem, 2.5vw, 1.5rem); padding: 12px 25px; }
         }
     </style>
 </head>
 <body>
-    <div id="welcome-popup" class="block-element">
-        QUERYING DATABANK // PROJECT_STARFALL
-        <span class="mihwa-line">Bullying Mi-hwa the beloved &lt;3</span>
+    <div id="standby-screen">
+        <h1 id="standby-title" class="block-element">SIRKIEFY PORTFOLIO</h1>
+        <p id="standby-message" class="block-element">SYSTEM STANDBY // AWAITING USER AUTHENTICATION</p>
+        <button id="logon-button" class="block-element">ACCESS TERMINAL</button>
+    </div>
+
+    <div id="initial-logon-screen">
+        <div id="logon-content-container" class="block-element">
+            <div id="initial-log-output" class="block-element"></div>
+            <div id="logon-graph-container" class="block-element">
+                <canvas id="logon-graph-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
 
     <aside id="sidebar" class="block-element">
-        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
+        <div class="sidebar-title font-terminal">SIRKIEFY_CONSOLE</div> 
         <nav class="main-nav font-terminal">
             <a href="index.html" class="block-element">Home_Interface</a>
-            <a href="about.html" class="block-element">Auth_Logs // About</a>
-            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
-            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="about.html" class="block-element">User_Profile // About</a> 
+            <a href="projects.html" class="block-element">Project_Files // Portfolio</a> 
+            <a href="hobbies.html" class="block-element">Personal_Logs // Hobbies</a> 
             <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
             <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PROJECT_ARCHIVE_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Archives...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
-                <option value="web-dev">Web Development</option>
                 <option value="sfx">SFX</option>
                 <option value="3d-model">3D Modelling</option>
+                <option value="pixel-art">Pixel Art</option> 
                 <option value="game-dev">Game Development</option>
                 <option value="world-build">World Building</option>
             </select>
@@ -204,56 +297,60 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
+            <!-- Go Back Button -->
+            <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button>
+            
             <section id="starfall-data" class="section-panel block-element">
                 <h2 class="section-title text-accent-orange font-terminal">// DATABANK_ACCESS :: PROJECT_STARFALL_CONCEPT_OUTLINE</h2>
+                <p class="mb-6 text-text-secondary">
+                    Project Starfall is a single-player, first-person survival tower defense game concept. This databank contains key excerpts from the outline. Click entry titles for more details where available.
+                </p>
 
-                <div class="databank-entry">
-                    <h3>Core Concept & Genre</h3>
+                <div class="databank-entry block-element">
+                    <h3><a href="starfall_core_concept_details.html">Core Concept & Genre</a></h3>
                     <p><strong>Title:</strong> Project Starfall</p>
                     <p><strong>Genre:</strong> First-Person Shooter (FPS), Tower Defense, Survival, Action-Defense, Base Building</p>
-                    <p>Project Starfall is a single-player, first-person survival tower defense game set in space. The player is a survivor crash-landed on a planet with a damaged spaceship and a critical piece of technology: the False Void Generator. The primary objective is to repair the ship and generator while defending against waves of alien robots and hostile human factions.</p>
+                    <p>Players must repair a crash-landed spaceship and its vital "False Void Generator" while defending against waves of alien robots and hostile human factions.</p>
                 </div>
 
-                <div class="databank-entry">
-                    <h3>Setting & Key Technology</h3>
-                    <p>The game takes place in a sector of space featuring the rare "False Void Generator" technology (only 3 known). This generator is the ship's primary power source and FTL drive, making its protection paramount. The player starts on a crash site, needing immediate survival and repair efforts.</p>
+                <div class="databank-entry block-element">
+                     <h3><a href="starfall_setting_technology_details.html">Setting & Key Technology</a></h3>
+                    <p>The game is set in a remote space sector. The "False Void Generator," a rare and powerful FTL drive and power source, is central to survival and progression.</p>
                 </div>
 
-                <div class="databank-entry">
-                    <h3>Gameplay Loop</h3>
+                <div class="databank-entry block-element">
+                    <h3><a href="starfall_gameplay_loop_details.html">Gameplay Loop</a></h3>
                     <ul>
-                        <li><strong>Initial Survival & Repair:</strong> Scavenge resources, perform preliminary repairs on the ship and False Void Generator core.</li>
-                        <li><strong>Resource Gathering:</strong> Explore planets to mine resources for crafting, building, and upgrades.</li>
-                        <li><strong>Base Building & Defense:</strong> Establish and fortify a base around the ship and generator with defensive structures (walls, turrets, traps).</li>
-                        <li><strong>Ship Repair & Preparation:</strong> Continue repairing the main spaceship for interplanetary travel.</li>
-                        <li><strong>Wave Defense:</strong> Defend against increasingly difficult waves of enemies in a first-person tower defense style.</li>
-                        <li><strong>Exploration & Expansion:</strong> Travel to other planets, each with unique resources, environments, and challenges.</li>
-                        <li><strong>Upgrades:</strong> Improve weapons, armor, defenses, spaceship capabilities, and potentially mechs.</li>
-                        <li><strong>Combat:</strong> First-person engagement with enemies, utilizing defensive structures and vehicles.</li>
-                        <li><strong>Fleet Encounters:</strong> Occasional large-scale enemy fleet encounters in space.</li>
-                        <li><strong>Survival:</strong> Manage player health, stamina, and environmental hazards.</li>
+                        <li>Initial Survival & Repair of ship and generator.</li>
+                        <li>Resource Gathering across diverse planets.</li>
+                        <li>Base Building & Fortification for wave defense.</li>
+                        <li>Ship Repair for interplanetary travel.</li>
+                        <li>Wave Defense against increasingly challenging enemies.</li>
+                        <li>Exploration & Expansion to new planetary systems.</li>
+                        <li>Upgrades for gear, defenses, ship, and mechs.</li>
+                        <li>Combat: First-person, utilizing structures and vehicles.</li>
                     </ul>
                 </div>
                 
-                <div class="databank-entry">
-                    <h3>Key Features</h3>
+                <div class="databank-entry block-element">
+                    <h3><a href="starfall_key_features_details.html">Key Features</a></h3>
                     <ul>
-                        <li>First-Person Perspective for all gameplay.</li>
-                        <li>Core Tower Defense mechanics against enemy waves.</li>
-                        <li>Survival elements: resource management, crafting.</li>
-                        <li>Base Building with modular or freeform construction.</li>
-                        <li>Resource Mining from diverse planetary environments.</li>
-                        <li>Upgradable systems for player, defenses, ship, and mechs.</li>
-                        <li>Player-controlled Spaceships for interplanetary travel.</li>
-                        <li>Playable Vehicles including mechs, bikes, and airships.</li>
-                        <li>Diverse Enemies: Aliens, robots, hostile human factions with unique classes.</li>
-                        <li>Focus on continuous survival with no planned end game.</li>
+                        <li>First-Person immersive gameplay.</li>
+                        <li>Core Tower Defense against enemy assaults.</li>
+                        <li>Survival mechanics: resource management, crafting.</li>
+                        <li>Modular Base Building for strategic defense.</li>
+                        <li>Resource Mining and material collection.</li>
+                        <li>Upgradable systems: player gear, defenses, ship, mechs.</li>
+                        <li>Player-controlled Spaceships for travel.</li>
+                        <li>Playable Vehicles: mechs, bikes, airships.</li>
+                        <li>Diverse Enemy Factions (Aliens, Robots, Humans) with unique units.</li>
+                        <li>Continuous Survival focus with no planned definitive end-game.</li>
                     </ul>
                      <p><strong>Target Platform:</strong> Single Player, Unity Engine 2022.3.10f1</p>
                 </div>
 
-                <div class="databank-entry">
-                    <h3>Enemy Faction Unit Classes (Examples)</h3>
+                <div class="databank-entry block-element">
+                    <h3><a href="starfall_enemy_factions_details.html">Enemy Faction Unit Classes (Examples)</a></h3>
                     <h4>Alien Faction:</h4>
                     <p>Drone (Swarming), Scout (Recon), Soldier (Standard), Vanguard (Heavy Armor), Librarian (Support/Debuff), Behemoth (Large Siege), Leviathan (Massive Boss-like).</p>
                     <h4>Robot Faction:</h4>
@@ -261,47 +358,194 @@
                     <h4>Hostile Human Faction:</h4>
                     <p>Drone (Armed), Scout (Stealth Sniper), Soldier (Infantry), Vanguard (Heavy Infantry), Librarian (Medic/Commander), Behemoth (Powered Armor/Tank), Leviathan (Large Vehicle/Command Center).</p>
                 </div>
-
-
             </section>
             <footer class="footer-terminal block-element">
-                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+                <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
-        // This entire script block should be copied from the updated index.html.
-        const welcomePopup = document.getElementById('welcome-popup');
+        // --- Paste ENTIRE SCRIPT from index.html (portfolio_website_final_index_v4_back_button) here ---
+        const standbyScreen = document.getElementById('standby-screen');
+        const logonButton = document.getElementById('logon-button');
+        const initialLogonScreen = document.getElementById('initial-logon-screen');
+        const initialLogOutput = document.getElementById('initial-log-output');
+        const logonGraphCanvas = document.getElementById('logon-graph-canvas');
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
+        // Go back button will be fetched dynamically within initializePageFunctions
 
-        function showWelcomePopup() {
-            if (welcomePopup) {
-                welcomePopup.classList.add('show');
-                setTimeout(() => {
-                    welcomePopup.classList.remove('show');
-                    setTimeout(() => {
-                         if(welcomePopup) welcomePopup.style.display = 'none';
-                         bodyElement.classList.add('loaded');
-                         initializePageFunctions();
-                    }, 500); 
-                }, 3000); 
-            } else {
-                bodyElement.classList.add('loaded');
-                initializePageFunctions();
+        const initialLogLines = [
+            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
+            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
+            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
+            { text: "Establishing secure link to user profile...", class: "system" },
+            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v5.1...", class: "info" },
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
+            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
+        ];
+
+        const typingSpeed = 10; 
+        const linePause = 70; 
+        const graphAnimationDuration = 3500; 
+        const totalIntroDuration = 5000; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; 
+
+        let graphCtx;
+        let graphWidth, graphHeight;
+        let graphStartTime;
+
+        function drawAnimatedGraph(timestamp) {
+            if (!graphCtx) return;
+            if (!graphStartTime) graphStartTime = timestamp;
+            const elapsedTime = timestamp - graphStartTime;
+            const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
+
+            graphCtx.clearRect(0, 0, graphWidth, graphHeight);
+            const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
+            gradient.addColorStop(0, 'var(--accent-cyan)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
+            gradient.addColorStop(1, 'var(--accent-cyan-dark)');
+            
+            graphCtx.strokeStyle = gradient;
+            graphCtx.lineWidth = 3; 
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight / 2);
+
+            for (let x = 0; x < graphWidth * progress; x++) {
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                graphCtx.lineTo(x, y);
             }
+            graphCtx.stroke();
+
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
+                for(let i = 0; i < 5; i++) { 
+                    if (Math.random() < progress * 0.6) { 
+                        graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
+                        const spikeX = Math.random() * graphWidth * progress;
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
+                    }
+                }
+            }
+            
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
+            graphCtx.stroke();
+
+            if (progress < 1) {
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function setupGraphCanvas() {
+            if (logonGraphCanvas) {
+                const container = logonGraphCanvas.parentElement;
+                logonGraphCanvas.width = container.clientWidth - 20; 
+                logonGraphCanvas.height = container.clientHeight - 20;
+                graphWidth = logonGraphCanvas.width;
+                graphHeight = logonGraphCanvas.height;
+                graphCtx = logonGraphCanvas.getContext('2d');
+                document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function typeLogLine(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
+            const lineElem = document.createElement('div'); 
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem);
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
+                } else {
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, linePause);
+                }
+            }
+            typeChar();
+        }
+
+        function playIntroAnimation() {
+            if (!initialLogonScreen) { 
+                console.warn("Initial logon screen not found. Cannot play intro.");
+                loadMainInterfaceDirectly();
+                return;
+            }
+            initialLogonScreen.style.display = 'flex';
+
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (initialLogOutput && currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    typeLogLine(line.text, line.class, initialLogOutput, nextInitialLine);
+                    currentLineIndex++;
+                } 
+            }
+
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; 
+                nextInitialLine();
+                setupGraphCanvas(); 
+            } else {
+                 console.error("Initial log output element not found for intro animation.");
+            }
+
+            setTimeout(() => {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded'); 
+                initializePageFunctions(); 
+                localStorage.setItem(introKey, 'true'); 
+            }, totalIntroDuration);
+        }
+
+        function loadMainInterfaceDirectly() {
+            if (standbyScreen) standbyScreen.style.display = 'none';
+            if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+            bodyElement.classList.add('loaded');
+            initializePageFunctions();
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            // filterProjects(); // Not needed on this page
+            filterProjects(); 
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
+
+            const contactForm = document.querySelector('#main-content form'); 
+            if (contactForm && contactForm.closest('section[id="contact"]')) { 
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert("Message submitted. (This is a demo feature)");
+                    this.reset();
+                });
+            }
+
+            const pageSpecificGoBackButton = document.getElementById('go-back-button');
+            if (pageSpecificGoBackButton) {
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || history.length <= 1) {
+                    pageSpecificGoBackButton.style.display = 'none';
+                } else {
+                    pageSpecificGoBackButton.addEventListener('click', () => {
+                        history.back();
+                    });
+                }
+            }
         }
         
         function setActiveNavLink() {
@@ -310,14 +554,26 @@
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
-                const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                let linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                if (linkPath === "" && (linkHref === "./" || linkHref === "index.html" || linkHref === "")) {
+                    linkPath = "index.html";
+                }
                 if (linkPath === currentPageName) {
                     link.classList.add('active');
                 }
             });
         }
 
-        // filterProjects() and its listeners are omitted as they are not relevant here.
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+        function filterProjects() {
+            const projectGrid = document.getElementById('project-grid'); 
+            if (!projectGrid) return; 
+            // No project cards on this specific page for filtering
+        }
+        if (searchInput) searchInput.addEventListener('keyup', filterProjects); // Keep for global consistency
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects); // Keep for global consistency
+
 
         if(document.getElementById('currentYear')) {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -326,21 +582,22 @@
             const scanTimeElem = document.getElementById('lastScanTime');
             if (scanTimeElem) {
                 const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-                const dateString = now.toLocaleDateString([], {year: 'numeric', month: '2-digit', day: '2-digit'});
+                const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+                const dateString = now.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC'});
                 scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
             }
         }
         
         const securityStatusMessages = [
-            "System integrity maintained.", "All channels secure.",
-            "Threat matrix nominal.", "Data encryption: MAX.",
-            "Network vigilance active."
+            "System Integrity: Optimal", "Network Channels: Secure",
+            "Threat Analysis: Nominal", "Data Encryption: Maximum",
+            "Perimeter Monitoring: Active" 
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
             const statusElement = document.getElementById('security-status-text');
             if (statusElement) {
+                statusElement.textContent = securityStatusMessages[currentStatusIndex];
                 setInterval(() => {
                     currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
                     statusElement.textContent = securityStatusMessages[currentStatusIndex];
@@ -352,14 +609,33 @@
             sidebarToggle.addEventListener('click', () => {
                 bodyElement.classList.toggle('sidebar-collapsed');
                 if (bodyElement.classList.contains('sidebar-collapsed')) {
-                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
+                    sidebarToggle.innerHTML = 'C<br>N<br>S<br>L'; 
                 } else {
                     sidebarToggle.innerHTML = 'CONSOLE';
                 }
             });
         }
         
-        window.onload = showWelcomePopup;
+        window.onload = () => {
+            if (standbyScreen && logonButton) {
+                if (localStorage.getItem(introKey)) { 
+                    loadMainInterfaceDirectly();
+                } else {
+                    logonButton.addEventListener('click', () => {
+                        if (standbyScreen) standbyScreen.style.display = 'none';
+                        playIntroAnimation();
+                    });
+                }
+            } else {
+                if (localStorage.getItem(introKey)) {
+                     loadMainInterfaceDirectly();
+                } else {
+                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
+                    loadMainInterfaceDirectly();
+                     localStorage.setItem(introKey, 'true'); 
+                }
+            }
+        };
     </script>
 </body>
 </html>
