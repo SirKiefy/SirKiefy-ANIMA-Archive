@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Kiegan - Starfall // Core Concept</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base CSS (Copy ALL from index.html or the updated project_starfall_databank.html) --- */
+        :root {
+            --bg-darkest: #050608;
+            --bg-dark: #0a0c0f;
+            --bg-panel: #101419;
+            --bg-card: #181c22;
+            --border-subtle: #303841;
+            --border-medium: #4a4e50;
+            --text-primary: #c5c6c7;
+            --text-secondary: #9ea4a8;
+            --text-muted: #787c82;
+            --accent-orange: #f07c3a;
+            --accent-orange-dark: #d96f32;
+            --accent-cyan: #00e0e0;
+            --accent-cyan-dark: #00b8b8;
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 0px; 
+        }
+        body {
+            font-family: 'Inter', sans-serif; background-color: var(--bg-dark);
+            color: var(--text-primary); margin: 0; padding: 0; box-sizing: border-box;
+            overflow-x: hidden; 
+        }
+        .font-terminal { font-family: 'Share Tech Mono', monospace; }
+        .text-accent-orange { color: var(--accent-orange); }
+        .border-accent-orange { border-color: var(--accent-orange); }
+        .bg-accent-orange { background-color: var(--accent-orange); }
+        .text-accent-cyan { color: var(--accent-cyan); }
+        .border-accent-cyan { border-color: var(--accent-cyan); }
+        .block-element { border-radius: 0px !important; }
+
+        #initial-logon-screen { /* Styles from index.html */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10000;
+            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
+        }
+        #logon-content-container { /* Styles from index.html */
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 900px; height: 80%; max-height: 700px;
+            border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
+            padding: 20px; gap: 20px;
+        }
+        #initial-log-output { /* Styles from index.html */
+            color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
+            width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
+        }
+        #initial-log-output .log-line.system { color: var(--text-primary); }
+        #initial-log-output .log-line.info { color: var(--accent-cyan); }
+        #initial-log-output .log-line.warning { color: var(--accent-orange); }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        #logon-graph-container { /* Styles from index.html */
+            width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle); padding: 10px; display: flex;
+            align-items: center; justify-content: center;
+        }
+        #logon-graph-canvas { max-width: 100%; max-height: 100%; }
+        @keyframes subtle-pulse { /* Styles from index.html */
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
+
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
+        body.loaded #main-content-wrapper { display: block; }
+        body.loaded #sidebar-toggle { display: block; }
+        
+        #sidebar { /* All sidebar styles from index.html */
+            width: var(--sidebar-width); background-color: var(--bg-darkest);
+            border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
+            position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
+            transition: transform 0.3s ease-in-out; transform: translateX(0); z-index: 1000;
+        }
+        body.sidebar-collapsed #sidebar { transform: translateX(-100%); }
+        .sidebar-title { 
+            font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 24px;
+            text-align: center; color: var(--accent-orange); font-weight: bold;
+        }
+        .main-nav a { 
+            display: block; padding: 10px 15px; margin-bottom: 6px; text-transform: uppercase;
+            border-left: 3px solid transparent; background-color: var(--bg-panel);
+            color: var(--text-secondary);
+            transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
+        }
+        .main-nav a:hover { 
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card);
+        }
+        .main-nav a.active { 
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card); font-weight: bold;
+        }
+        .sidebar-controls { 
+            margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);
+        }
+        .sidebar-controls h3 { 
+            font-family: 'Share Tech Mono', monospace; font-size: 1rem;
+            color: var(--text-secondary); margin-bottom: 8px;
+        }
+        #search-input, #category-filter { 
+            width: 100%; padding: 8px; background-color: var(--bg-panel);
+            border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
+        }
+        #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
+
+        #sidebar-toggle { /* Styles from index.html */
+            position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
+            background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
+            padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem; transition: left 0.3s ease-in-out, background-color 0.2s ease;
+            writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg);
+            height: auto; line-height: 1;
+        }
+        #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
+        body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
+
+        #main-content-wrapper { /* Styles from index.html */
+            margin-left: var(--sidebar-width); padding: 0;
+            width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        body.sidebar-collapsed #main-content-wrapper {
+            margin-left: var(--sidebar-width-collapsed);
+            width: calc(100% - var(--sidebar-width-collapsed));
+        }
+        #main-content { padding: 32px; }
+
+        .section-panel { /* Styles from index.html */
+            background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+            padding: 24px; margin-bottom: 32px;
+        }
+        .section-title { /* Styles from index.html */
+            font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
+            margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .footer-terminal { /* Styles from index.html */
+            background-color: var(--bg-panel); text-align: center; padding: 24px;
+            border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
+            color: var(--text-muted); margin-top: 32px;
+        }
+        #security-status-text { /* Styles from index.html */
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
+        }
+        @keyframes glow-security-text { /* Styles from index.html */
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
+        }
+        /* Styles for full document view */
+        .document-view-content {
+            line-height: 1.8;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        .document-view-content p {
+            margin-bottom: 1rem;
+        }
+        .document-view-content strong {
+            color: var(--text-primary);
+            font-weight: 600; /* From Inter font */
+        }
+         .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+            color: var(--accent-orange-dark);
+        }
+
+        @media (max-width: 768px) { /* Styles from index.html */
+            #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
+            body.sidebar-collapsed #sidebar { display: none; }
+            #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
+            #main-content { padding: 16px; }
+            #sidebar-toggle { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="initial-logon-screen">
+        <div id="logon-content-container" class="block-element">
+            <div id="initial-log-output" class="block-element"></div>
+            <div id="logon-graph-container" class="block-element">
+                <canvas id="logon-graph-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
+
+    <aside id="sidebar" class="block-element">
+        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
+        <nav class="main-nav font-terminal">
+            <a href="index.html" class="block-element">Home_Interface</a>
+            <a href="about.html" class="block-element">Auth_Logs // About</a>
+            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
+            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
+            <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
+            <a href="contact.html" class="block-element">Comms_Link // Contact</a>
+        </nav>
+        <div class="sidebar-controls">
+            <h3>// PROJECT_ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// CATEGORY_SORT</h3>
+            <select id="category-filter" class="font-terminal block-element">
+                <option value="all">All Categories</option>
+                <option value="web-dev">Web Development</option>
+                <option value="sfx">SFX</option>
+                <option value="3d-model">3D Modelling</option>
+                <option value="game-dev">Game Development</option>
+                <option value="world-build">World Building</option>
+            </select>
+        </div>
+    </aside>
+
+    <div id="main-content-wrapper">
+        <main id="main-content">
+            <section id="starfall-core-concept-full" class="section-panel block-element">
+                <a href="project_starfall_databank.html" class="back-link">&lt;&lt; Back to Project Starfall Databank</a>
+                <h2 class="section-title text-accent-cyan font-terminal">Project Starfall // Core Concept & Genre</h2>
+                
+                <div class="document-view-content">
+                    <p><strong>Title:</strong> Project Starfall</p>
+                    <p><strong>Genre:</strong> First-Person Shooter (FPS), Tower Defense, Survival, Action-Defense, Base Building</p>
+                    <p>Project Starfall is a single-player, first-person survival tower defense game set in space. The player takes on the role of a survivor who has crash-landed on a planet with a damaged spaceship and a critical piece of technology: the False Void Generator.</p>
+                    <p>The primary goal is to repair the ship and the generator while defending against relentless waves of alien robots and hostile human factions. Players will explore planets, mine resources, build and upgrade bases and defenses, and manage their ship to survive and potentially thrive across multiple planetary locations.</p>
+                    <p>The game emphasizes a challenging survival experience where strategic base construction, resource management, and proficient first-person combat are key to enduring the escalating threats. Each planetary expedition offers new opportunities and dangers, pushing the player to adapt and enhance their capabilities continually.</p>
+                </div>
+
+            </section>
+            <footer class="footer-terminal block-element">
+                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
+        // This entire script block should be copied from the updated index.html.
+        const initialLogonScreen = document.getElementById('initial-logon-screen');
+        const initialLogOutput = document.getElementById('initial-log-output');
+        const logonGraphCanvas = document.getElementById('logon-graph-canvas');
+        const bodyElement = document.body;
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+
+        const initialLogLines = [
+            { text: "SYSTEM BOOT INITIATED...", class: "system" },
+            { text: "Memory integrity check: PASSED", class: "info" },
+            { text: "Core processor calibration: COMPLETE", class: "info" },
+            { text: "Establishing secure connection to user profile...", class: "system" },
+            { text: "User: Kiegan. Authentication successful.", class: "system" },
+            { text: "Loading databank entry viewer...", class: "info" }, // Changed log message
+            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" },
+            { text: "Interface protocols online. Welcome, Operator.", class: "system" },
+        ];
+
+        const typingSpeed = 50; 
+        const linePause = 250; 
+        const graphAnimationDuration = 2000; 
+        const totalIntroDuration = 4500; 
+
+        let graphCtx;
+        let graphWidth, graphHeight;
+        let graphStartTime;
+
+        function drawAnimatedGraph(timestamp) {
+            if (!graphCtx) return;
+            if (!graphStartTime) graphStartTime = timestamp;
+            const elapsedTime = timestamp - graphStartTime;
+            const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
+
+            graphCtx.clearRect(0, 0, graphWidth, graphHeight);
+            graphCtx.strokeStyle = 'var(--accent-cyan)';
+            graphCtx.lineWidth = 2;
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight / 2);
+
+            for (let x = 0; x < graphWidth * progress; x++) {
+                const y = graphHeight / 2 + Math.sin(x * 0.1 + elapsedTime * 0.005) * (graphHeight / 4);
+                graphCtx.lineTo(x, y);
+            }
+            graphCtx.stroke();
+
+            if (progress > 0.3 && progress < 0.8) {
+                graphCtx.fillStyle = 'var(--accent-orange)';
+                for(let i = 0; i < 3; i++) {
+                    if (Math.random() < progress * 0.5) { 
+                        const spikeX = Math.random() * graphWidth * progress;
+                        const spikeY = graphHeight - (Math.random() * graphHeight * 0.3 * progress);
+                        const spikeHeight = Math.random() * 20 * progress + 5;
+                        graphCtx.fillRect(spikeX, spikeY - spikeHeight, 3, spikeHeight);
+                    }
+                }
+            }
+            
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.3)';
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight);
+            graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0);
+            graphCtx.lineTo(0, graphHeight);
+            graphCtx.stroke();
+
+            if (progress < 1) {
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function setupGraphCanvas() {
+            if (logonGraphCanvas) {
+                const container = logonGraphCanvas.parentElement;
+                logonGraphCanvas.width = container.clientWidth - 20; 
+                logonGraphCanvas.height = container.clientHeight - 20;
+                graphWidth = logonGraphCanvas.width;
+                graphHeight = logonGraphCanvas.height;
+                graphCtx = logonGraphCanvas.getContext('2d');
+                document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function typeLogLine(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
+            const lineElem = document.createElement('div'); 
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem);
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
+                } else {
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, linePause);
+                }
+            }
+            typeChar();
+        }
+
+        function runInitialLogonSequence() {
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (initialLogOutput && currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    typeLogLine(line.text.replace("[Your Name]", "Kiegan"), line.class, initialLogOutput, nextInitialLine);
+                    currentLineIndex++;
+                } 
+            }
+
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; 
+                nextInitialLine();
+                setupGraphCanvas(); 
+            } else {
+                 console.error("Initial log output element not found.");
+            }
+
+            setTimeout(() => {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded');
+                initializePageFunctions(); 
+            }, totalIntroDuration);
+        }
+        
+        function initializePageFunctions() {
+            setActiveNavLink();
+            // filterProjects(); // No project grid on this page
+            startFooterStatusCycle(); 
+            updateScanTime(); 
+            setInterval(updateScanTime, 1000 * 60);
+            // No contact form on this specific document page
+        }
+        
+        function setActiveNavLink() {
+            // For document view pages, we might want to highlight the parent databank page in the nav
+            const parentPage = "project_starfall_databank.html"; // Or make this dynamic if needed
+            document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
+                link.classList.remove('active');
+                const linkHref = link.getAttribute('href');
+                const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                if (linkPath === parentPage) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // filterProjects() and its listeners are omitted as they are not relevant here.
+
+        if(document.getElementById('currentYear')) {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+        function updateScanTime() {
+            const scanTimeElem = document.getElementById('lastScanTime');
+            if (scanTimeElem) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+                const dateString = now.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC'});
+                scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
+            }
+        }
+        
+        const securityStatusMessages = [
+            "System integrity maintained.", "All channels secure.",
+            "Threat matrix nominal.", "Data encryption: MAX.",
+            "Network vigilance active."
+        ];
+        let currentStatusIndex = 0;
+        function startFooterStatusCycle() {
+            const statusElement = document.getElementById('security-status-text');
+            if (statusElement) {
+                statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                setInterval(() => {
+                    currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
+                    statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                }, 30000); 
+            }
+        }
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                bodyElement.classList.toggle('sidebar-collapsed');
+                if (bodyElement.classList.contains('sidebar-collapsed')) {
+                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
+                } else {
+                    sidebarToggle.innerHTML = 'CONSOLE';
+                }
+            });
+        }
+        
+        window.onload = runInitialLogonSequence;
+    </script>
+</body>
+</html>
