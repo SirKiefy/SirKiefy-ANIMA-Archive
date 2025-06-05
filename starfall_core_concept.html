@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator Kiegan - Starfall // Core Concept</title>
+    <title>Sirkiefy's Portfolio - Starfall // Core Concept</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- Base CSS (Copy ALL from index.html or the updated project_starfall_databank.html) --- */
+        /* --- Paste ALL CSS from index.html here --- */
         :root {
             --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
@@ -38,19 +38,48 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        #initial-logon-screen { /* Styles from index.html */
+        #standby-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10000;
-            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
+            background-color: var(--bg-darkest);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10001; text-align: center; padding: 20px;
         }
-        #logon-content-container { /* Styles from index.html */
+        #standby-title {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange); margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--accent-orange-dark);
+        }
+        #standby-message {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary); margin-bottom: 40px;
+        }
+        #logon-button {
+            font-family: 'Share Tech Mono', monospace; background-color: var(--accent-cyan);
+            color: var(--bg-darkest); border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px; font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
+        }
+        #logon-button:hover {
+            background-color: var(--accent-cyan-dark); color: var(--bg-darkest);
+            box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
+        }
+
+        #initial-logon-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10000; padding: 20px; box-sizing: border-box; 
+            font-family: 'Share Tech Mono', monospace;
+        }
+        #logon-content-container {
             display: flex; flex-direction: column; align-items: center;
             width: 100%; max-width: 900px; height: 80%; max-height: 700px;
             border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
             padding: 20px; gap: 20px;
         }
-        #initial-log-output { /* Styles from index.html */
+        #initial-log-output {
             color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
             width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
             background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
@@ -59,23 +88,28 @@
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
         #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
-        #logon-graph-container { /* Styles from index.html */
+        
+        #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
             border: 1px solid var(--border-subtle); padding: 10px; display: flex;
             align-items: center; justify-content: center;
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
-        @keyframes subtle-pulse { /* Styles from index.html */
+
+        @keyframes subtle-pulse {
             from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
             to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
         }
 
-        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
+        
+        body.loaded #standby-screen { display: none; } 
+        body.loaded #initial-logon-screen { display: none; } 
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
-        
-        #sidebar { /* All sidebar styles from index.html */
+
+        #sidebar { 
             width: var(--sidebar-width); background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
             position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
@@ -113,7 +147,7 @@
         }
         #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
 
-        #sidebar-toggle { /* Styles from index.html */
+        #sidebar-toggle { 
             position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
             background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
             padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
@@ -123,8 +157,8 @@
         }
         #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
         body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
-
-        #main-content-wrapper { /* Styles from index.html */
+        
+        #main-content-wrapper { 
             margin-left: var(--sidebar-width); padding: 0;
             width: calc(100% - var(--sidebar-width));
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -134,28 +168,28 @@
             width: calc(100% - var(--sidebar-width-collapsed));
         }
         #main-content { padding: 32px; }
-
-        .section-panel { /* Styles from index.html */
+        
+        .section-panel { 
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
         }
-        .section-title { /* Styles from index.html */
+        .section-title { 
             font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
             margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
-        .footer-terminal { /* Styles from index.html */
+        .footer-terminal { 
             background-color: var(--bg-panel); text-align: center; padding: 24px;
             border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
             color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text { /* Styles from index.html */
+        #security-status-text { 
             display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
-        @keyframes glow-security-text { /* Styles from index.html */
+        @keyframes glow-security-text { 
             from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
             to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-        /* Styles for full document view */
+        /* Styles for full document view from starfall_core_concept.html */
         .document-view-content {
             line-height: 1.8;
             font-size: 1rem;
@@ -166,30 +200,42 @@
         }
         .document-view-content strong {
             color: var(--text-primary);
-            font-weight: 600; /* From Inter font */
+            font-weight: 600; 
         }
-         .back-link {
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            color: var(--accent-orange);
+        .back-button, .back-link { /* Combined from index.html */
+            display: inline-block; padding: 8px 16px; margin-bottom: 20px; 
+            background-color: var(--accent-orange); color: var(--bg-darkest);
+            font-family: 'Share Tech Mono', monospace; text-transform: uppercase;
+            letter-spacing: 1px; border: 1px solid var(--accent-orange-dark);
+            cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease;
             text-decoration: none;
-            font-family: 'Share Tech Mono', monospace;
         }
-        .back-link:hover {
-            text-decoration: underline;
-            color: var(--accent-orange-dark);
+        .back-button:hover, .back-link:hover {
+            background-color: var(--accent-orange-dark); color: var(--bg-darkest);
+            text-decoration: none;
         }
-
-        @media (max-width: 768px) { /* Styles from index.html */
+        @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
             #main-content { padding: 16px; }
             #sidebar-toggle { display: none; }
+            #logon-content-container { height: 90%; max-height: none; gap: 10px;}
+            #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
+            #logon-graph-container { height: 30%; }
+            #standby-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            #standby-message { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+            #logon-button { font-size: clamp(1rem, 2.5vw, 1.5rem); padding: 12px 25px; }
         }
     </style>
 </head>
 <body>
+    <div id="standby-screen">
+        <h1 id="standby-title" class="block-element">SIRKIEFY PORTFOLIO</h1>
+        <p id="standby-message" class="block-element">SYSTEM STANDBY // AWAITING USER AUTHENTICATION</p>
+        <button id="logon-button" class="block-element">ACCESS TERMINAL</button>
+    </div>
+
     <div id="initial-logon-screen">
         <div id="logon-content-container" class="block-element">
             <div id="initial-log-output" class="block-element"></div>
@@ -202,25 +248,25 @@
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
 
     <aside id="sidebar" class="block-element">
-        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
+        <div class="sidebar-title font-terminal">SIRKIEFY_CONSOLE</div> 
         <nav class="main-nav font-terminal">
             <a href="index.html" class="block-element">Home_Interface</a>
-            <a href="about.html" class="block-element">Auth_Logs // About</a>
-            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
-            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="about.html" class="block-element">User_Profile // About</a> 
+            <a href="projects.html" class="block-element">Project_Files // Portfolio</a> 
+            <a href="hobbies.html" class="block-element">Personal_Logs // Hobbies</a> 
             <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
             <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
         <div class="sidebar-controls">
-            <h3>// PROJECT_ARCHIVE_QUERY</h3>
-            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Archives...">
             <h3>// CATEGORY_SORT</h3>
             <select id="category-filter" class="font-terminal block-element">
                 <option value="all">All Categories</option>
-                <option value="web-dev">Web Development</option>
                 <option value="sfx">SFX</option>
                 <option value="3d-model">3D Modelling</option>
+                <option value="pixel-art">Pixel Art</option> 
                 <option value="game-dev">Game Development</option>
                 <option value="world-build">World Building</option>
             </select>
@@ -229,8 +275,10 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
+            <!-- Go Back Button -->
+            <a href="project_starfall_databank.html" id="go-back-button" class="back-button block-element">&lt;&lt; Back to Project Starfall Databank</a>
+            
             <section id="starfall-core-concept-full" class="section-panel block-element">
-                <a href="project_starfall_databank.html" class="back-link">&lt;&lt; Back to Project Starfall Databank</a>
                 <h2 class="section-title text-accent-cyan font-terminal">Project Starfall // Core Concept & Genre</h2>
                 
                 <div class="document-view-content">
@@ -243,37 +291,41 @@
 
             </section>
             <footer class="footer-terminal block-element">
-                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+                <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
 
     <script>
-        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
-        // This entire script block should be copied from the updated index.html.
+        // --- Paste ENTIRE SCRIPT from index.html (portfolio_website_final_index_v4_back_button) here ---
+        const standbyScreen = document.getElementById('standby-screen');
+        const logonButton = document.getElementById('logon-button');
         const initialLogonScreen = document.getElementById('initial-logon-screen');
         const initialLogOutput = document.getElementById('initial-log-output');
         const logonGraphCanvas = document.getElementById('logon-graph-canvas');
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
+        // Go back button specific to this page is an <a> tag, handled by browser. 
+        // If it were a <button id="go-back-button">, the JS would handle it.
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT INITIATED...", class: "system" },
-            { text: "Memory integrity check: PASSED", class: "info" },
-            { text: "Core processor calibration: COMPLETE", class: "info" },
-            { text: "Establishing secure connection to user profile...", class: "system" },
-            { text: "User: Kiegan. Authentication successful.", class: "system" },
-            { text: "Loading databank entry viewer...", class: "info" }, // Changed log message
-            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" },
-            { text: "Interface protocols online. Welcome, Operator.", class: "system" },
+            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
+            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
+            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
+            { text: "Establishing secure link to user profile...", class: "system" },
+            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v5.1...", class: "info" },
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
+            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
 
-        const typingSpeed = 50; 
-        const linePause = 250; 
-        const graphAnimationDuration = 2000; 
-        const totalIntroDuration = 4500; 
+        const typingSpeed = 10; 
+        const linePause = 70; 
+        const graphAnimationDuration = 3500; 
+        const totalIntroDuration = 5000; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; 
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -286,35 +338,39 @@
             const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
 
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
-            graphCtx.strokeStyle = 'var(--accent-cyan)';
-            graphCtx.lineWidth = 2;
+            const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
+            gradient.addColorStop(0, 'var(--accent-cyan)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
+            gradient.addColorStop(1, 'var(--accent-cyan-dark)');
+            
+            graphCtx.strokeStyle = gradient;
+            graphCtx.lineWidth = 3; 
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight / 2);
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const y = graphHeight / 2 + Math.sin(x * 0.1 + elapsedTime * 0.005) * (graphHeight / 4);
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            if (progress > 0.3 && progress < 0.8) {
-                graphCtx.fillStyle = 'var(--accent-orange)';
-                for(let i = 0; i < 3; i++) {
-                    if (Math.random() < progress * 0.5) { 
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
+                for(let i = 0; i < 5; i++) { 
+                    if (Math.random() < progress * 0.6) { 
+                        graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const spikeY = graphHeight - (Math.random() * graphHeight * 0.3 * progress);
-                        const spikeHeight = Math.random() * 20 * progress + 5;
-                        graphCtx.fillRect(spikeX, spikeY - spikeHeight, 3, spikeHeight);
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.3)';
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight);
-            graphCtx.lineTo(graphWidth, graphHeight);
-            graphCtx.moveTo(0, 0);
-            graphCtx.lineTo(0, graphHeight);
+            graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
             graphCtx.stroke();
 
             if (progress < 1) {
@@ -356,12 +412,19 @@
             typeChar();
         }
 
-        function runInitialLogonSequence() {
+        function playIntroAnimation() {
+            if (!initialLogonScreen) { 
+                console.warn("Initial logon screen not found. Cannot play intro.");
+                loadMainInterfaceDirectly();
+                return;
+            }
+            initialLogonScreen.style.display = 'flex';
+
             let currentLineIndex = 0;
             function nextInitialLine() {
                 if (initialLogOutput && currentLineIndex < initialLogLines.length) {
                     const line = initialLogLines[currentLineIndex];
-                    typeLogLine(line.text.replace("[Your Name]", "Kiegan"), line.class, initialLogOutput, nextInitialLine);
+                    typeLogLine(line.text, line.class, initialLogOutput, nextInitialLine);
                     currentLineIndex++;
                 } 
             }
@@ -371,39 +434,61 @@
                 nextInitialLine();
                 setupGraphCanvas(); 
             } else {
-                 console.error("Initial log output element not found.");
+                 console.error("Initial log output element not found for intro animation.");
             }
 
             setTimeout(() => {
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                bodyElement.classList.add('loaded');
+                bodyElement.classList.add('loaded'); 
                 initializePageFunctions(); 
+                localStorage.setItem(introKey, 'true'); 
             }, totalIntroDuration);
+        }
+
+        function loadMainInterfaceDirectly() {
+            if (standbyScreen) standbyScreen.style.display = 'none';
+            if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+            bodyElement.classList.add('loaded');
+            initializePageFunctions();
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            // filterProjects(); // No project grid on this page
+            // filterProjects(); // No project grid on this specific detail page
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
-            // No contact form on this specific document page
+
+            // No contact form here
+            
+            // For a specific back link (<a> tag), no JS is needed if it's a direct href.
+            // If it were a <button id="go-back-button">, the JS below would apply.
+            const pageSpecificGoBackButton = document.getElementById('go-back-button');
+             if (pageSpecificGoBackButton && pageSpecificGoBackButton.tagName === 'BUTTON') { // Only if it's a button
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || history.length <= 1) {
+                    pageSpecificGoBackButton.style.display = 'none';
+                } else {
+                    pageSpecificGoBackButton.addEventListener('click', () => {
+                        history.back();
+                    });
+                }
+            }
         }
         
         function setActiveNavLink() {
-            // For document view pages, we might want to highlight the parent databank page in the nav
-            const parentPage = "project_starfall_databank.html"; // Or make this dynamic if needed
+            // For document view pages, highlight the parent databank page.
+            const parentPage = "project_starfall_databank.html"; 
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
                 const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
-                if (linkPath === parentPage) {
+                if (linkPath === parentPage) { // Match against the specific parent databank page
                     link.classList.add('active');
                 }
             });
         }
 
-        // filterProjects() and its listeners are omitted as they are not relevant here.
+        // filterProjects and its listeners are not relevant for this detail page.
 
         if(document.getElementById('currentYear')) {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -419,9 +504,9 @@
         }
         
         const securityStatusMessages = [
-            "System integrity maintained.", "All channels secure.",
-            "Threat matrix nominal.", "Data encryption: MAX.",
-            "Network vigilance active."
+            "System Integrity: Optimal", "Network Channels: Secure",
+            "Threat Analysis: Nominal", "Data Encryption: Maximum",
+            "Perimeter Monitoring: Active" 
         ];
         let currentStatusIndex = 0;
         function startFooterStatusCycle() {
@@ -439,14 +524,33 @@
             sidebarToggle.addEventListener('click', () => {
                 bodyElement.classList.toggle('sidebar-collapsed');
                 if (bodyElement.classList.contains('sidebar-collapsed')) {
-                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
+                    sidebarToggle.innerHTML = 'C<br>N<br>S<br>L'; 
                 } else {
                     sidebarToggle.innerHTML = 'CONSOLE';
                 }
             });
         }
         
-        window.onload = runInitialLogonSequence;
+        window.onload = () => {
+            if (standbyScreen && logonButton) {
+                if (localStorage.getItem(introKey)) { 
+                    loadMainInterfaceDirectly();
+                } else {
+                    logonButton.addEventListener('click', () => {
+                        if (standbyScreen) standbyScreen.style.display = 'none';
+                        playIntroAnimation();
+                    });
+                }
+            } else {
+                if (localStorage.getItem(introKey)) {
+                     loadMainInterfaceDirectly();
+                } else {
+                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
+                    loadMainInterfaceDirectly();
+                     localStorage.setItem(introKey, 'true'); 
+                }
+            }
+        };
     </script>
 </body>
 </html>
