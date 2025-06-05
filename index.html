@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator Kiegan - Portfolio Terminal v3.3</title>
+    <title>Operator SirKiefy - Databank </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -22,14 +22,12 @@
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
             --sidebar-width: 280px;
-            --sidebar-width-collapsed: 0px; /* Can be non-zero for a sliver */
+            --sidebar-width-collapsed: 0px; 
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            margin: 0; padding: 0; box-sizing: border-box;
-            overflow-x: hidden; /* Prevent horizontal scroll when sidebar moves */
+            font-family: 'Inter', sans-serif; background-color: var(--bg-dark);
+            color: var(--text-primary); margin: 0; padding: 0; box-sizing: border-box;
+            overflow-x: hidden; 
         }
         .font-terminal { font-family: 'Share Tech Mono', monospace; }
         .text-accent-orange { color: var(--accent-orange); }
@@ -39,126 +37,125 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        /* Initial Welcome Pop-up */
-        #welcome-popup {
+        /* Initial Full-Screen Log-on Animation */
+        #initial-logon-screen {
             position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--bg-panel);
-            color: var(--text-primary);
-            padding: 30px 40px;
-            border: 2px solid var(--accent-orange); /* Thicker border */
-            box-shadow: 0 0 30px rgba(240, 124, 58, 0.4); /* More pronounced shadow */
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             z-index: 10000;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            padding: 20px;
+            box-sizing: border-box;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 1.3rem; /* Slightly larger */
         }
-        #welcome-popup.show { opacity: 1; visibility: visible; }
-        #welcome-popup .mihwa-line {
-            color: var(--accent-orange); font-weight: bold; display: block;
-            margin-top: 12px; animation: subtle-pulse 1.5s infinite alternate;
+        #logon-content-container {
+            display: flex;
+            flex-direction: column; /* Changed to column for better layout */
+            align-items: center; /* Center items in the column */
+            width: 100%;
+            max-width: 900px; /* Increased max-width */
+            height: 80%;
+            max-height: 700px; /* Increased max-height */
+            border: 1px solid var(--border-medium);
+            background-color: rgba(10,12,15,0.7);
+            padding: 20px;
+            gap: 20px; /* Space between log and graph */
         }
-        @keyframes subtle-pulse {
-            from { opacity: 0.7; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1.02); }
+        #initial-log-output {
+            color: var(--accent-cyan);
+            font-size: clamp(0.9rem, 2vw, 1.1rem); 
+            width: 100%;
+            height: 50%; /* Allocate space for log */
+            overflow-y: auto;
+            white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.3);
+            padding: 10px;
+            border: 1px solid var(--border-subtle);
+        }
+        #initial-log-output .log-line.system { color: var(--text-primary); }
+        #initial-log-output .log-line.info { color: var(--accent-cyan); }
+        #initial-log-output .log-line.warning { color: var(--accent-orange); }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        
+        #logon-graph-container {
+            width: 100%;
+            height: 40%; /* Allocate space for graph */
+            background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #logon-graph-canvas {
+            max-width: 100%;
+            max-height: 100%;
         }
 
-        /* Hide main content initially */
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
+
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
-        body.loaded #sidebar-toggle { display: block; /* Or flex if it's a flex item */ }
+        body.loaded #sidebar-toggle { display: block; }
 
-
-        /* Sidebar */
-        #sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--bg-darkest);
-            border-right: 1px solid var(--border-subtle); padding: 24px;
-            height: 100vh; position: fixed; top: 0; left: 0;
-            flex-direction: column; overflow-y: auto;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(0);
-            z-index: 1000; /* Ensure sidebar is above main content for overlap if any */
+        #sidebar { 
+            width: var(--sidebar-width); background-color: var(--bg-darkest);
+            border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
+            position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
+            transition: transform 0.3s ease-in-out; transform: translateX(0); z-index: 1000;
         }
-        body.sidebar-collapsed #sidebar {
-            transform: translateX(-100%);
+        body.sidebar-collapsed #sidebar { transform: translateX(-100%); }
+        .sidebar-title { 
+            font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 24px;
+            text-align: center; color: var(--accent-orange); font-weight: bold;
         }
-        .sidebar-title {
-            font-size: 1.6rem; letter-spacing: 2px; /* Slightly larger */
-            margin-bottom: 24px; text-align: center;
-            color: var(--accent-orange); /* Explicitly color title */
-            font-weight: bold;
-        }
-        .main-nav a {
-            display: block; padding: 10px 15px; margin-bottom: 6px;
-            text-transform: uppercase; border-left: 3px solid transparent;
-            background-color: var(--bg-panel); color: var(--text-secondary);
+        .main-nav a { 
+            display: block; padding: 10px 15px; margin-bottom: 6px; text-transform: uppercase;
+            border-left: 3px solid transparent; background-color: var(--bg-panel);
+            color: var(--text-secondary);
             transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
         }
-        .main-nav a:hover {
+        .main-nav a:hover { 
             color: var(--accent-orange); border-left-color: var(--accent-orange);
             background-color: var(--bg-card);
         }
-        .main-nav a.active {
+        .main-nav a.active { 
             color: var(--accent-orange); border-left-color: var(--accent-orange);
             background-color: var(--bg-card); font-weight: bold;
         }
-
-        /* Removed #animated-log-screen as per request */
-
-        .sidebar-controls { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle); }
-        .sidebar-controls h3 {
+        .sidebar-controls { 
+            margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);
+        }
+        .sidebar-controls h3 { 
             font-family: 'Share Tech Mono', monospace; font-size: 1rem;
             color: var(--text-secondary); margin-bottom: 8px;
         }
-        #search-input, #category-filter {
+        #search-input, #category-filter { 
             width: 100%; padding: 8px; background-color: var(--bg-panel);
-            border: 1px solid var(--border-subtle); color: var(--text-primary);
-            margin-bottom: 12px;
+            border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
         }
-        #search-input:focus, #category-filter:focus {
-            outline: none; border-color: var(--accent-orange);
-        }
+        #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
 
-        /* Sidebar Toggle Button */
-        #sidebar-toggle {
-            position: fixed;
-            top: 15px;
-            left: var(--sidebar-width); /* Initial position next to sidebar */
-            z-index: 1001; /* Above sidebar */
-            background-color: var(--accent-orange);
-            color: var(--bg-darkest);
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem;
-            transition: left 0.3s ease-in-out, background-color 0.2s ease;
-            border-top-right-radius: 0px; /* Sharp edges */
-            border-bottom-right-radius: 0px;
-            writing-mode: vertical-rl; /* Vertical text */
-            text-orientation: mixed;
-            transform: rotate(180deg); /* Flip text to read correctly */
-            height: auto; /* Adjust height based on content */
-            line-height: 1;
+        #sidebar-toggle { 
+            position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
+            background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
+            padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem; transition: left 0.3s ease-in-out, background-color 0.2s ease;
+            writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg);
+            height: auto; line-height: 1;
         }
-         #sidebar-toggle:hover {
-            background-color: var(--accent-orange-dark);
-        }
-        body.sidebar-collapsed #sidebar-toggle {
-            left: var(--sidebar-width-collapsed); /* Position at edge when collapsed */
-        }
-
-
-        /* Main Content Wrapper */
-        #main-content-wrapper {
-            margin-left: var(--sidebar-width);
-            padding: 0; /* Main content itself will have padding */
+        #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
+        body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
+        
+        #main-content-wrapper { 
+            margin-left: var(--sidebar-width); padding: 0;
             width: calc(100% - var(--sidebar-width));
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
         }
@@ -167,22 +164,19 @@
             width: calc(100% - var(--sidebar-width-collapsed));
         }
         #main-content { padding: 32px; }
-
-
-        .section-panel {
+        
+        .section-panel { 
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
         }
-        .section-title {
-            font-size: 1.75rem; padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-medium); margin-bottom: 24px;
-            text-transform: uppercase; letter-spacing: 1px;
+        .section-title { 
+            font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
+            margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
         .hero-section { text-align: center; border-bottom: 2px solid var(--accent-orange); }
         .hero-title { font-size: 2.5rem; letter-spacing: 3px; line-height: 1.2; }
         .hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-top: 8px; }
-        
-        .status-indicator { /* Re-added animation */
+        .status-indicator { 
             display: inline-block; width: 12px; height: 12px;
             background-color: var(--accent-cyan); margin-right: 8px;
             vertical-align: middle;
@@ -192,7 +186,6 @@
             0%, 100% { box-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan); opacity: 1; } 
             50% { box-shadow: 0 0 8px var(--accent-cyan-dark), 0 0 12px var(--accent-cyan-dark); opacity: 0.6; } 
         }
-
         .btn {
             padding: 12px 24px; text-transform: uppercase; letter-spacing: 1px;
             border: 1px solid; transition: background-color 0.2s ease, color 0.2s ease;
@@ -206,7 +199,7 @@
             background-color: var(--accent-orange-dark);
             border-color: var(--accent-orange-dark);
         }
-         .btn-secondary { /* Ensure secondary button style is present */
+         .btn-secondary { 
             background-color: transparent;
             border-color: var(--accent-cyan);
             color: var(--accent-cyan);
@@ -215,65 +208,60 @@
             background-color: var(--accent-cyan);
             color: var(--bg-darkest);
         }
-        .footer-terminal {
-            background-color: var(--bg-panel); text-align: center;
-            padding: 24px; border-top: 1px solid var(--border-subtle);
-            font-size: 0.875rem; color: var(--text-muted); margin-top: 32px;
+        .footer-terminal { 
+            background-color: var(--bg-panel); text-align: center; padding: 24px;
+            border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
+            color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text { /* Re-added glow animation */
-            display: inline-block;
-            animation: glow-security-text 2.5s infinite alternate ease-in-out;
+        #security-status-text { 
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
-        @keyframes glow-security-text { /* Renamed to avoid conflict */
+        @keyframes glow-security-text { 
             from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
             to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-
-
-        .project-card {
-            background-color: var(--bg-card); border: 1px solid var(--border-subtle);
-            transition: border-color 0.3s ease; overflow: hidden; margin-bottom: 16px;
+        .databank-entry { margin-bottom: 1.5rem; line-height: 1.7; }
+        .databank-entry h3 {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
+            font-size: 1.4rem; margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
         }
-        .project-card.hidden { display: none; } 
-        .project-card:hover { border-color: var(--accent-orange); }
-        .project-image-placeholder {
-            background-color: #252a31; height: 180px; display: flex;
-            align-items: center; justify-content: center; color: #565c64;
+        .databank-entry h4 {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
+            font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.25rem;
         }
-        .project-title { font-size: 1.25rem; }
-
-        @media (max-width: 768px) {
-            #sidebar {
-                /* When sidebar is part of normal flow on mobile */
-                position: static; width: 100%; height: auto;
-                border-right: none; border-bottom: 1px solid var(--border-subtle);
-                transform: translateX(0) !important; /* Override fixed positioning transform */
-            }
-            body.sidebar-collapsed #sidebar { /* Still allow collapse if toggle shown on mobile */
-                display: none; /* Or transform if you have a mobile-specific toggle */
-            }
-            #main-content-wrapper {
-                 margin-left: 0 !important; width: 100% !important;
-            }
+        .databank-entry p { margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .databank-entry ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
+        .databank-entry li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
+        .databank-entry li::before {
+            content: '>'; position: absolute; left: 0; color: var(--accent-orange);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        @media (max-width: 768px) { 
+            #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
+            body.sidebar-collapsed #sidebar { display: none; }
+            #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
             #main-content { padding: 16px; }
-            #sidebar-toggle { display: none; } /* Hide toggle on mobile by default, can be changed */
-            
-            .sidebar-title { font-size: 1.25rem; margin-bottom: 16px; }
-            .main-nav a { padding: 10px 12px; }
-            .hero-title { font-size: 2rem; }
+            #sidebar-toggle { display: none; }
+            #logon-content-container { height: 90%; max-height: none; gap: 10px;}
+            #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
+            #logon-graph-container { height: 30%; }
         }
     </style>
 </head>
 <body>
-    <!-- Initial Welcome Pop-up -->
-    <div id="welcome-popup" class="block-element">
-        INITIALIZING CONNECTION... OPERATOR: KIEGAN
-        <span class="mihwa-line">Bullying Mi-hwa the beloved &lt;3</span>
+    <!-- Initial Full-Screen Log-on Screen with Graph -->
+    <div id="initial-logon-screen">
+        <div id="logon-content-container" class="block-element">
+            <div id="initial-log-output" class="block-element"></div>
+            <div id="logon-graph-container" class="block-element">
+                <canvas id="logon-graph-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
 
-    <!-- Sidebar (Common to all pages) -->
     <aside id="sidebar" class="block-element">
         <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
         <nav class="main-nav font-terminal">
@@ -285,7 +273,6 @@
             <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
             <a href="contact.html" class="block-element">Comms_Link // Contact</a>
         </nav>
-        <!-- Log screen removed from sidebar -->
         <div class="sidebar-controls">
             <h3>// PROJECT_ARCHIVE_QUERY</h3>
             <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
@@ -301,38 +288,66 @@
         </div>
     </aside>
 
-    <!-- Main Content Wrapper for margin adjustment -->
     <div id="main-content-wrapper">
         <main id="main-content">
-            <section id="hero" class="hero-section section-panel block-element">
-                <h1 class="hero-title font-terminal text-accent-orange">
-                    <span class="status-indicator block-element"></span>SYSTEM ACCESS GRANTED
-                </h1>
-                <p class="hero-subtitle font-terminal">
-                    Portfolio Interface Initialized. Operator: Kiegan. <br> Specializing in SFX & 3D Modelling. Core OS: DataCore v3.3
-                </p>
-                <div class="mt-8">
-                    <a href="projects.html" class="btn btn-primary block-element font-terminal">Access Project Archives</a>
+            <section id="starfall-data" class="section-panel block-element">
+                <h2 class="section-title text-accent-orange font-terminal">// DATABANK_ACCESS :: PROJECT_STARFALL_CONCEPT_OUTLINE</h2>
+
+                <div class="databank-entry">
+                    <h3>Core Concept & Genre</h3>
+                    <p><strong>Title:</strong> Project Starfall</p>
+                    <p><strong>Genre:</strong> First-Person Shooter (FPS), Tower Defense, Survival, Action-Defense, Base Building</p>
+                    <p>Project Starfall is a single-player, first-person survival tower defense game set in space. The player is a survivor crash-landed on a planet with a damaged spaceship and a critical piece of technology: the False Void Generator. The primary objective is to repair the ship and generator while defending against waves of alien robots and hostile human factions.</p>
                 </div>
-                 <p class="mt-12 font-terminal text-sm text-text-secondary">
-                    This terminal grants access to declassified operational records and skill assessments for Operator Kiegan.<br>
-                    Navigate via the console. All transmissions are monitored.
-                </p>
-            </section>
-            <section class="section-panel block-element">
-                <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_OVERVIEW :: QUICK_ACCESS</h2>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="bg-bg-card p-6 block-element border border-border-subtle">
-                        <h3 class="font-terminal text-accent-orange text-lg mb-2">Intel // About Kiegan</h3>
-                        <p class="text-sm mb-4">Access background information, mission statement, and operational history.</p>
-                        <a href="about.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">View Operator File &gt;&gt;</a>
-                    </div>
-                    <div class="bg-bg-card p-6 block-element border border-border-subtle">
-                        <h3 class="font-terminal text-accent-orange text-lg mb-2">Hobby Logs // World Building</h3>
-                        <p class="text-sm mb-4">Explore personal logs detailing created universes and ongoing narrative projects.</p>
-                        <a href="hobbies.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">Access Personal Logs &gt;&gt;</a>
-                    </div>
+
+                <div class="databank-entry">
+                    <h3>Setting & Key Technology</h3>
+                    <p>The game takes place in a sector of space featuring the rare "False Void Generator" technology (only 3 known). This generator is the ship's primary power source and FTL drive, making its protection paramount. The player starts on a crash site, needing immediate survival and repair efforts.</p>
                 </div>
+
+                <div class="databank-entry">
+                    <h3>Gameplay Loop</h3>
+                    <ul>
+                        <li><strong>Initial Survival & Repair:</strong> Scavenge resources, perform preliminary repairs on the ship and False Void Generator core.</li>
+                        <li><strong>Resource Gathering:</strong> Explore planets to mine resources for crafting, building, and upgrades.</li>
+                        <li><strong>Base Building & Defense:</strong> Establish and fortify a base around the ship and generator with defensive structures (walls, turrets, traps).</li>
+                        <li><strong>Ship Repair & Preparation:</strong> Continue repairing the main spaceship for interplanetary travel.</li>
+                        <li><strong>Wave Defense:</strong> Defend against increasingly difficult waves of enemies in a first-person tower defense style.</li>
+                        <li><strong>Exploration & Expansion:</strong> Travel to other planets, each with unique resources, environments, and challenges.</li>
+                        <li><strong>Upgrades:</strong> Improve weapons, armor, defenses, spaceship capabilities, and potentially mechs.</li>
+                        <li><strong>Combat:</strong> First-person engagement with enemies, utilizing defensive structures and vehicles.</li>
+                        <li><strong>Fleet Encounters:</strong> Occasional large-scale enemy fleet encounters in space.</li>
+                        <li><strong>Survival:</strong> Manage player health, stamina, and environmental hazards.</li>
+                    </ul>
+                </div>
+                
+                <div class="databank-entry">
+                    <h3>Key Features</h3>
+                    <ul>
+                        <li>First-Person Perspective for all gameplay.</li>
+                        <li>Core Tower Defense mechanics against enemy waves.</li>
+                        <li>Survival elements: resource management, crafting.</li>
+                        <li>Base Building with modular or freeform construction.</li>
+                        <li>Resource Mining from diverse planetary environments.</li>
+                        <li>Upgradable systems for player, defenses, ship, and mechs.</li>
+                        <li>Player-controlled Spaceships for interplanetary travel.</li>
+                        <li>Playable Vehicles including mechs, bikes, and airships.</li>
+                        <li>Diverse Enemies: Aliens, robots, hostile human factions with unique classes.</li>
+                        <li>Focus on continuous survival with no planned end game.</li>
+                    </ul>
+                     <p><strong>Target Platform:</strong> Single Player, Unity Engine 2022.3.10f1</p>
+                </div>
+
+                <div class="databank-entry">
+                    <h3>Enemy Faction Unit Classes (Examples)</h3>
+                    <h4>Alien Faction:</h4>
+                    <p>Drone (Swarming), Scout (Recon), Soldier (Standard), Vanguard (Heavy Armor), Librarian (Support/Debuff), Behemoth (Large Siege), Leviathan (Massive Boss-like).</p>
+                    <h4>Robot Faction:</h4>
+                    <p>Drone (Utility/Attack), Scout (Fast Recon), Soldier (Combat Bot), Vanguard (Shielded/Heavy Weapons), Librarian (Repair/Buff Bot), Behemoth (Large Platform), Leviathan (Factory/Command Unit).</p>
+                    <h4>Hostile Human Faction:</h4>
+                    <p>Drone (Armed), Scout (Stealth Sniper), Soldier (Infantry), Vanguard (Heavy Infantry), Librarian (Medic/Commander), Behemoth (Powered Armor/Tank), Leviathan (Large Vehicle/Command Center).</p>
+                </div>
+
             </section>
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
@@ -342,33 +357,151 @@
     </div>
 
     <script>
-        const welcomePopup = document.getElementById('welcome-popup');
+        const initialLogonScreen = document.getElementById('initial-logon-screen');
+        const initialLogOutput = document.getElementById('initial-log-output');
+        const logonGraphCanvas = document.getElementById('logon-graph-canvas');
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        const mainContentWrapper = document.getElementById('main-content-wrapper');
 
-        function showWelcomePopup() {
-            if (welcomePopup) {
-                welcomePopup.classList.add('show');
-                setTimeout(() => {
-                    welcomePopup.classList.remove('show');
-                    setTimeout(() => {
-                         if(welcomePopup) welcomePopup.style.display = 'none';
-                         bodyElement.classList.add('loaded');
-                         initializePageFunctions();
-                    }, 500); 
-                }, 3000); 
-            } else {
-                bodyElement.classList.add('loaded');
-                initializePageFunctions();
+        const initialLogLines = [
+            { text: "SYSTEM BOOT INITIATED...", class: "system" },
+            { text: "Memory integrity check: PASSED", class: "info" },
+            { text: "Core processor calibration: COMPLETE", class: "info" },
+            { text: "Establishing secure connection to user profile...", class: "system" },
+            { text: "User: Kiegan. Authentication successful.", class: "system" },
+            { text: "Loading portfolio interface modules...", class: "info" },
+            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" }, // User's requested line
+            { text: "Interface protocols online. Welcome, Operator.", class: "system" },
+        ];
+
+        const typingSpeed = 50; // Milliseconds per character for log
+        const linePause = 250; // Milliseconds between log lines
+        const graphAnimationDuration = 2000; // Milliseconds for graph animation
+        const totalIntroDuration = 4500; // Total duration for intro sequence
+
+        let graphCtx;
+        let graphWidth, graphHeight;
+        let graphStartTime;
+
+        function drawAnimatedGraph(timestamp) {
+            if (!graphCtx) return;
+            if (!graphStartTime) graphStartTime = timestamp;
+            const elapsedTime = timestamp - graphStartTime;
+            const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
+
+            graphCtx.clearRect(0, 0, graphWidth, graphHeight);
+
+            // Simple animated line graph
+            graphCtx.strokeStyle = 'var(--accent-cyan)';
+            graphCtx.lineWidth = 2;
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight / 2);
+
+            for (let x = 0; x < graphWidth * progress; x++) {
+                const y = graphHeight / 2 + Math.sin(x * 0.1 + elapsedTime * 0.005) * (graphHeight / 4);
+                graphCtx.lineTo(x, y);
             }
+            graphCtx.stroke();
+
+            // Add some "activity spikes"
+            if (progress > 0.3 && progress < 0.8) {
+                graphCtx.fillStyle = 'var(--accent-orange)';
+                for(let i = 0; i < 3; i++) {
+                    if (Math.random() < progress * 0.5) { // More likely as progress increases
+                        const spikeX = Math.random() * graphWidth * progress;
+                        const spikeY = graphHeight - (Math.random() * graphHeight * 0.3 * progress);
+                        const spikeHeight = Math.random() * 20 * progress + 5;
+                        graphCtx.fillRect(spikeX, spikeY - spikeHeight, 3, spikeHeight);
+                    }
+                }
+            }
+            
+            // Axis lines (optional)
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.3)'; // Use RGB for opacity
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight);
+            graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0);
+            graphCtx.lineTo(0, graphHeight);
+            graphCtx.stroke();
+
+
+            if (progress < 1) {
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function setupGraphCanvas() {
+            if (logonGraphCanvas) {
+                const container = logonGraphCanvas.parentElement;
+                logonGraphCanvas.width = container.clientWidth - 20; // -20 for padding
+                logonGraphCanvas.height = container.clientHeight - 20; // -20 for padding
+                graphWidth = logonGraphCanvas.width;
+                graphHeight = logonGraphCanvas.height;
+                graphCtx = logonGraphCanvas.getContext('2d');
+                
+                // Initialize text-muted RGB value (approximation)
+                document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+
+
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+
+        function typeLogLine(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
+            const lineElem = document.createElement('div'); // Use div for block display
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem);
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
+                } else {
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, linePause);
+                }
+            }
+            typeChar();
+        }
+
+        function runInitialLogonSequence() {
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (initialLogOutput && currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    typeLogLine(line.text.replace("[Your Name]", "Kiegan"), line.class, initialLogOutput, nextInitialLine);
+                    currentLineIndex++;
+                } 
+                // Note: We don't transition out from here anymore, we use a fixed total duration.
+            }
+
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; // Clear before starting
+                nextInitialLine();
+                setupGraphCanvas(); // Start graph animation alongside text
+            } else {
+                 console.error("Initial log output element not found.");
+            }
+
+            // Regardless of text finishing, transition after totalIntroDuration
+            setTimeout(() => {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded');
+                initializePageFunctions(); 
+            }, totalIntroDuration);
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
             filterProjects(); 
-            startFooterStatusCycle(); // Re-added
+            startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
 
@@ -384,11 +517,12 @@
         
         function setActiveNavLink() {
             const currentPath = window.location.pathname.split("/").pop() || "index.html";
+            const currentPageName = currentPath === "" ? "index.html" : currentPath;
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
                 const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
-                if (linkPath === currentPath || (currentPath === "" && linkPath === "index.html") ) {
+                if (linkPath === currentPageName) {
                     link.classList.add('active');
                 }
             });
@@ -423,13 +557,13 @@
             const scanTimeElem = document.getElementById('lastScanTime');
             if (scanTimeElem) {
                 const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-                const dateString = now.toLocaleDateString([], {year: 'numeric', month: '2-digit', day: '2-digit'});
+                // Using 'en-GB' for British English date/time format, but keeping UTC for the label
+                const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+                const dateString = now.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC'});
                 scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
             }
         }
         
-        // Re-added Footer Security Status Cycling
         const securityStatusMessages = [
             "System integrity maintained.", "All channels secure.",
             "Threat matrix nominal.", "Data encryption: MAX.",
@@ -439,6 +573,7 @@
         function startFooterStatusCycle() {
             const statusElement = document.getElementById('security-status-text');
             if (statusElement) {
+                statusElement.textContent = securityStatusMessages[currentStatusIndex]; // Set initial text
                 setInterval(() => {
                     currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
                     statusElement.textContent = securityStatusMessages[currentStatusIndex];
@@ -446,20 +581,18 @@
             }
         }
 
-        // Sidebar Toggle Logic
         if (sidebarToggle && sidebar) {
             sidebarToggle.addEventListener('click', () => {
                 bodyElement.classList.toggle('sidebar-collapsed');
-                // Update toggle button text (optional)
                 if (bodyElement.classList.contains('sidebar-collapsed')) {
-                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; // Example text for collapsed
+                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
                 } else {
                     sidebarToggle.innerHTML = 'CONSOLE';
                 }
             });
         }
         
-        window.onload = showWelcomePopup;
+        window.onload = runInitialLogonSequence;
     </script>
 </body>
 </html>
