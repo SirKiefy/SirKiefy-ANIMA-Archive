@@ -3,881 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator K - Portfolio DATA CORE</title>
+    <title>Operator [Your Name] - Portfolio Terminal v3</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&family=Aldrich&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        /* Global Styles & Theme */
-        body { 
-            font-family: 'Roboto Mono', monospace; 
-            background-color: #111827; /* gray-900 */
-            color: #E5E7EB; /* gray-200 */
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg-darkest: #050608;
+            --bg-dark: #0a0c0f;
+            --bg-panel: #101419;
+            --bg-card: #181c22;
+            --border-subtle: #303841;
+            --border-medium: #4a4e50;
+            --text-primary: #c5c6c7;
+            --text-secondary: #9ea4a8;
+            --text-muted: #787c82;
+            --accent-orange: #f07c3a;
+            --accent-orange-dark: #d96f32;
+            --accent-cyan: #00e0e0;
+            --accent-cyan-dark: #00b8b8;
         }
-        .font-aldrich { font-family: 'Aldrich', sans-serif; }
-        .font-share-tech-mono { font-family: 'Share Tech Mono', monospace; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0; padding: 0; box-sizing: border-box;
+            overflow: hidden; /* Hide scrollbars during initial logon */
+        }
+        .font-terminal { font-family: 'Share Tech Mono', monospace; }
+        .text-accent-orange { color: var(--accent-orange); }
+        .border-accent-orange { border-color: var(--accent-orange); }
+        .bg-accent-orange { background-color: var(--accent-orange); }
+        .text-accent-cyan { color: var(--accent-cyan); }
+        .border-accent-cyan { border-color: var(--accent-cyan); }
+        .block-element { border-radius: 0px !important; }
 
-        /* Teal Nav Link Active State */
-        .nav-link-active-teal { 
-            background-color: #0D9488 !important; /* teal-600 */
-            color: #FFFFFF !important; 
-            box-shadow: 0 0 10px rgba(20, 184, 166, 0.7), 0 0 3px rgba(255, 255, 255, 0.4); 
-            border-bottom: 2px solid #5EEAD4; /* teal-300 */
-        }
-        .nav-link-default { 
-            color: #9CA3AF; /* gray-400 */
-            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease; 
-            border-bottom: 2px solid transparent; 
-        }
-        .nav-link-default:hover { 
-            color: #5EEAD4; /* teal-300 */
-            background-color: rgba(20, 184, 166, 0.1); 
-            border-bottom-color: #0D9488; /* teal-600 */
-        }
-
-        /* Teal Modal Styling */
-        .modal-cyber-teal { 
-            background-color: #1F2937; /* gray-800 */
-            border: 1px solid #0F766E; /* teal-700 */
-            box-shadow: 0 0 25px rgba(15, 118, 110, 0.6); 
-            border-radius: 0.125rem; /* rounded-sm */
-        }
-        .modal-cyber-header-teal { 
-            border-bottom: 1px solid #0F766E; /* teal-700 */
-            padding-bottom: 0.75rem; /* pb-3 */
-            margin-bottom: 1.25rem; /* mb-5 */
-        }
-
-        /* Teal Prose Styling */
-        .prose-cyber-teal { color: #D1D5DB; /* gray-300 */ }
-        .prose-cyber-teal h1, 
-        .prose-cyber-teal h2, 
-        .prose-cyber-teal h3, 
-        .prose-cyber-teal h4, 
-        .prose-cyber-teal h5, 
-        .prose-cyber-teal h6 { 
-            color: #2DD4BF; /* teal-400 */
-            font-family: 'Aldrich', sans-serif; 
-            border-bottom: 1px solid #0F766E; /* teal-700 */
-            padding-bottom: 0.2em; 
-            margin-top: 1.5em; 
-            margin-bottom: 0.75em; 
-        }
-        .prose-cyber-teal a { 
-            color: #2DD4BF; /* teal-400 */
-            text-decoration: none; 
-            border-bottom: 1px dashed #0D9488; /* teal-600 */
-        }
-        .prose-cyber-teal a:hover { color: #FFFFFF; background-color: #0D9488; /* teal-600 */ }
-        .prose-cyber-teal strong { color: #A7F3D0; /* teal-200 */ }
-        .prose-cyber-teal blockquote { 
-            border-left-color: #0D9488; /* teal-600 */
-            color: #9CA3AF; /* gray-400 */
-            font-style: italic; 
-            background-color: rgba(20, 184, 166, 0.05); 
-            padding: 0.5em 1em; 
-            border-radius: 0.125rem; /* rounded-sm */
-        }
-        .prose-cyber-teal code { 
-            color: #99F6E4; /* teal-300 */
-            background-color: #374151; /* gray-700 */
-            padding: 0.1em 0.3em; 
-            border-radius: 0.25rem; /* rounded-md */
-            font-family: 'Share Tech Mono', monospace; 
-        }
-        .prose-cyber-teal ul { list-style-type: square; padding-left: 1.5em;} 
-        .prose-cyber-teal li::marker { color: #0D9488; /* teal-600 */ }
-
-        /* Teal Custom Scrollbar */
-        .custom-scrollbar-teal::-webkit-scrollbar { width: 8px; height: 8px; }
-        .custom-scrollbar-teal::-webkit-scrollbar-track { background: #111827; /* gray-900 */ }
-        .custom-scrollbar-teal::-webkit-scrollbar-thumb { 
-            background: #0F766E; /* teal-700 */
-            border-radius: 2px; 
-            border: 1px solid #14B8A6; /* teal-500 */
-        }
-        .custom-scrollbar-teal::-webkit-scrollbar-thumb:hover { background: #14B8A6; /* teal-500 */ }
-
-        /* Teal Button Styles */
-        .btn-primary-cyber-teal { 
-            background-color: #0D9488; /* teal-600 */
-            color: white; 
-            transition: all 0.2s ease; 
-            border: 1px solid #5EEAD4; /* teal-300 */
-            font-family: 'Share Tech Mono', monospace; 
-            text-transform: uppercase; 
-            padding: 0.5rem 1rem; 
-            border-radius:0.125rem; /* rounded-sm */
-        }
-        .btn-primary-cyber-teal:hover { 
-            background-color: #0F766E; /* teal-700 */
-            box-shadow: 0 0 12px rgba(20, 184, 166, 0.9); 
-            transform: translateY(-1px); 
-        }
-        .btn-secondary-cyber { 
-            background-color: #374151; /* gray-700 */
-            color: #E5E7EB; /* gray-200 */
-            transition: all 0.2s ease; 
-            border: 1px solid #4B5563; /* gray-600 */
-            font-family: 'Share Tech Mono', monospace; 
-            padding: 0.5rem 1rem; 
-            border-radius:0.125rem; /* rounded-sm */
-        }
-        .btn-secondary-cyber:hover { 
-            background-color: #4B5563; /* gray-600 */
-            color: white; 
-            box-shadow: 0 0 8px rgba(107, 114, 128, 0.5); 
-        }
-        .btn-google-cyber-teal { 
-            background-color: #1F2937; /* gray-800 */
-            color: white; 
-            border: 1px solid #0D9488; /* teal-600 */
-            font-family: 'Share Tech Mono', monospace; 
-            padding: 0.5rem 1rem; 
-            border-radius:0.125rem; /* rounded-sm */
-            transition: all 0.2s ease;
-        }
-        .btn-google-cyber-teal:hover { 
-            background-color: #0D9488; /* teal-600 */
-            color: #111827; /* gray-900 */
-            box-shadow: 0 0 10px rgba(20, 184, 166, 0.7); 
-        }
-
-        /* Teal Input field styling */
-        .input-cyber-teal { 
-            background-color: #1F2937; /* gray-800 */
-            border: 1px solid #4B5563; /* gray-600 */
-            color: #E5E7EB; /* gray-200 */
-            border-radius: 0.125rem; /* rounded-sm */
-            padding: 0.625rem 0.75rem; /* py-2.5 px-3 */
-            font-family: 'Share Tech Mono', monospace; 
-        }
-        .input-cyber-teal:focus { 
-            border-color: #0D9488; /* teal-600 */
-            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.4); 
-            outline: none; 
-            background-color: #111827; /* gray-900 */
-        }
-
-        /* Teal Card styling */
-        .card-cyber-teal { 
-            background-color: #1F2937; /* gray-800 */
-            border: 1px solid #4B5563; /* gray-600 */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4); 
-            transition: all 0.2s ease-out; 
-            border-radius: 0.125rem; /* rounded-sm */
-            cursor:pointer; 
-        }
-        .card-cyber-teal:hover { 
-            transform: translateY(-4px) scale(1.02); 
-            box-shadow: 0 6px 15px rgba(20, 184, 166, 0.3), 0 0 10px rgba(20, 184, 166, 0.2); 
-            border-color: #0F766E; /* teal-700 */
-        }
-        .card-title-cyber-teal { color: #2DD4BF; /* teal-400 */ font-family: 'Aldrich', sans-serif; } 
-        .card-classification-cyber-teal { color: #A7F3D0; /* teal-200 */ font-family: 'Share Tech Mono', monospace; } 
-        .card-category-cyber-teal { color: #67E8F9; /* cyan-300 for contrast */ font-family: 'Share Tech Mono', monospace; } 
-
-        /* Teal Category Filter "Folder" Styling */
-        .category-filter-container { 
-            margin-bottom: 1.5rem; /* mb-6 */
-            padding-bottom: 1rem; /* pb-4 */
-            border-bottom: 1px solid #4B5563; /* gray-600 */
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 0.5rem; /* gap-2 */
-        }
-        .category-filter-btn { 
-            font-family: 'Share Tech Mono', monospace; 
-            background-color: #374151; /* gray-700 */
-            color: #D1D5DB; /* gray-300 */
-            padding: 0.375rem 0.75rem; /* py-1.5 px-3 */
-            border-radius: 0.125rem; /* rounded-sm */
-            border: 1px solid #4B5563; /* gray-600 */
-            font-size: 0.75rem; /* text-xs */
-            text-transform: uppercase; 
-            letter-spacing: 0.05em; 
-            transition: all 0.2s ease; 
-            cursor: pointer; 
-        }
-        .category-filter-btn:hover { 
-            background-color: #4B5563; /* gray-600 */
-            border-color: #6B7280; /* gray-500 */
-            color: #FFFFFF; 
-        }
-        .category-filter-btn.active-category-teal { 
-            background-color: #0D9488; /* teal-600 */
-            color: #FFFFFF; 
-            border-color: #5EEAD4; /* teal-300 */
-            box-shadow: 0 0 8px rgba(20, 184, 166, 0.5); 
-        }
-        
-        .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; opacity:0; }
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        /* Pulse Animations */
-        @keyframes pulseBgTeal600 {
-          0%, 100% { background-color: #0D9488; } /* teal-600 */
-          50% { background-color: #14B8A6; }    /* teal-500 */
-        }
-        @keyframes pulseTextTeal400 {
-          0%, 100% { color: #2DD4BF; }           /* teal-400 */
-          50% { color: #5EEAD4; }             /* teal-300 */
-        }
-        @keyframes pulseBorderTeal700 {
-          0%, 100% { border-color: #0F766E; }    /* teal-700 */
-          50% { border-color: #0D9488; }      /* teal-600 */
-        }
-        @keyframes pulseTextTealCardTitle {
-          0%, 100% { color: #2DD4BF; } /* teal-400 */
-          50% { color: #14B8A6; }    /* teal-500 */
-        }
-
-        .animate-pulse-bg-teal { animation: pulseBgTeal600 2.5s infinite alternate ease-in-out; }
-        .animate-pulse-text-teal-main { animation: pulseTextTeal400 2.5s infinite alternate ease-in-out; }
-        .animate-pulse-border-teal { animation: pulseBorderTeal700 2.5s infinite alternate ease-in-out; }
-        .animate-pulse-text-teal-card-title { animation: pulseTextTealCardTitle 2.5s infinite alternate ease-in-out; }
-
-        /* Modal specific styles */
-        .modal-overlay {
+        /* Initial Full-Screen Log-on */
+        #initial-logon-screen {
             position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.9); /* Darker overlay */
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; /* Pitch black for boot-up */
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
-            z-index: 50;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content-area {
-            max-height: 90vh;
+        #initial-log-output {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--accent-cyan);
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem); /* Responsive font size */
+            width: 100%;
+            max-width: 800px;
+            height: 80%;
+            max-height: 600px;
             overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid var(--border-medium);
+            background-color: rgba(10,12,15,0.5); /* Slightly transparent dark bg */
+            padding: 15px;
         }
-        /* Hide scrollbar for main body when modal is open */
-        body.modal-open {
-            overflow: hidden;
+        #initial-log-output .log-line.jargon { color: var(--accent-cyan); }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite; }
+        #initial-log-output .log-line.system { color: #fff; font-weight: bold; }
+
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
-        /* Logon Screen Specific Styles */
-        #logonAnimationOverlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0,0,0,0.95);
-            display: flex; /* Changed to flex for JS control */
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            /* Initially hidden, JS will show it */
-        }
-         #logonLogArea { 
-            height: 180px; /* Fixed height */
-            overflow-y: auto; 
-            border: 1px solid #0F766E; /* teal-700 */
-            padding: 0.75rem; /* p-3 */
-            margin-bottom: 0.25rem; /* mb-1 */
-            background-color: rgba(0,0,0,0.3); 
-            border-radius: 0.125rem; /* rounded-sm */
-            text-align: left; 
-            font-family: 'Share Tech Mono', monospace; 
-            font-size: 0.75rem; /* text-xs */
-        }
-        #logonLogArea p { 
-            line-height: 1.3; 
-            margin-bottom: 0.0625rem; /* mb-px */
-        }
-        .log-error { color: #EF4444; font-weight: bold;} /* text-red-500 */
-        .log-success { color: #4ADE80; font-weight: bold;} /* text-green-400 */
-        .log-warning { color: #FACC15; font-weight: bold;} /* text-yellow-400 */
 
-        /* Mobile Menu Styling */
-        #mobileMenu.hidden { display: none; }
-        #mobileMenu {
-            position: fixed;
-            inset-inline-start: 0; /* For LTR/RTL */
-            inset-inline-end: 0; /* For LTR/RTL */
-            top: 4.0rem; /* Adjust based on navbar height, e.g. 64px / 4rem if navbar is p-4 */
-            z-index: 30;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        /* Hide main content initially */
+        #sidebar, #main-content {
+            display: none;
+        }
+        body.loaded {
+            overflow: visible; /* Restore scrollbars after load */
+        }
+        body.loaded #sidebar, body.loaded #main-content {
+            display: flex; /* Or 'block' for main-content if not flex container itself */
+        }
+        body.loaded #main-content { display: block; } /* main-content is not a flex container */
+
+
+        /* Sidebar (Common to all pages) */
+        #sidebar {
+            width: 280px; background-color: var(--bg-darkest);
+            border-right: 1px solid var(--border-subtle); padding: 24px;
+            height: 100vh; position: fixed; top: 0; left: 0;
+            flex-direction: column; overflow-y: auto; /* display: flex already applied by .loaded */
+        }
+        .sidebar-title {
+            font-size: 1.5rem; letter-spacing: 2px;
+            margin-bottom: 24px; text-align: center;
+        }
+        /* Modified Main Menu Appearance */
+        .main-nav a {
+            display: block;
+            padding: 10px 15px; /* Adjusted padding */
+            margin-bottom: 6px; /* Slightly reduced margin */
+            text-transform: uppercase;
+            border-left: 3px solid transparent; /* Indicator bar */
+            background-color: var(--bg-panel); /* Base background for menu items */
+            color: var(--text-secondary);
+            transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
+        }
+        .main-nav a:hover {
+            color: var(--accent-orange);
+            border-left-color: var(--accent-orange);
+            background-color: var(--bg-card); /* Darker on hover */
+        }
+        .main-nav a.active {
+            color: var(--accent-orange);
+            border-left-color: var(--accent-orange);
+            background-color: var(--bg-card); /* Active state same as hover for consistency */
+            font-weight: bold; /* Make active link bolder */
         }
 
+        #animated-log-screen { /* Sidebar log */
+            background-color: #000; border: 1px solid var(--border-medium);
+            padding: 12px; height: 150px; overflow-y: auto;
+            margin-top: 24px; margin-bottom: 24px; font-size: 0.8rem;
+            line-height: 1.5; white-space: pre-wrap;
+        }
+        #animated-log-screen .log-line.jargon { color: var(--accent-cyan); }
+        #animated-log-screen .log-line.mihwa { color: var(--accent-orange); font-weight: bold; }
+        .sidebar-controls { margin-top: auto; }
+        .sidebar-controls h3 {
+            font-family: 'Share Tech Mono', monospace; font-size: 1rem;
+            color: var(--text-secondary); margin-bottom: 8px;
+            border-top: 1px solid var(--border-subtle); padding-top: 16px;
+        }
+        #search-input, #category-filter {
+            width: 100%; padding: 8px; background-color: var(--bg-panel);
+            border: 1px solid var(--border-subtle); color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        #search-input:focus, #category-filter:focus {
+            outline: none; border-color: var(--accent-orange);
+        }
+
+        /* Main Content Area (This part changes per page) */
+        #main-content {
+            margin-left: 280px; padding: 32px;
+            width: calc(100% - 280px); overflow-y: auto; height: 100vh;
+             /* display: block applied by .loaded */
+        }
+        .section-panel {
+            background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+            padding: 24px; margin-bottom: 32px;
+        }
+        .section-title {
+            font-size: 1.75rem; padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-medium); margin-bottom: 24px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .hero-section { text-align: center; border-bottom: 2px solid var(--accent-orange); }
+        .hero-title { font-size: 2.5rem; letter-spacing: 3px; line-height: 1.2; }
+        .hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-top: 8px; }
+        .status-indicator {
+            display: inline-block; width: 12px; height: 12px;
+            background-color: var(--accent-cyan); margin-right: 8px;
+            vertical-align: middle; animation: pulse-cyan 2s infinite;
+        }
+        @keyframes pulse-cyan { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .btn {
+            padding: 12px 24px; text-transform: uppercase; letter-spacing: 1px;
+            border: 1px solid; transition: background-color 0.2s ease, color 0.2s ease;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: var(--accent-orange); border-color: var(--accent-orange);
+            color: var(--bg-darkest);
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-orange-dark);
+            border-color: var(--accent-orange-dark);
+        }
+        .footer-terminal {
+            background-color: var(--bg-panel); text-align: center;
+            padding: 24px; border-top: 1px solid var(--border-subtle);
+            font-size: 0.875rem; color: var(--text-muted); margin-top: 32px;
+        }
+        /* Footer Text Glow & Change */
+        #security-status-text {
+            animation: glow-animation 2s infinite alternate;
+            display: inline-block; /* Needed for text-shadow to not break line */
+        }
+        @keyframes glow-animation {
+            from { text-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan), 0 0 7px var(--accent-cyan-dark); }
+            to { text-shadow: 0 0 5px var(--accent-cyan-dark), 0 0 8px var(--accent-cyan-dark), 0 0 10px var(--accent-orange); }
+        }
+
+        .project-card { /* Styles for project cards if they appear on index.html */
+            background-color: var(--bg-card); border: 1px solid var(--border-subtle);
+            transition: border-color 0.3s ease; overflow: hidden; margin-bottom: 16px;
+        }
+        .project-card.hidden { display: none; }
+        .project-card:hover { border-color: var(--accent-orange); }
+        .project-image-placeholder {
+            background-color: #252a31; height: 180px; display: flex;
+            align-items: center; justify-content: center; color: #565c64;
+        }
+        .project-title { font-size: 1.25rem; }
+
+        @media (max-width: 768px) {
+            body.loaded #sidebar { /* Ensure sidebar specific style for loaded state */
+                position: static; width: 100%; height: auto;
+                border-right: none; border-bottom: 1px solid var(--border-subtle);
+                overflow-y: visible;
+            }
+            body.loaded #main-content { margin-left: 0; width: 100%; height: auto; padding: 16px; }
+            
+            #initial-log-output { font-size: 0.8rem; padding: 10px; }
+            .sidebar-title { font-size: 1.25rem; margin-bottom: 16px; }
+            .main-nav a { padding: 10px 12px; }
+            #animated-log-screen { height: 100px; font-size: 0.75rem;}
+            .hero-title { font-size: 2rem; }
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-300">
-
-    <!-- Logon Animation Overlay -->
-    <div id="logonAnimationOverlay" class="hidden">
-        <div class="text-center p-6 rounded-sm bg-gray-800 shadow-2xl border border-teal-700 w-11/12 max-w-xl animate-pulse-border-teal"> 
-            <div class="mb-4">
-                <svg class="w-12 h-12 text-teal-500 mx-auto animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> 
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-                <h2 class="font-aldrich text-xl text-teal-400 mt-2 animate-pulse-text-teal-main">PORTFOLIO INTERFACE ACCESS</h2> 
-            </div>
-            <div id="logonLogArea" class="custom-scrollbar-teal animate-pulse-border-teal"></div>
-            <div id="glitchTextContainer" class="text-xs text-yellow-500 font-mono my-1 h-4"></div>
-            <div class="w-full bg-gray-700 rounded-sm h-1.5 overflow-hidden mt-2">
-                <div id="logonProgressBar" class="bg-teal-600 h-full rounded-sm transition-all duration-200 ease-linear animate-pulse-bg-teal" style="width: 0%"></div> 
-            </div>
-            <p class="text-xs text-gray-600 mt-3 font-aldrich">SYSTEM_INTERFACE_V4.1_TEAL</p>
-        </div>
+<body>
+    <!-- Initial Full-Screen Log-on Screen -->
+    <div id="initial-logon-screen">
+        <div id="initial-log-output"></div>
     </div>
 
-    <!-- Navbar -->
-    <header id="navbar" class="bg-gray-800 shadow-xl sticky top-0 z-40 border-b-2 border-teal-700 animate-pulse-border-teal">
-        <div class="container mx-auto px-4 py-2.5 flex justify-between items-center">
-            <a href="#/Home" class="nav-link text-xl font-aldrich text-teal-500 cursor-pointer nav-link-default" style="text-shadow: 0 0 5px rgba(20, 184, 166, 0.7);">
-                OPERATOR K <span class="text-xs text-gray-500">// PORTFOLIO CORE</span>
-            </a>
-            <nav class="hidden md:flex items-center space-x-1">
-                <a href="#/Home" data-page="Home" class="nav-item px-3 py-2 rounded-sm text-xs uppercase tracking-wider nav-link-default">Home</a>
-                <a href="#/Projects" data-page="Projects" class="nav-item px-3 py-2 rounded-sm text-xs uppercase tracking-wider nav-link-default">Projects</a>
-                <a href="#/WorldBuilding" data-page="WorldBuilding" class="nav-item px-3 py-2 rounded-sm text-xs uppercase tracking-wider nav-link-default">World Building</a>
-                <a href="#/About" data-page="About" class="nav-item px-3 py-2 rounded-sm text-xs uppercase tracking-wider nav-link-default">About Me</a>
-                <a href="#/Hobbies" data-page="Hobbies" class="nav-item px-3 py-2 rounded-sm text-xs uppercase tracking-wider nav-link-default">Hobbies</a>
-                <button id="searchIconNav" title="Search Archives" class="p-2 ml-1 rounded-sm text-gray-400 hover:bg-gray-700 hover:text-teal-400 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                </button>
-            </nav>
-            <div class="md:hidden flex items-center">
-                <button id="searchIconMobileNav" title="Search Archives" class="p-2 mr-2 rounded-sm text-gray-400 hover:bg-gray-700 hover:text-teal-400 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                </button>
-                <button id="mobileMenuButton" class="text-gray-400 hover:text-teal-400 focus:outline-none p-1">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </button>
-            </div>
+    <!-- Sidebar (Common to all pages) -->
+    <aside id="sidebar" class="block-element">
+        <div class="sidebar-title font-terminal text-accent-orange">OPERATOR CONSOLE</div>
+        <nav class="main-nav font-terminal">
+            <a href="index.html" class="block-element">Home_Interface</a>
+            <a href="about.html" class="block-element">Auth_Logs // About</a>
+            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
+            <a href="skills.html" class="block-element">Core_Matrix // Skills</a>
+            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="contact.html" class="block-element">Comms_Link // Contact</a>
+        </nav>
+        <div id="animated-log-screen" class="font-terminal block-element">
+            <!-- Sidebar log will appear here after initial logon -->
         </div>
-    </header>
-    
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden bg-gray-800 border-t-2 border-teal-700 animate-pulse-border-teal">
-        <a href="#/Home" data-page="Home" class="nav-item block w-full text-left px-4 py-3 text-sm nav-link-default">Home</a>
-        <a href="#/Projects" data-page="Projects" class="nav-item block w-full text-left px-4 py-3 text-sm nav-link-default">Projects</a>
-        <a href="#/WorldBuilding" data-page="WorldBuilding" class="nav-item block w-full text-left px-4 py-3 text-sm nav-link-default">World Building</a>
-        <a href="#/About" data-page="About" class="nav-item block w-full text-left px-4 py-3 text-sm nav-link-default">About Me</a>
-        <a href="#/Hobbies" data-page="Hobbies" class="nav-item block w-full text-left px-4 py-3 text-sm nav-link-default">Hobbies</a>
-    </div>
+        <div class="sidebar-controls">
+            <h3>// PROJECT_ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// CATEGORY_SORT</h3>
+            <select id="category-filter" class="font-terminal block-element">
+                <option value="all">All Categories</option>
+                <option value="web-dev">Web Development</option>
+                <option value="data-vis">Data Visualization</option>
+                <option value="ui-ux">UI/UX Design</option>
+                <option value="cyber-sec">Cyber Security</option>
+            </select>
+        </div>
+    </aside>
 
-    <!-- Main Content Area -->
-    <main id="mainContent" class="container mx-auto p-4 md:p-6 lg:p-8 min-h-[calc(100vh-150px)]"> 
-        <!-- Content will be injected here by JavaScript -->
+    <!-- Main Content Area (This part changes per page) -->
+    <main id="main-content">
+        <!-- =============================================================== -->
+        <!-- START: Page Specific Content for index.html (Home Page)        -->
+        <!-- =============================================================== -->
+        <section id="hero" class="hero-section section-panel block-element">
+            <h1 class="hero-title font-terminal text-accent-orange">
+                <span class="status-indicator block-element"></span>SYSTEM ACCESS GRANTED
+            </h1>
+            <p class="hero-subtitle font-terminal">
+                Portfolio Interface Initialized. Operator: [Your Name]. <br> Specializing in [Your Main Skill/Field]. Core OS: DataCore v3.2
+            </p>
+            <div class="mt-8">
+                <a href="projects.html" class="btn btn-primary block-element font-terminal">Access Project Archives</a>
+            </div>
+             <p class="mt-12 font-terminal text-sm text-text-secondary">
+                This terminal grants access to declassified operational records and skill assessments for Operator [Your Name].<br>
+                Navigate via the console on the left. All transmissions are monitored.
+            </p>
+        </section>
+
+        <section class="section-panel block-element">
+            <h2 class="section-title text-accent-cyan font-terminal">// SYSTEM_OVERVIEW :: QUICK_ACCESS</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-bg-card p-6 block-element border border-border-subtle">
+                    <h3 class="font-terminal text-accent-orange text-lg mb-2">Latest Intel // About</h3>
+                    <p class="text-sm mb-4">Access background information, mission statement, and operational history of Operator [Your Name].</p>
+                    <a href="about.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">View About Page &gt;&gt;</a>
+                </div>
+                <div class="bg-bg-card p-6 block-element border border-border-subtle">
+                    <h3 class="font-terminal text-accent-orange text-lg mb-2">Project Databanks</h3>
+                    <p class="text-sm mb-4">Browse a curated list of completed missions, system developments, and classified project files.</p>
+                    <a href="projects.html" class="btn btn-secondary btn-sm block-element font-terminal w-full text-center">View Projects Page &gt;&gt;</a>
+                </div>
+            </div>
+        </section>
+        <!-- =============================================================== -->
+        <!-- END: Page Specific Content for index.html (Home Page)          -->
+        <!-- =============================================================== -->
+
+        <!-- Footer (Common to all pages) -->
+        <footer class="footer-terminal block-element">
+            <p>&copy; <span id="currentYear"></span> [Your Name/Alias]. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+            <p class="font-terminal text-xs">DATA CORE INTERFACE v3.2 // LAST SCAN: <span id="lastScanTime"></span></p>
+        </footer>
     </main>
 
-    <!-- Project Detail Modal -->
-    <div id="projectDetailModal" class="modal-overlay hidden">
-        <div id="projectDetailModalContent" class="modal-cyber-teal shadow-2xl p-4 sm:p-6 max-w-3xl w-full relative text-gray-300 modal-content-area animate-pulse-border-teal">
-            {/* Modal content will be injected here */}
-        </div>
-    </div>
-
-    <!-- Search Modal -->
-    <div id="searchModal" class="modal-overlay hidden">
-        <div class="modal-cyber-teal shadow-2xl p-6 md:p-8 max-w-xl w-full relative max-h-[80vh] flex flex-col animate-pulse-border-teal">
-            <div class="modal-cyber-header-teal flex justify-between items-center animate-pulse-border-teal">
-                <h3 class="text-xl font-aldrich text-teal-400 animate-pulse-text-teal-main">SEARCH PORTFOLIO ARCHIVES</h3>
-                <button id="closeSearchModal" class="text-gray-400 hover:text-white transition-colors -mr-2 -mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            </div>
-            <form id="searchForm" class="mb-5 pt-2">
-                <input type="search" id="searchInput" placeholder="Enter search query..." class="w-full input-cyber-teal text-sm" />
-                <button type="submit" class="w-full mt-3 btn-primary-cyber-teal font-bold text-sm animate-pulse-bg-teal">Initiate Search Protocol</button>
-            </form>
-            <div id="searchResultsContainer" class="overflow-y-auto text-sm flex-grow pr-1 custom-scrollbar-teal">
-                <p class="text-gray-500 font-share-tech-mono">QUERY FIELD EMPTY. INPUT REQUIRED.</p>
-            </div>
-            <div class="mt-6 text-center">
-                <button id="cancelSearchModal" class="btn-secondary-cyber text-xs px-6">Close Search</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="text-center py-10 mt-16 border-t-2 border-gray-800">
-        <p class="text-xs text-gray-600 font-share-tech-mono">&copy; <span id="currentYear"></span> Operator K // PORTFOLIO CORE INTERFACE v4.1 // CONNECTION ACTIVE</p>
-        <p class="text-xs text-gray-700 font-roboto-mono mt-1">All data fragments subject to corruption and temporal distortion. Proceed with caution.</p>
-    </footer>
-
     <script>
-        // --- Project Data (Placeholder Name: Operator K) ---
-        const initialProjectsData = [
-          { id: 'project-everfield', title: 'Project Everfield', category: 'Game Dev', classification: "UNITY // SOULS-LIKE ACTION RPG", tags: ['Unity', 'Souls-like', 'Action RPG', 'Fantasy', 'Magic System'], shortDescription: 'A noble dark fantasy Action RPG set in Everfield, featuring in-depth spell-crafting and souls-like combat.', fullDescription: `Project Everfield is a noble dark fantasy world, echoing with loss, loneliness, and isolation amidst an endless sea of people and cyclical resets... (Full description from GDD needed)`, imageUrl: 'https://placehold.co/600x300/1F2937/14B8A6?text=Project+Everfield', date: 'Ongoing', status: 'In Development', technologies: ['Unity', 'C#'], gddLink: null },
-          { id: 'project-starfall', title: 'Project Starfall', category: 'Game Dev', classification: "UNITY // FPS TOWER DEFENSE SURVIVAL", tags: ['Unity', 'FPS', 'Tower Defense', 'Sci-Fi'], shortDescription: 'Single-player FPS survival tower defense in space. Repair your ship and defend the False Void Generator.', fullDescription: `Project Starfall puts you in the role of a survivor crash-landed on a hostile planet... (Full description from GDD needed)`, imageUrl: 'https://placehold.co/600x300/1F2937/14B8A6?text=Project+Starfall', date: 'Ongoing', status: 'In Development', technologies: ['Unity', 'C#'], gddLink: null },
-          { id: 'dont-wreck-it-ralph', title: "Don't Wreck It Ralph", category: 'Game Dev', classification: "ITCH.IO GAME // ARCADE", tags: ['Unity', 'Arcade', 'Published'], shortDescription: "A fun arcade game developed and published on Itch.io.", fullDescription: `"Don't Wreck It Ralph" is a completed game project published on Itch.io. It's an engaging arcade-style experience.`, imageUrl: 'https://placehold.co/600x300/1F2937/14B8A6?text=DWIR', date: 'Published', status: 'Released', technologies: ['Unity', 'C#'], gddLink: 'https://theawesomeibz.itch.io/dont-wreck-it-ralph' },
-          { id: 'cowsins-sfx', title: 'SFX for Cowsins Engines', category: 'SFX Design', classification: "AUDIO ASSETS // UNITY", tags: ['Audio', 'Unity Asset'], shortDescription: 'Sound design for various Cowsins game engine assets on the Unity Asset Store.', fullDescription: `Provided comprehensive sound effects packages for multiple Cowsins assets... (Full description needed)`, imageUrl: 'https://placehold.co/600x300/1F2937/14B8A6?text=Cowsins+SFX', date: '2022-Present', status: 'Ongoing', technologies: ['Audacity', 'Reaper'], gddLink: null },
-          { id: 'eols-age-of-silence', title: 'The Age of Silence (EOLS)', category: 'World Building', classification: "EOLS // CORE LORE", tags: ['Sci-Fi', 'Cosmic Horror'], shortDescription: 'The galaxy is a graveyard of ambition after the Golden Age collapse.', fullDescription: `The galaxy is a graveyard of ambition, a testament to an age when humanity touched the stars... (Full description from EOLS doc needed)`, imageUrl: 'https://placehold.co/600x300/1F2937/14B8A6?text=Age+of+Silence', date: 'Core Concept', status: 'Established', technologies: ['Creative Writing'], gddLink: null },
-          { id: 'eols-sentinels-nightmares', title: 'Sentinels & N.I.G.H.T.M.A.R.E.s (EOLS)', category: 'World Building', classification: "EOLS // WARRIORS & MECHS", tags: ['Sentinels', 'Mechs'], shortDescription: 'Artificially imbued warriors bonded with colossal, degraded AI war machines.', fullDescription: `Sentinels: Children of The Heart... N.I.G.H.T.M.A.R.E. Units... (Full description from EOLS doc needed)`, imageUrl: 'https://placehold.co/600x300/1F2937/14B8A6?text=Sentinels+Mechs', date: 'Faction Lore', status: 'Established', technologies: ['Character Design'], gddLink: null },
+        const initialLogonScreen = document.getElementById('initial-logon-screen');
+        const initialLogOutput = document.getElementById('initial-log-output');
+        const sidebarLogScreen = document.getElementById('animated-log-screen');
+        const bodyElement = document.body;
+
+        const initialLogLines = [
+            { text: "INITIALIZING SYSTEM BOOT SEQUENCE...", class: "system" },
+            { text: "MEMORY CHECK: 64 ZETTABYTES OK", class: "jargon" },
+            { text: "QUANTUM CORE ALIGNMENT: IN PROGRESS...", class: "jargon" },
+            { text: "DECRYPTING PRIMARY DIRECTIVES...", class: "jargon" },
+            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" },
+            { text: "LOADING USER AUTHENTICATION MODULE...", class: "system" },
+            { text: "BIOMETRIC SCAN: MATCH FOUND - OPERATOR [YOUR NAME]", class: "system" },
+            { text: "ESTABLISHING SECURE DATALINK...", class: "jargon" },
+            { text: "INTERFACE PROTOCOLS ACTIVATED.", class: "system" },
+            { text: "WELCOME, OPERATOR.", class: "system" },
         ];
 
-        // --- DOM Elements ---
-        const logonOverlay = document.getElementById('logonAnimationOverlay');
-        const logonLogArea = document.getElementById('logonLogArea');
-        const logonProgressBar = document.getElementById('logonProgressBar');
-        const glitchTextContainer = document.getElementById('glitchTextContainer');
-        const mainContent = document.getElementById('mainContent');
-        const navbar = document.getElementById('navbar');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileMenuButton = document.getElementById('mobileMenuButton');
-        const navItems = document.querySelectorAll('.nav-item');
-        const projectDetailModal = document.getElementById('projectDetailModal');
-        const projectDetailModalContent = document.getElementById('projectDetailModalContent');
-        const searchModal = document.getElementById('searchModal');
-        const searchIconNav = document.getElementById('searchIconNav');
-        const searchIconMobileNav = document.getElementById('searchIconMobileNav');
-        const closeSearchModalBtn = document.getElementById('closeSearchModal');
-        const cancelSearchModalBtn = document.getElementById('cancelSearchModal');
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const searchResultsContainer = document.getElementById('searchResultsContainer');
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        const sidebarLogJargon = [
+            "Monitoring network traffic...", "Analyzing threat vectors...",
+            "System performance optimal.", "Data integrity verified.",
+            "Quantum entanglement stable.", "No anomalies detected."
+        ];
+        const sidebarMihwaLine = "Bullying Mi-hwa the beloved <3";
 
-        // --- State Variables ---
-        let currentPage = 'Home';
-        let currentProjectCategory = 'All Archives';
-        let currentWorldCategory = 'All Archives';
+        const typingSpeed = 40;
+        const linePause = 300;
+        const initialSequenceLinePause = 500; // Slower for initial boot
 
-        // --- Logon Animation ---
-        function runLogonAnimation() {
-            logonOverlay.classList.remove('hidden');
-            logonOverlay.classList.add('flex');
+        // Corrected function definition: removed 'element' parameter
+        function typeLine(text, className, outputContainer, callback, speed = typingSpeed, pause = linePause) {
+            if (!outputContainer) return; // Ensure outputContainer is a valid DOM element
+            const lineElem = document.createElement('span');
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem); // This should now work
+            let charIndex = 0;
 
-            const logonMessages = [
-                "INITIATING DATA CORE LINK V4.1...", "KERNEL INTEGRITY CHECK... [PASS]",
-                "ESTABLISHING SECURE RELAY (CYGNUS-X1)... [HANDSHAKE ACKNOWLEDGED]",
-                "AUTHENTICATING CREDENTIALS VIA QUANTUM MATRIX...", "ACCESS LEVEL: OPERATIVE :: DESIGNATION: OPERATOR K",
-                "LOADING CORE MODULES: PORTFOLIO_ACCESS, QUERY_ENGINE, RENDER_LAYER_TEAL...",
-                "DECRYPTING DATA STREAMS... [NODE AQUILA-PRIME ONLINE]",
-                "SYSTEM ANOMALY DETECTED: Sub-routine 'Mi-Hwa_BullyProtocol.exe' active",
-                "NAVIGATING NEURAL NET ARCHITECTURE... [LAYER 11 SYNCHRONIZED]",
-                "FINALIZING CONNECTION... STANDBY...", "SYSTEM ONLINE. PORTFOLIO INTERFACE ACCESSIBLE."
-            ];
-            let currentMessageIndex = 0;
-            const totalDuration = 6500; // Approx 6.5 seconds
-            const messageInterval = totalDuration / logonMessages.length;
-            let glitchTimeout;
-
-            logonLogArea.innerHTML = ''; // Clear previous logs
-
-            const intervalId = setInterval(() => {
-                if (currentMessageIndex < logonMessages.length) {
-                    const p = document.createElement('p');
-                    const timestamp = `[${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: false})}.${String(new Date().getMilliseconds()).padStart(3, '0')}]`;
-                    let logText = logonMessages[currentMessageIndex];
-                    let logClass = '';
-
-                    if (logText.includes("ERROR") || logText.includes("FAIL")) logClass = 'log-error';
-                    else if (logText.includes("ANOMALY DETECTED") || logText.includes("BullyProtocol")) {
-                        logClass = 'log-warning animate-pulse';
-                        glitchTextContainer.textContent = "B̴u̴l̴l̴y̴i̴n̴g̴ ̴M̴i̴-̴H̴w̴a̴";
-                        glitchTimeout = setTimeout(() => { glitchTextContainer.textContent = ''; }, 300);
-                    } else if (logText.includes("ONLINE") || logText.includes("GRANTED") || logText.includes("PASS") || logText.includes("ESTABLISHED") || logText.includes("SYNCHRONIZED") || logText.includes("ACKNOWLEDGED")) logClass = 'log-success';
-                    else if (logText.includes("WARNING") || logText.includes("STANDBY")) logClass = 'log-warning';
-                    
-                    p.innerHTML = `${timestamp} <span class="${logClass}">${logText}</span>`;
-                    logonLogArea.appendChild(p);
-                    logonLogArea.scrollTop = logonLogArea.scrollHeight;
-                    logonProgressBar.style.width = `${((currentMessageIndex + 1) / logonMessages.length) * 100}%`;
-                    currentMessageIndex++;
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, speed);
                 } else {
-                    clearInterval(intervalId);
-                    clearTimeout(glitchTimeout);
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, pause);
+                }
+            }
+            typeChar();
+        }
+
+        function runInitialLogon() {
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    // Call with corrected argument mapping for the modified typeLine
+                    typeLine(line.text.replace("[YOUR NAME]", "Operator"), line.class, initialLogOutput, nextInitialLine, typingSpeed, initialSequenceLinePause);
+                    currentLineIndex++;
+                } else {
+                    // Initial logon finished
                     setTimeout(() => {
-                        logonOverlay.classList.add('hidden');
-                        logonOverlay.classList.remove('flex');
-                    }, 500);
-                }
-            }, messageInterval);
-        }
-
-        // --- Navigation & Page Rendering ---
-        function setActiveNavLink(page) {
-            navItems.forEach(item => {
-                item.classList.remove('nav-link-active-teal', 'animate-pulse-bg-teal');
-                item.classList.add('nav-link-default');
-                if (item.dataset.page === page || (page.startsWith('Project_') && (item.dataset.page === 'Projects' || item.dataset.page === 'WorldBuilding'))) {
-                    item.classList.add('nav-link-active-teal', 'animate-pulse-bg-teal');
-                    item.classList.remove('nav-link-default');
-                }
-            });
-        }
-        
-        function renderHomePage() {
-            mainContent.innerHTML = `
-                <section id="homeSection" class="container mx-auto p-4 md:p-6 lg:p-8">
-                    <div class="text-center py-16 md:py-24">
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-aldrich text-teal-500 mb-3 animate-fadeIn" style="text-shadow: 0 0 8px rgba(20, 184, 166, 0.7), 0 0 3px #fff;"> 
-                            OPERATOR K - PORTFOLIO
-                        </h1>
-                        <p class="text-lg md:text-xl text-gray-300 mb-10 animate-fadeIn font-share-tech-mono tracking-wider" style="animation-delay: 0.3s;">
-                            &lt;&lt; DATA CORE ONLINE // ARCHIVES ACCESSIBLE &gt;&gt;
-                        </p>
-                    </div>
-                    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
-                        <div class="card-cyber-teal p-6"> 
-                            <h2 class="text-2xl font-aldrich text-teal-400 mb-3 animate-pulse-text-teal-main">Explore Project Archives</h2> 
-                            <p class="text-gray-400 mb-5 font-roboto-mono text-sm">Delve into documented game development, SFX design, and world building endeavors.</p>
-                            <a href="#/Projects" data-page="Projects" class="nav-item btn-primary-cyber-teal font-bold text-sm animate-pulse-bg-teal">Access Projects &gt;&gt;</a> 
-                        </div>
-                        <div class="card-cyber-teal p-6"> 
-                            <h2 class="text-2xl font-aldrich text-gray-300 mb-3">Operative Profile</h2>
-                            <p class="text-gray-400 mb-5 font-roboto-mono text-sm">Review background, skillsets, and contact protocols.</p>
-                            <a href="#/About" data-page="About" class="nav-item btn-secondary-cyber font-bold text-sm">Access Profile &gt;&gt;</a>
-                        </div>
-                    </div>
-                </section>
-            `;
-        }
-
-        function createProjectCardHTML(project) {
-            const summary = project.shortDescription || (project.fullDescription ? project.fullDescription.substring(0, 120) + '...' : 'Content corrupted.');
-            return `
-                <div class="card-cyber-teal p-5 flex flex-col justify-between" data-project-id="${project.id}">
-                    <div>
-                        <h3 class="text-xl card-title-cyber-teal mb-2 animate-pulse-text-teal-card-title">${project.title}</h3> 
-                        <p class="text-xs card-classification-cyber-teal mb-1">${project.classification || 'N/A'}</p> 
-                        <p class="text-xs card-category-cyber-teal mt-1 mb-2 uppercase tracking-wider">CAT: ${project.category || 'UNCAT'}</p> 
-                        <p class="text-gray-300 text-sm mb-4 leading-relaxed font-roboto-mono">${summary}</p>
-                    </div>
-                    <button class="project-card-button mt-auto btn-primary-cyber-teal py-2 px-4 self-start text-xs animate-pulse-bg-teal" data-project-id="${project.id}">ACCESS FULL DATA</button> 
-                </div>
-            `;
-        }
-        
-        function renderContentDisplayPage(title, subtitle, projectsToDisplay, currentCatState, allCatArray, isWorldBuildingPage = false) {
-            const categoryToFilterBy = isWorldBuildingPage ? currentWorldCategory : currentProjectCategory;
-            const filtered = projectsToDisplay.filter(project => 
-                categoryToFilterBy === 'All Archives' || project.category === categoryToFilterBy
-            );
-
-            let categoryButtonsHTML = '';
-            if (!isWorldBuildingPage || (isWorldBuildingPage && allCatArray.length > 1)) { // Only show filters if multiple categories or it's the main projects page
-                 categoryButtonsHTML = allCatArray.map(cat => `
-                    <button class="category-filter-btn ${categoryToFilterBy === cat ? 'active-category-teal animate-pulse-bg-teal' : ''}" data-category="${cat}" data-page-type="${isWorldBuildingPage ? 'WorldBuilding' : 'Projects'}">
-                        ${cat}
-                    </button>
-                `).join('');
-            }
-
-            const projectsHTML = filtered.length > 0 
-                ? filtered.map(createProjectCardHTML).join('')
-                : `<p class="text-center text-gray-500 font-share-tech-mono col-span-full py-10">NO DATA FRAGMENTS MATCHING "${categoryToFilterBy || 'ALL ARCHIVES'}".</p>`;
-
-            mainContent.innerHTML = `
-                <section class="container mx-auto p-4 md:p-6 lg:p-8">
-                    <header class="text-center mb-8 md:mb-12">
-                        <h1 class="text-3xl md:text-4xl font-aldrich text-teal-400 mb-2 tracking-wider animate-pulse-text-teal-main" style="text-shadow: 0 0 6px rgba(20, 184, 166, 0.5)">${title}</h1>
-                        ${subtitle ? `<p class="text-md text-gray-400 font-share-tech-mono">${subtitle}</p>` : ''}
-                    </header>
-                    ${categoryButtonsHTML ? `<div class="category-filter-container mb-8">${categoryButtonsHTML}</div>` : ''}
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        ${projectsHTML}
-                    </div>
-                </section>
-            `;
-            document.querySelectorAll('.category-filter-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const category = e.target.dataset.category;
-                    const pageType = e.target.dataset.pageType;
-                    if (pageType === 'WorldBuilding') {
-                        currentWorldCategory = category;
-                    } else {
-                        currentProjectCategory = category;
-                    }
-                    navigateTo(currentPage); // Re-render current page with new filter
-                });
-            });
-            document.querySelectorAll('.project-card-button, .card-cyber-teal[data-project-id]').forEach(el => {
-                 el.addEventListener('click', (e) => {
-                    const projectId = e.currentTarget.dataset.projectId; // Use currentTarget for delegation
-                    const project = initialProjectsData.find(p => p.id === projectId);
-                    if (project) showProjectDetailModal(project);
-                });
-            });
-        }
-
-        function renderFullProjectPage(projectId) {
-            const project = initialProjectsData.find(p => p.id === projectId);
-            if (!project) {
-                mainContent.innerHTML = `
-                    <div class="container mx-auto p-8 text-center">
-                        <h2 class="text-3xl text-teal-500 font-aldrich mb-4">DATA FRAGMENT LOST // 404</h2> 
-                        <p class="text-gray-300 font-share-tech-mono mb-6">The requested project data stream is corrupted or non-existent.</p>
-                        <a href="#/Projects" data-page="Projects" class="nav-item btn-primary-cyber-teal animate-pulse-bg-teal">RETURN TO ARCHIVES</a>
-                    </div>`;
-                return;
-            }
-            const backLinkPage = project.category === 'World Building' ? 'WorldBuilding' : 'Projects';
-            mainContent.innerHTML = `
-                <div class="container mx-auto p-4 md:p-8">
-                    <a href="#/${backLinkPage}" data-page="${backLinkPage}" class="nav-item btn-secondary-cyber text-xs mb-8">&lt;&lt; RETURN TO ARCHIVES</a>
-                    <article class="modal-cyber-teal p-6 md:p-10 animate-pulse-border-teal">
-                        <header class="modal-cyber-header-teal mb-6 animate-pulse-border-teal">
-                            <h1 class="text-3xl md:text-4xl font-aldrich text-teal-400 animate-pulse-text-teal-main" style="text-shadow: 0 0 4px rgba(20, 184, 166, 0.6)">${project.title}</h1>
-                            <p class="text-sm card-classification-cyber-teal mt-1">${project.classification || 'CLASSIFICATION: N/A'}</p>
-                            <p class="text-xs card-category-cyber-teal mt-1 uppercase tracking-wider">CATEGORY: ${project.category || 'UNCATEGORIZED'}</p>
-                        </header>
-                        ${project.imageUrl ? `<img src="${project.imageUrl}" alt="${project.title}" class="w-full h-auto max-h-[400px] object-contain rounded-sm my-6 border-2 border-teal-800 shadow-xl animate-pulse-border-teal" onerror="this.src='https://placehold.co/800x400/1F2937/14B8A6?text=VISUAL_ERROR'">` : ''}
-                        <div class="prose-cyber-teal max-w-none text-sm md:text-base leading-relaxed whitespace-pre-line mb-8">${project.fullDescription || project.shortDescription}</div>
-                        ${project.technologies && project.technologies.length > 0 ? `
-                            <div class="mb-8">
-                                <h3 class="text-xl font-aldrich text-teal-400 border-b border-teal-700 pb-1 mb-3 animate-pulse-text-teal-main animate-pulse-border-teal">TECHNOLOGIES_INTEGRATED:</h3>
-                                <div class="flex flex-wrap gap-2">${project.technologies.map(tech => `<span class="text-sm bg-gray-700 text-sky-300 px-3 py-1 rounded-sm border border-gray-600 font-share-tech-mono">${tech}</span>`).join('')}</div>
-                            </div>` : ''}
-                        ${project.tags && project.tags.length > 0 ? `
-                            <div class="mb-8">
-                                <h3 class="text-xl font-aldrich text-teal-400 border-b border-teal-700 pb-1 mb-3 animate-pulse-text-teal-main animate-pulse-border-teal">SYSTEM_TAGS:</h3>
-                                <div class="flex flex-wrap gap-2">${project.tags.map(tag => `<span class="text-xs bg-gray-600 text-gray-300 px-2 py-1 rounded-sm font-share-tech-mono">${tag}</span>`).join('')}</div>
-                            </div>` : ''}
-                        ${project.gddLink ? `
-                            <div class="mt-10">
-                                <a href="${project.gddLink}" target="_blank" rel="noopener noreferrer" class="btn-google-cyber-teal inline-flex items-center animate-pulse-bg-teal">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                                    ACCESS DETAILED SCHEMATICS / GDD
-                                </a>
-                            </div>` : ''}
-                    </article>
-                </div>
-            `;
-        }
-        
-        function renderAboutPage() {
-            const aboutContent = `
-                <p>Initiating data stream... I'm Operator K, a 20-year-old creator forged in the high-stakes arenas of competitive Esports (T1 and T2 circuits) and now channeling that focus into crafting immersive digital realities. My transition to game development was a natural evolution, driven by a lifelong passion for interactive storytelling and system design.</p>
-                <p>My core directive is game development, with a specialization in Sound Effects (SFX) design and programming. I've contributed audio architecture to several projects, including the <strong>Cowsins FPS Engine</strong>, <strong>Cowsins Platformer Engine</strong>, <strong>Cowsins Inventory Add-on</strong>, and the <strong>Cowsins Save and Load Add-on</strong>, enhancing gameplay with impactful audio. On the programming front, I work primarily with Unity (C#), building mechanics and systems that bring game worlds to life.</p>
-                <h3>// My Protocol //</h3>
-                <p>I operate on the principle that exceptional digital experiences are born from a fusion of robust functionality and evocative artistry. The cyberpunk aesthetic you see isn't just visual; it's a philosophy—structured, resilient systems underpinning worlds rich with narrative and detail. My goal is to construct experiences that are not just played, but felt.</p>
-                <h3>// Current Directives //</h3>
-                <p>Currently, my cycles are dedicated to advancing my skills in game development, SFX design, and world building. I'm always interfacing with new technologies and seeking collaborative entities for ambitious constructs. If your project requires a dedicated operative, initiate contact.</p>
-            `;
-            mainContent.innerHTML = `
-                <section class="container mx-auto p-4 md:p-6 lg:p-8">
-                    <header class="text-center mb-8 md:mb-12">
-                        <h1 class="text-3xl md:text-4xl font-aldrich text-teal-400 mb-2 tracking-wider animate-pulse-text-teal-main" style="text-shadow: 0 0 6px rgba(20, 184, 166, 0.5)">TRANSMISSION :: OPERATIVE_PROFILE</h1> 
-                        <p class="text-md text-gray-400 font-share-tech-mono">Subject_ID: OPERATOR K // Status: Active // Age_Cycle: 20</p>
-                    </header>
-                    <div class="modal-cyber-teal p-6 md:p-10 animate-pulse-border-teal"> 
-                        <div class="flex flex-col md:flex-row gap-8 items-center mb-8">
-                            <img src="https://placehold.co/200x200/1F2937/14B8A6?text=OP_K" alt="Operator K - Avatar" class="w-32 h-32 md:w-40 md:h-40 rounded-sm object-cover border-2 border-teal-700 shadow-xl animate-pulse-border-teal" />
-                            <div class="flex-1 text-center md:text-left">
-                                <h2 class="text-2xl font-aldrich text-teal-400 mb-1 animate-pulse-text-teal-main">Operator K</h2> 
-                                <p class="text-lg text-gray-300 font-share-tech-mono mb-1">Game Developer | SFX Designer | World Architect</p>
-                                <p class="text-sm text-gray-500 font-share-tech-mono mb-3">Former Esports Pro (T1/T2 Circuit)</p>
-                                <div class="flex justify-center md:justify-start space-x-3">
-                                    <a href="https://github.com/SirKiefy" target="_blank" rel="noopener noreferrer" class="btn-secondary-cyber text-xs">GitHub (SirKiefy)</a>
-                                    <a href="https://theawesomeibz.itch.io/" target="_blank" rel="noopener noreferrer" class="btn-secondary-cyber text-xs">Itch.io</a> 
-                                    <a href="#" target="_blank" rel="noopener noreferrer" class="btn-secondary-cyber text-xs">LinkedIn (Placeholder)</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="prose-cyber-teal max-w-none">${aboutContent}</div> 
-                    </div>
-                </section>
-            `;
-        }
-
-        function renderHobbiesPage() {
-            const hobbiesContent = `
-                <p>Beyond the primary directives of development and design, these are some of the activities that occupy my processing cycles:</p>
-                <h3>// Tactical Simulations & Strategy Games //</h3>
-                <p>My background in Esports cultivated a lasting appreciation for complex strategy games and tactical simulations. Analyzing systems, predicting opponent moves, and optimizing resource management are skills that translate surprisingly well to development. Games like XCOM, StarCraft, and Crusader Kings are frequent occupants of my leisure chronometer.</p>
-                <h3>// Sci-Fi & Cyberpunk Media Consumption //</h3>
-                <p>Immersing myself in the rich tapestry of science fiction and cyberpunk literature, film, and art is crucial for inspiration and maintaining thematic coherence in my own creations. From the foundational texts of Gibson and Asimov to modern visual marvels like Blade Runner 2049 or series like The Expanse.</p>
-                <h3>// Retro Game Archaeology //</h3>
-                <p>Exploring and deconstructing classic video games from older console generations. Understanding their design limitations and ingenious solutions provides valuable perspective on modern development.</p>
-                <p class="mt-6 text-xs text-gray-600 font-share-tech-mono">Note: All off-network activities are conducted within acceptable risk parameters and do not interfere with primary mission objectives.</p>
-            `;
-            mainContent.innerHTML = `
-                <section class="container mx-auto p-4 md:p-6 lg:p-8">
-                    <header class="text-center mb-8 md:mb-12">
-                        <h1 class="text-3xl md:text-4xl font-aldrich text-teal-400 mb-2 tracking-wider animate-pulse-text-teal-main" style="text-shadow: 0 0 6px rgba(20, 184, 166, 0.5)">PERSONAL LOGS :: RECREATIONAL_SUBROUTINES</h1> 
-                        <p class="text-md text-gray-400 font-share-tech-mono">Downtime Protocols & Tertiary Interests.</p>
-                    </header>
-                    <div class="modal-cyber-teal p-6 md:p-10 animate-pulse-border-teal"> 
-                        <div class="prose-cyber-teal max-w-none">${hobbiesContent}</div> 
-                    </div>
-                </section>
-            `;
-        }
-
-        function navigateTo(pageId) {
-            currentPage = pageId; // Update internal state
-            window.location.hash = `/${pageId}`; // Update URL hash for bookmarking/history
-        }
-        
-        function handleHashChange() {
-            const hash = window.location.hash.replace(/^#\/?|\/$/g, '');
-            const pageKey = hash.startsWith('Project_') ? hash : (hash.charAt(0).toUpperCase() + hash.slice(1) || 'Home');
-            
-            currentPage = pageKey; // Update internal state from hash
-            setActiveNavLink(pageKey.startsWith('Project_') ? 'Projects' : pageKey); // Highlight correct nav item
-            closeModalsAndMenu();
-            window.scrollTo(0, 0);
-
-            if (pageKey.startsWith('Project_')) {
-                renderFullProjectPage(pageKey.split('_')[1]);
-            } else {
-                switch (pageKey) {
-                    case 'Home': renderHomePage(); break;
-                    case 'Projects': 
-                        renderContentDisplayPage('PROJECT ARCHIVES', 'Game Development // SFX Design // Programming // Art', initialProjectsData.filter(p => p.category !== 'World Building'), currentProjectCategory, ['All Archives', ...new Set(initialProjectsData.filter(p => p.category !== 'World Building').map(p => p.category).filter(Boolean).sort())], false); 
-                        break;
-                    case 'WorldBuilding': 
-                        renderContentDisplayPage('WORLD BUILDING NEXUS', 'Lore Compendiums // Cartography // Conceptual Frameworks', initialProjectsData.filter(p => p.category === 'World Building'), currentWorldCategory, ['All Archives', ...new Set(initialProjectsData.filter(p => p.category === 'World Building').map(p => p.category).filter(Boolean).sort())], true); 
-                        break;
-                    case 'About': renderAboutPage(); break;
-                    case 'Hobbies': renderHobbiesPage(); break;
-                    default: renderHomePage(); break; 
+                        if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                        bodyElement.classList.add('loaded');
+                        startSidebarLogAnimation(); // Start the continuous sidebar log
+                        initializePageFunctions(); // Initialize other common page functions
+                    }, 1000); // Pause before revealing main content
                 }
             }
-            // Re-attach nav item listeners if page re-renders them
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    navigateTo(e.target.dataset.page);
-                });
-            });
-        }
-
-        // --- Modal Logic ---
-        function showProjectDetailModal(project) {
-            projectDetailModalContent.innerHTML = `
-                <div class="modal-cyber-header-teal flex justify-between items-start animate-pulse-border-teal"> 
-                    <h3 class="text-2xl md:text-3xl font-aldrich text-teal-400 flex-grow animate-pulse-text-teal-main" style="text-shadow: 0 0 4px rgba(20, 184, 166, 0.6)">${project.title}</h3>
-                    <button id="closeDetailModalBtn" class="text-gray-400 hover:text-white transition-colors ml-4 -mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                <div class="overflow-y-auto custom-scrollbar-teal pr-2 flex-grow pt-2 modal-content-area">
-                    <p class="text-xs card-classification-cyber-teal mb-1 uppercase tracking-wider">${project.classification || 'CLASSIFICATION: N/A'}</p>
-                    <p class="text-xs card-category-cyber-teal mb-4 uppercase tracking-wider">CATEGORY: ${project.category || 'UNCATEGORIZED'}</p>
-                    ${project.imageUrl ? `<img src="${project.imageUrl}" alt="${project.title}" class="w-full h-auto max-h-72 object-contain rounded-sm my-4 border-2 border-teal-800 shadow-lg animate-pulse-border-teal" onerror="this.src='https://placehold.co/600x300/1F2937/14B8A6?text=VISUAL_ERROR'">` : ''}
-                    <div class="text-sm leading-relaxed prose-cyber-teal max-w-none mt-4 whitespace-pre-line"><p>${project.shortDescription}</p></div>
-                    ${project.technologies && project.technologies.length > 0 ? `<div class="mt-6"><h4 class="text-md font-aldrich text-teal-400 mb-2 animate-pulse-text-teal-main">TECHNOLOGIES_USED:</h4><div class="flex flex-wrap gap-2">${project.technologies.map(tech => `<span class="text-xs bg-gray-700 text-sky-300 px-2 py-1 rounded-sm border border-gray-600">${tech}</span>`).join('')}</div></div>` : ''}
-                    ${project.gddLink ? `<div class="mt-6"><a href="${project.gddLink}" target="_blank" rel="noopener noreferrer" class="btn-google-cyber-teal inline-flex items-center text-xs animate-pulse-bg-teal"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> VIEW PROJECT FILES / GDD</a></div>` : ''}
-                </div>
-                <div class="mt-6 pt-4 border-t border-gray-700 flex justify-end space-x-3">
-                    <a href="#/Project_${project.id}" data-page="Project_${project.id}" class="nav-item btn-primary-cyber-teal text-xs animate-pulse-bg-teal">ACCESS FULL DATA LOG</a> 
-                    <button id="cancelDetailModalBtn" class="btn-secondary-cyber text-xs">CLOSE FRAGMENT</button>
-                </div>
-            `;
-            projectDetailModal.classList.remove('hidden');
-            projectDetailModal.classList.add('active');
-            document.body.classList.add('modal-open');
-            document.getElementById('closeDetailModalBtn').addEventListener('click', closeProjectDetailModal);
-            document.getElementById('cancelDetailModalBtn').addEventListener('click', closeProjectDetailModal);
-            document.querySelector(`#projectDetailModalContent a[data-page="Project_${project.id}"]`).addEventListener('click', (e) => {
-                e.preventDefault();
-                navigateTo(`Project_${project.id}`);
-                closeProjectDetailModal(); // Close modal after navigating to full page
-            });
-        }
-
-        function closeProjectDetailModal() {
-            projectDetailModal.classList.add('hidden');
-            projectDetailModal.classList.remove('active');
-            document.body.classList.remove('modal-open');
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; // Clear before starting
+                nextInitialLine();
+            } else { // Fallback if initial log output isn't there for some reason
+                 console.error("Initial log output element not found. Skipping initial log.");
+                 bodyElement.classList.add('loaded');
+                 startSidebarLogAnimation();
+                 initializePageFunctions();
+            }
         }
         
-        function openSearchModal() {
-            searchModal.classList.remove('hidden');
-            searchModal.classList.add('active');
-            document.body.classList.add('modal-open');
-            searchInput.value = ''; // Clear previous search
-            searchResultsContainer.innerHTML = '<p class="text-gray-500 font-share-tech-mono">QUERY FIELD EMPTY. INPUT REQUIRED.</p>';
-        }
+        let sidebarJargonIndex = 0;
+        function startSidebarLogAnimation() {
+            if (!sidebarLogScreen) return;
+            sidebarLogScreen.innerHTML = ''; // Clear previous logs
 
-        function closeSearchModalHandler() {
-            searchModal.classList.add('hidden');
-            searchModal.classList.remove('active');
-            document.body.classList.remove('modal-open');
-        }
-        
-        function closeModalsAndMenu() {
-            closeProjectDetailModal();
-            closeSearchModalHandler();
-            mobileMenu.classList.add('hidden');
-        }
-
-
-        // --- Event Listeners ---
-        window.addEventListener('hashchange', handleHashChange);
-        window.addEventListener('DOMContentLoaded', () => {
-            runLogonAnimation(); // Run logon animation first
-            setTimeout(() => { // Then setup the page based on hash
-                 handleHashChange(); // Initial page load based on hash
-            }, 500); // Small delay to ensure DOM is ready after potential intro
-           
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            navItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = e.target.dataset.page;
-                    navigateTo(page);
-                });
-            });
-            
-            searchIconNav.addEventListener('click', openSearchModal);
-            searchIconMobileNav.addEventListener('click', openSearchModal);
-            closeSearchModalBtn.addEventListener('click', closeSearchModalHandler);
-            cancelSearchModalBtn.addEventListener('click', closeSearchModalHandler);
-
-            searchForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const term = searchInput.value.toLowerCase().trim();
-                if (!term) {
-                    searchResultsContainer.innerHTML = '<p class="text-gray-500 font-share-tech-mono">QUERY FIELD EMPTY. INPUT REQUIRED.</p>';
-                    return;
-                }
-                const results = initialProjectsData.filter(project => 
-                    project.title.toLowerCase().includes(term) ||
-                    (project.shortDescription && project.shortDescription.toLowerCase().includes(term)) ||
-                    (project.category && project.category.toLowerCase().includes(term)) ||
-                    (project.classification && project.classification.toLowerCase().includes(term)) ||
-                    (project.tags && project.tags.some(tag => tag.toLowerCase().includes(term)))
-                );
-
-                if (results.length > 0) {
-                    searchResultsContainer.innerHTML = results.map(project => `
-                        <li class="p-3 bg-gray-700 rounded-sm shadow-sm border border-gray-600 hover:border-teal-600">
-                            <strong class="text-teal-400 font-aldrich text-md animate-pulse-text-teal-main">${project.title}</strong>
-                            <span class="text-xs text-gray-400 ml-2 uppercase tracking-wider">(${project.category})</span>
-                            <p class="text-xs text-gray-300 mt-1 font-roboto-mono truncate">${project.shortDescription}</p>
-                            <a href="#/Project_${project.id}" data-project-id-link="${project.id}" class="search-result-link text-xs text-teal-500 hover:text-teal-300 mt-2 font-share-tech-mono uppercase tracking-wider py-1 px-2 border border-teal-700 hover:bg-teal-700 hover:text-white rounded-sm transition-all animate-pulse-border-teal">
-                                Access Fragment &gt;&gt;
-                            </a>
-                        </li>
-                    `).join('');
-                    document.querySelectorAll('.search-result-link').forEach(link => {
-                        link.addEventListener('click', (ev) => {
-                            ev.preventDefault();
-                            navigateTo(`Project_${ev.currentTarget.dataset.projectIdLink}`);
-                            closeSearchModalHandler();
-                        });
-                    });
+            function nextSidebarLine() {
+                let text, className, pause;
+                if (sidebarJargonIndex % 4 === 2) { // Show Mi-hwa line periodically
+                    text = sidebarMihwaLine;
+                    className = 'mihwa';
+                    pause = 2000;
                 } else {
-                    searchResultsContainer.innerHTML = '<p class="text-gray-500 font-share-tech-mono">NO MATCHING DATA FRAGMENTS FOUND.</p>';
+                    text = sidebarLogJargon[sidebarJargonIndex % sidebarLogJargon.length];
+                    className = 'jargon';
+                    pause = 1500 + Math.random() * 1000; // Vary pause for sidebar
+                }
+                // Call with corrected argument mapping for the modified typeLine
+                typeLine(text, className, sidebarLogScreen, nextSidebarLine, 30, pause);
+                sidebarJargonIndex++;
+            }
+            nextSidebarLine();
+        }
+
+        // --- Functions to be called AFTER initial logon ---
+        function initializePageFunctions() {
+            setActiveNavLink();
+            filterProjects(); 
+            startFooterStatusCycle();
+            updateScanTime(); 
+            setInterval(updateScanTime, 1000 * 60);
+
+            // Contact form listener (if present on the page)
+            // Ensure your contact form has id="contact-form" or adjust selector
+            const contactForm = document.querySelector('#main-content form'); 
+            if (contactForm && contactForm.closest('section[id="contact"]')) { 
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Using custom message box logic if available, otherwise alert
+                    if (typeof showMessage === 'function') {
+                        showMessage("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
+                    } else {
+                        alert("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
+                    }
+                    this.reset();
+                });
+            }
+        }
+        
+        // --- Active Navigation Link ---
+        function setActiveNavLink() {
+            const currentPath = window.location.pathname.split("/").pop() || "index.html";
+            document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
+                link.classList.remove('active');
+                const linkPath = link.getAttribute('href').split("/").pop();
+                if (linkPath === currentPath || (currentPath === "" && linkPath === "index.html") ) {
+                    link.classList.add('active');
                 }
             });
+        }
 
-            // Close modals on Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === "Escape") {
-                    closeProjectDetailModal();
-                    closeSearchModalHandler();
-                }
+        // --- Project Search and Category Filter ---
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+        function filterProjects() {
+            const projectGrid = document.getElementById('project-grid');
+            if (!projectGrid) return; 
+            const projectCards = projectGrid.querySelectorAll('.project-card');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
+
+            projectCards.forEach(card => {
+                const title = (card.dataset.title || '').toLowerCase();
+                const description = (card.dataset.description || '').toLowerCase();
+                const category = (card.dataset.category || '').toLowerCase();
+                
+                const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
+
+                // Using display style instead of class for simpler show/hide
+                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
             });
-        });
+        }
+        if (searchInput) searchInput.addEventListener('keyup', filterProjects);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
 
+        // --- Footer Dynamic Content ---
+        if(document.getElementById('currentYear')) {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+        function updateScanTime() {
+            const scanTimeElem = document.getElementById('lastScanTime');
+            if (scanTimeElem) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+                const dateString = now.toLocaleDateString([], {year: 'numeric', month: '2-digit', day: '2-digit'});
+                scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
+            }
+        }
+        
+        // --- Footer Security Status Cycling ---
+        const securityStatusMessages = [
+            "System integrity maintained.",
+            "All channels secure. No breaches detected.",
+            "Threat matrix nominal. Vigilance protocols active.",
+            "Data encryption at maximum strength.",
+            "Network monitored. Perimeter holding strong."
+        ];
+        let currentStatusIndex = 0;
+        function startFooterStatusCycle() {
+            const statusElement = document.getElementById('security-status-text');
+            if (statusElement) {
+                setInterval(() => {
+                    currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
+                    statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                }, 30000); // Change every 30 seconds
+            }
+        }
+        
+        // --- Initialize on Page Load ---
+        window.onload = runInitialLogon;
     </script>
 </body>
 </html>
