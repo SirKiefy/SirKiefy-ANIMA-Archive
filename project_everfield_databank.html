@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Kiegan - Databank // Project Everfield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base CSS (Copy ALL from index.html or about.html) --- */
+        :root {
+            --bg-darkest: #050608; /* ... (copy all CSS variables from index.html) ... */
+            --bg-dark: #0a0c0f;
+            --bg-panel: #101419;
+            --bg-card: #181c22;
+            --border-subtle: #303841;
+            --border-medium: #4a4e50;
+            --text-primary: #c5c6c7;
+            --text-secondary: #9ea4a8;
+            --text-muted: #787c82;
+            --accent-orange: #f07c3a;
+            --accent-orange-dark: #d96f32;
+            --accent-cyan: #00e0e0;
+            --accent-cyan-dark: #00b8b8;
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 0px;
+        }
+        body {
+            font-family: 'Inter', sans-serif; background-color: var(--bg-dark);
+            color: var(--text-primary); margin: 0; padding: 0; box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        .font-terminal { font-family: 'Share Tech Mono', monospace; }
+        .text-accent-orange { color: var(--accent-orange); }
+        .border-accent-orange { border-color: var(--accent-orange); }
+        .bg-accent-orange { background-color: var(--accent-orange); }
+        .text-accent-cyan { color: var(--accent-cyan); }
+        .border-accent-cyan { border-color: var(--accent-cyan); }
+        .block-element { border-radius: 0px !important; }
+
+        #welcome-popup { /* Styles from index.html */
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: var(--bg-panel); color: var(--text-primary); padding: 30px 40px;
+            border: 2px solid var(--accent-orange); box-shadow: 0 0 30px rgba(240, 124, 58, 0.4);
+            z-index: 10000; text-align: center; opacity: 0; visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            font-family: 'Share Tech Mono', monospace; font-size: 1.3rem;
+        }
+        #welcome-popup.show { opacity: 1; visibility: visible; }
+        #welcome-popup .mihwa-line {
+            color: var(--accent-orange); font-weight: bold; display: block;
+            margin-top: 12px; animation: subtle-pulse 1.5s infinite alternate;
+        }
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1.02); }
+        }
+
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; }
+        body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
+        body.loaded #main-content-wrapper { display: block; }
+        body.loaded #sidebar-toggle { display: block; }
+
+        #sidebar { /* Styles from index.html */
+            width: var(--sidebar-width); background-color: var(--bg-darkest);
+            border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
+            position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
+            transition: transform 0.3s ease-in-out; transform: translateX(0); z-index: 1000;
+        }
+        body.sidebar-collapsed #sidebar { transform: translateX(-100%); }
+        .sidebar-title { /* Styles from index.html */
+            font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 24px;
+            text-align: center; color: var(--accent-orange); font-weight: bold;
+        }
+        .main-nav a { /* Styles from index.html */
+            display: block; padding: 10px 15px; margin-bottom: 6px; text-transform: uppercase;
+            border-left: 3px solid transparent; background-color: var(--bg-panel);
+            color: var(--text-secondary);
+            transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
+        }
+        .main-nav a:hover { /* Styles from index.html */
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card);
+        }
+        .main-nav a.active { /* Styles from index.html */
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card); font-weight: bold;
+        }
+        .sidebar-controls { /* Styles from index.html */
+            margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);
+        }
+        .sidebar-controls h3 { /* Styles from index.html */
+            font-family: 'Share Tech Mono', monospace; font-size: 1rem;
+            color: var(--text-secondary); margin-bottom: 8px;
+        }
+        #search-input, #category-filter { /* Styles from index.html */
+            width: 100%; padding: 8px; background-color: var(--bg-panel);
+            border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
+        }
+        #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
+        
+        #sidebar-toggle { /* Styles from index.html */
+            position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
+            background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
+            padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem; transition: left 0.3s ease-in-out, background-color 0.2s ease;
+            writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg);
+            height: auto; line-height: 1;
+        }
+        #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
+        body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
+
+        #main-content-wrapper { /* Styles from index.html */
+            margin-left: var(--sidebar-width); padding: 0;
+            width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        body.sidebar-collapsed #main-content-wrapper {
+            margin-left: var(--sidebar-width-collapsed);
+            width: calc(100% - var(--sidebar-width-collapsed));
+        }
+        #main-content { padding: 32px; }
+
+        .section-panel { /* Styles from index.html */
+            background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+            padding: 24px; margin-bottom: 32px;
+        }
+        .section-title { /* Styles from index.html */
+            font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
+            margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .footer-terminal { /* Styles from index.html */
+            background-color: var(--bg-panel); text-align: center; padding: 24px;
+            border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
+            color: var(--text-muted); margin-top: 32px;
+        }
+        #security-status-text { /* Styles from index.html */
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
+        }
+        @keyframes glow-security-text { /* Styles from index.html */
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
+        }
+        /* Databank specific styles */
+        .databank-entry { margin-bottom: 1.5rem; line-height: 1.7; }
+        .databank-entry h3 {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
+            font-size: 1.4rem; margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
+        }
+        .databank-entry h4 {
+            font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
+            font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.25rem;
+        }
+        .databank-entry p { margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .databank-entry ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
+        .databank-entry li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
+        .databank-entry li::before {
+            content: '>'; /* Simpler bullet for databank */
+            position: absolute; left: 0; color: var(--accent-orange);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .code-block {
+            background-color: var(--bg-darkest); border: 1px solid var(--border-subtle);
+            padding: 1rem; margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem; color: var(--accent-cyan); white-space: pre-wrap; overflow-x: auto;
+        }
+        @media (max-width: 768px) { /* Styles from index.html */
+            #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
+            body.sidebar-collapsed #sidebar { display: none; }
+            #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
+            #main-content { padding: 16px; }
+            #sidebar-toggle { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-popup" class="block-element">
+        QUERYING DATABANK // PROJECT_EVERFIELD
+        <span class="mihwa-line">Bullying Mi-hwa the beloved &lt;3</span>
+    </div>
+
+    <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
+
+     <aside id="sidebar" class="block-element">
+        <div class="sidebar-title font-terminal">OPERATOR CONSOLE</div>
+        <nav class="main-nav font-terminal">
+            <a href="index.html" class="block-element">Home_Interface</a>
+            <a href="about.html" class="block-element">Auth_Logs // About</a>
+            <a href="projects.html" class="block-element">Data_Streams // Projects</a>
+            <a href="hobbies.html" class="block-element">Recreation_Protocols // Hobbies</a>
+            <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
+            <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
+            <a href="contact.html" class="block-element">Comms_Link // Contact</a>
+        </nav>
+        <div class="sidebar-controls">
+            <h3>// PROJECT_ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Projects...">
+            <h3>// CATEGORY_SORT</h3>
+            <select id="category-filter" class="font-terminal block-element">
+                <option value="all">All Categories</option>
+                <option value="web-dev">Web Development</option>
+                <option value="sfx">SFX</option>
+                <option value="3d-model">3D Modelling</option>
+                <option value="game-dev">Game Development</option>
+                <option value="world-build">World Building</option>
+            </select>
+        </div>
+    </aside>
+
+    <div id="main-content-wrapper">
+        <main id="main-content">
+            <section id="everfield-data" class="section-panel block-element">
+                <h2 class="section-title text-accent-orange font-terminal">// DATABANK_ACCESS :: PROJECT_EVERFIELD_GDD_v2.0</h2>
+
+                <div class="databank-entry">
+                    <h3>Core Concept</h3>
+                    <p><strong>Game Name:</strong> Project Everfield</p>
+                    <p><strong>Genre:</strong> Action RPG</p>
+                    <p><strong>Engine:</strong> Unity</p>
+                    <p><strong>Platform:</strong> Desktop (PC)</p>
+                    <p>Project Everfield is envisioned as an action RPG set in the fantasy world of Everfield. Gameplay focuses on exploration, souls-like combat mechanics (melee and ranged), and a deep magic system involving elemental matchups and dynamic spell interactions. Character progression involves stat allocation and skill development.</p>
+                </div>
+
+                <div class="databank-entry">
+                    <h3>World of Everfield</h3>
+                    <p>Everfield is a world defined by diverse and magical biomes. Notable regions include:</p>
+                    <ul>
+                        <li><strong>Crystal Oasis Desert:</strong> Dark sands, towering mana gems, ancient mage ruins.</li>
+                        <li><strong>Blossom Valley:</strong> Cherry blossoms, hot springs, waterfalls.</li>
+                        <li><strong>Forest of the World Tree:</strong> Giant mahogany trees, colossal World Tree at its center.</li>
+                        <li><strong>Dead Forest of the World Tree:</strong> Charred, desolate version of its living counterpart.</li>
+                        <li><strong>Fragmented Lands:</strong> Surreal landscape of floating islands from a cataclysmic battle.</li>
+                        <li><strong>Flooded Forest:</strong> Vast forested wetlands with deep underwater abysses.</li>
+                        <li><strong>Volcanic Mountain Range:</strong> Rugged peaks with lava flows meeting the sea.</li>
+                        <li><strong>Giant Ice Shards:</strong> Frozen landscape with towering ice formations and dense forests.</li>
+                        <li><strong>World of Bioluminescence:</strong> Ethereally glowing flora, fauna, and waterways.</li>
+                        <li><strong>Cradle of Lakes:</strong> Interconnected crater lakes forming a network of waterways.</li>
+                    </ul>
+                    <p>A variety of races inhabit Everfield, including Humans, Dragons, Bharons, Angels, Chitarin, Elves, Lyssandra, Homunculus, Beast folk, Flugals, Kitsune, Tenguuru, Mechanoids, Golems, Vampires, Ents, and Dwarfs.</p>
+                </div>
+
+                <div class="databank-entry">
+                    <h3>Gameplay Mechanics Overview</h3>
+                    <h4>Combat System:</h4>
+                    <p>Third-person, souls-like combat with stamina management. Melee features stance switching (similar to For Honor) with directional attacks, blocks, and parries. Ranged combat uses an over-the-shoulder view.</p>
+                    <p>Weapon types are categorized: Light, Mid, Heavy, and Ultra Heavy for melee; Bows, Slings, Throwing Weapons, Crossbows, and Firearms for ranged.</p>
+                    
+                    <h4>Player Stats:</h4>
+                    <p>Strength, Finesse, Agility, Endurance, Charisma, Arcane, Mind, Soul. Each stat influences various combat and non-combat attributes (e.g., Melee Prowess, Carry Capacity, Spellcasting Proficiency, Mana Reservoir).</p>
+
+                    <h4>Magic & Spell Crafting:</h4>
+                    <p>A core feature is the elemental magic system with strengths/weaknesses (e.g., Fire strong vs. Earth, weak vs. Water). Affinity bonuses enhance elemental specialization. Dynamic spell interactions occur with the environment and other spells (e.g., Fire + Air = Firestorm).</p>
+                    <p>An enhanced spell crafting system allows players to define spell type (Projectile, Beam, AoE), assign energy sources/elements, and add modifiers using crafting materials. Spell power and duration scale with stats and material quality.</p>
+                    <pre class="code-block block-element">
+// Example Damage Formula Snippet
+Physical Damage Taken = (SUM(max(0, Attack Value - Armor Reduction))) * (1 - Physical Resistance)
+Magical Damage Taken = (SUM(max(0, Attack Value * Multiplier - Elemental Resistance))) * (1 - Magical Resistance)
+Total Damage Taken = Physical Damage Taken + Magical Damage Taken
+                    </pre>
+                </div>
+                
+                <div class="databank-entry">
+                    <h3>Other Key Features</h3>
+                    <ul>
+                        <li><strong>Player Movement:</strong> Includes climbing, swimming, jumping, running, dodging, rolling.</li>
+                        <li><strong>Death Mechanics:</strong> Penalties like EXP loss, potential skill loss, or even character deletion depending on game mode.</li>
+                        <li><strong>Exploration:</strong> Hidden paths, secrets, and puzzles.</li>
+                        <li><strong>NPC Interactions:</strong> Dialogue choices, quests, factions, trading, pickpocketing, recruitment.</li>
+                        <li><strong>Crafting/Upgrading:</strong> For weapons, armor, and consumables.</li>
+                        <li><strong>Boss Mechanics:</strong> Unique abilities, phases, and weaknesses.</li>
+                    </ul>
+                </div>
+
+            </section>
+            <footer class="footer-terminal block-element">
+                <p>&copy; <span id="currentYear"></span> Kiegan. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">DATA CORE INTERFACE v3.3 // LAST SCAN: <span id="lastScanTime"></span></p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
+        // This entire script block should be copied from the updated index.html.
+        const welcomePopup = document.getElementById('welcome-popup');
+        const bodyElement = document.body;
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+
+        function showWelcomePopup() {
+            if (welcomePopup) {
+                welcomePopup.classList.add('show');
+                setTimeout(() => {
+                    welcomePopup.classList.remove('show');
+                    setTimeout(() => {
+                         if(welcomePopup) welcomePopup.style.display = 'none';
+                         bodyElement.classList.add('loaded');
+                         initializePageFunctions();
+                    }, 500); 
+                }, 3000); 
+            } else {
+                bodyElement.classList.add('loaded');
+                initializePageFunctions();
+            }
+        }
+        
+        function initializePageFunctions() {
+            setActiveNavLink();
+            // filterProjects(); // Not needed on this page, #project-grid doesn't exist
+            startFooterStatusCycle(); 
+            updateScanTime(); 
+            setInterval(updateScanTime, 1000 * 60);
+        }
+        
+        function setActiveNavLink() {
+            const currentPath = window.location.pathname.split("/").pop() || "index.html";
+            const currentPageName = currentPath === "" ? "index.html" : currentPath;
+            document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
+                link.classList.remove('active');
+                const linkHref = link.getAttribute('href');
+                const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                if (linkPath === currentPageName) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // filterProjects() and its listeners are omitted as they are not relevant here.
+        // const searchInput = document.getElementById('search-input');
+        // const categoryFilter = document.getElementById('category-filter');
+        // if (searchInput) searchInput.addEventListener('keyup', filterProjects);
+        // if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
+
+
+        if(document.getElementById('currentYear')) {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+        function updateScanTime() {
+            const scanTimeElem = document.getElementById('lastScanTime');
+            if (scanTimeElem) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+                const dateString = now.toLocaleDateString([], {year: 'numeric', month: '2-digit', day: '2-digit'});
+                scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
+            }
+        }
+        
+        const securityStatusMessages = [
+            "System integrity maintained.", "All channels secure.",
+            "Threat matrix nominal.", "Data encryption: MAX.",
+            "Network vigilance active."
+        ];
+        let currentStatusIndex = 0;
+        function startFooterStatusCycle() {
+            const statusElement = document.getElementById('security-status-text');
+            if (statusElement) {
+                setInterval(() => {
+                    currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
+                    statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                }, 30000); 
+            }
+        }
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                bodyElement.classList.toggle('sidebar-collapsed');
+                 if (bodyElement.classList.contains('sidebar-collapsed')) {
+                    sidebarToggle.innerHTML = 'C<br>O<br>N<br>S<br>O<br>L<br>E'; 
+                } else {
+                    sidebarToggle.innerHTML = 'CONSOLE';
+                }
+            });
+        }
+        
+        window.onload = showWelcomePopup;
+    </script>
+</body>
+</html>
