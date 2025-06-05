@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator SirKiefy - Databank // </title>
+    <title>Operator SirKiefy - Starfall // Core Concept</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
+        /* --- Base CSS (Copy ALL from index.html or the updated project_starfall_databank.html) --- */
         :root {
             --bg-darkest: #050608;
             --bg-dark: #0a0c0f;
@@ -37,65 +38,34 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        /* Initial Full-Screen Log-on Animation */
-        #initial-logon-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-            box-sizing: border-box;
-            font-family: 'Share Tech Mono', monospace;
+        #initial-logon-screen { /* Styles from index.html */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10000;
+            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
         }
-        #logon-content-container {
-            display: flex;
-            flex-direction: column; 
-            align-items: center; 
-            width: 100%;
-            max-width: 900px; 
-            height: 80%;
-            max-height: 700px; 
-            border: 1px solid var(--border-medium);
-            background-color: rgba(10,12,15,0.7);
-            padding: 20px;
-            gap: 20px; 
+        #logon-content-container { /* Styles from index.html */
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 900px; height: 80%; max-height: 700px;
+            border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
+            padding: 20px; gap: 20px;
         }
-        #initial-log-output {
-            color: var(--accent-cyan);
-            font-size: clamp(0.9rem, 2vw, 1.1rem); 
-            width: 100%;
-            height: 50%; 
-            overflow-y: auto;
-            white-space: pre-wrap;
-            background-color: rgba(0,0,0,0.3);
-            padding: 10px;
-            border: 1px solid var(--border-subtle);
+        #initial-log-output { /* Styles from index.html */
+            color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
+            width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
         }
         #initial-log-output .log-line.system { color: var(--text-primary); }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
         #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
-        
-        #logon-graph-container {
-            width: 100%;
-            height: 40%; 
-            background-color: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-subtle);
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #logon-graph-container { /* Styles from index.html */
+            width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle); padding: 10px; display: flex;
+            align-items: center; justify-content: center;
         }
-        #logon-graph-canvas {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        @keyframes subtle-pulse {
+        #logon-graph-canvas { max-width: 100%; max-height: 100%; }
+        @keyframes subtle-pulse { /* Styles from index.html */
             from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
             to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
         }
@@ -104,8 +74,8 @@
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
-
-        #sidebar { 
+        
+        #sidebar { /* All sidebar styles from index.html */
             width: var(--sidebar-width); background-color: var(--bg-darkest);
             border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
             position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
@@ -143,7 +113,7 @@
         }
         #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
 
-        #sidebar-toggle { 
+        #sidebar-toggle { /* Styles from index.html */
             position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
             background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
             padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
@@ -153,8 +123,8 @@
         }
         #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
         body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
-        
-        #main-content-wrapper { 
+
+        #main-content-wrapper { /* Styles from index.html */
             margin-left: var(--sidebar-width); padding: 0;
             width: calc(100% - var(--sidebar-width));
             transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
@@ -164,98 +134,53 @@
             width: calc(100% - var(--sidebar-width-collapsed));
         }
         #main-content { padding: 32px; }
-        
-        .section-panel { 
+
+        .section-panel { /* Styles from index.html */
             background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
             padding: 24px; margin-bottom: 32px;
         }
-        .section-title { 
+        .section-title { /* Styles from index.html */
             font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
             margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
         }
-        .hero-section { text-align: center; border-bottom: 2px solid var(--accent-orange); }
-        .hero-title { font-size: 2.5rem; letter-spacing: 3px; line-height: 1.2; }
-        .hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-top: 8px; }
-        .status-indicator { 
-            display: inline-block; width: 12px; height: 12px;
-            background-color: var(--accent-cyan); margin-right: 8px;
-            vertical-align: middle;
-            animation: pulse-cyan 1.5s infinite ease-in-out;
-        }
-        @keyframes pulse-cyan { 
-            0%, 100% { box-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan); opacity: 1; } 
-            50% { box-shadow: 0 0 8px var(--accent-cyan-dark), 0 0 12px var(--accent-cyan-dark); opacity: 0.6; } 
-        }
-        .btn {
-            padding: 12px 24px; text-transform: uppercase; letter-spacing: 1px;
-            border: 1px solid; transition: background-color 0.2s ease, color 0.2s ease;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: var(--accent-orange); border-color: var(--accent-orange);
-            color: var(--bg-darkest);
-        }
-        .btn-primary:hover {
-            background-color: var(--accent-orange-dark);
-            border-color: var(--accent-orange-dark);
-        }
-         .btn-secondary { 
-            background-color: transparent;
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-        .btn-secondary:hover {
-            background-color: var(--accent-cyan);
-            color: var(--bg-darkest);
-        }
-        .footer-terminal { 
+        .footer-terminal { /* Styles from index.html */
             background-color: var(--bg-panel); text-align: center; padding: 24px;
             border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
             color: var(--text-muted); margin-top: 32px;
         }
-        #security-status-text { 
+        #security-status-text { /* Styles from index.html */
             display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
         }
-        @keyframes glow-security-text { 
+        @keyframes glow-security-text { /* Styles from index.html */
             from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
             to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
         }
-        .databank-entry { 
-            margin-bottom: 1.5rem; line-height: 1.7;
-            transition: background-color 0.2s ease, border-color 0.2s ease; /* Added transition for hover */
-             border: 1px solid var(--border-subtle); /* Initial border */
-             padding: 1rem; /* Add padding to the entry box */
+        /* Styles for full document view */
+        .document-view-content {
+            line-height: 1.8;
+            font-size: 1rem;
+            color: var(--text-secondary);
         }
-        .databank-entry:hover {
-            background-color: var(--bg-card); /* Example hover background */
-            border-color: var(--accent-cyan); /* Example hover border */
+        .document-view-content p {
+            margin-bottom: 1rem;
         }
-        .databank-entry h3 {
-            font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan);
-            font-size: 1.4rem; margin-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.3rem;
+        .document-view-content strong {
+            color: var(--text-primary);
+            font-weight: 600; /* From Inter font */
         }
-        .databank-entry h3 a { /* Style for the link within h3 */
+         .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent-orange);
             text-decoration: none;
-            color: inherit; /* Inherit color from h3 */
-            display: block; /* Make the link fill the h3 area for easier clicking */
-        }
-        .databank-entry h3 a:hover {
-            color: var(--accent-orange); /* Change color on title hover */
-            text-decoration: underline;
-        }
-        .databank-entry h4 {
-            font-family: 'Share Tech Mono', monospace; color: var(--accent-orange);
-            font-size: 1.15rem; margin-top: 1rem; margin-bottom: 0.25rem;
-        }
-        .databank-entry p { margin-bottom: 0.5rem; color: var(--text-secondary); }
-        .databank-entry ul { list-style: none; padding-left: 0; margin-bottom: 0.75rem; }
-        .databank-entry li { margin-bottom: 0.3rem; padding-left: 1.5em; position: relative; }
-        .databank-entry li::before {
-            content: '>'; position: absolute; left: 0; color: var(--accent-orange);
             font-family: 'Share Tech Mono', monospace;
         }
-        @media (max-width: 768px) { 
+        .back-link:hover {
+            text-decoration: underline;
+            color: var(--accent-orange-dark);
+        }
+
+        @media (max-width: 768px) { /* Styles from index.html */
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
             #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
@@ -268,7 +193,6 @@
     </style>
 </head>
 <body>
-    <!-- Initial Full-Screen Log-on Screen with Graph -->
     <div id="initial-logon-screen">
         <div id="logon-content-container" class="block-element">
             <div id="initial-log-output" class="block-element"></div>
@@ -308,62 +232,16 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
-            <section id="starfall-data" class="section-panel block-element">
-                <h2 class="section-title text-accent-orange font-terminal">// DATABANK_ACCESS :: PROJECT_STARFALL_CONCEPT_OUTLINE</h2>
-
-                <div class="databank-entry block-element">
-                    <h3><a href="starfall_core_concept.html">Core Concept & Genre</a></h3>
+            <section id="starfall-core-concept-full" class="section-panel block-element">
+                <a href="project_starfall_databank.html" class="back-link">&lt;&lt; Back to Project Starfall Databank</a>
+                <h2 class="section-title text-accent-cyan font-terminal">Project Starfall // Core Concept & Genre</h2>
+                
+                <div class="document-view-content">
                     <p><strong>Title:</strong> Project Starfall</p>
                     <p><strong>Genre:</strong> First-Person Shooter (FPS), Tower Defense, Survival, Action-Defense, Base Building</p>
-                    <p>Project Starfall is a single-player, first-person survival tower defense game set in space. The player is a survivor crash-landed on a planet with a damaged spaceship and a critical piece of technology: the False Void Generator. The primary objective is to repair the ship and generator while defending against waves of alien robots and hostile human factions.</p>
-                </div>
-
-                <div class="databank-entry block-element">
-                     <h3><a href="starfall_setting_technology.html">Setting & Key Technology</a></h3>
-                    <p>The game takes place in a sector of space featuring the rare "False Void Generator" technology (only 3 known). This generator is the ship's primary power source and FTL drive, making its protection paramount. The player starts on a crash site, needing immediate survival and repair efforts.</p>
-                </div>
-
-                <div class="databank-entry block-element">
-                    <h3><a href="starfall_gameplay_loop.html">Gameplay Loop</a></h3>
-                    <ul>
-                        <li><strong>Initial Survival & Repair:</strong> Scavenge resources, perform preliminary repairs on the ship and False Void Generator core.</li>
-                        <li><strong>Resource Gathering:</strong> Explore planets to mine resources for crafting, building, and upgrades.</li>
-                        <li><strong>Base Building & Defense:</strong> Establish and fortify a base around the ship and generator with defensive structures (walls, turrets, traps).</li>
-                        <li><strong>Ship Repair & Preparation:</strong> Continue repairing the main spaceship for interplanetary travel.</li>
-                        <li><strong>Wave Defense:</strong> Defend against increasingly difficult waves of enemies in a first-person tower defense style.</li>
-                        <li><strong>Exploration & Expansion:</strong> Travel to other planets, each with unique resources, environments, and challenges.</li>
-                        <li><strong>Upgrades:</strong> Improve weapons, armor, defenses, spaceship capabilities, and potentially mechs.</li>
-                        <li><strong>Combat:</strong> First-person engagement with enemies, utilizing defensive structures and vehicles.</li>
-                        <li><strong>Fleet Encounters:</strong> Occasional large-scale enemy fleet encounters in space.</li>
-                        <li><strong>Survival:</strong> Manage player health, stamina, and environmental hazards.</li>
-                    </ul>
-                </div>
-                
-                <div class="databank-entry block-element">
-                    <h3><a href="starfall_key_features.html">Key Features</a></h3>
-                    <ul>
-                        <li>First-Person Perspective for all gameplay.</li>
-                        <li>Core Tower Defense mechanics against enemy waves.</li>
-                        <li>Survival elements: resource management, crafting.</li>
-                        <li>Base Building with modular or freeform construction.</li>
-                        <li>Resource Mining from diverse planetary environments.</li>
-                        <li>Upgradable systems for player, defenses, ship, and mechs.</li>
-                        <li>Player-controlled Spaceships for interplanetary travel.</li>
-                        <li>Playable Vehicles including mechs, bikes, and airships.</li>
-                        <li>Diverse Enemies: Aliens, robots, hostile human factions with unique classes.</li>
-                        <li>Focus on continuous survival with no planned end game.</li>
-                    </ul>
-                     <p><strong>Target Platform:</strong> Single Player, Unity Engine 2022.3.10f1</p>
-                </div>
-
-                <div class="databank-entry block-element">
-                    <h3><a href="starfall_enemy_factions.html">Enemy Faction Unit Classes (Examples)</a></h3>
-                    <h4>Alien Faction:</h4>
-                    <p>Drone (Swarming), Scout (Recon), Soldier (Standard), Vanguard (Heavy Armor), Librarian (Support/Debuff), Behemoth (Large Siege), Leviathan (Massive Boss-like).</p>
-                    <h4>Robot Faction:</h4>
-                    <p>Drone (Utility/Attack), Scout (Fast Recon), Soldier (Combat Bot), Vanguard (Shielded/Heavy Weapons), Librarian (Repair/Buff Bot), Behemoth (Large Platform), Leviathan (Factory/Command Unit).</p>
-                    <h4>Hostile Human Faction:</h4>
-                    <p>Drone (Armed), Scout (Stealth Sniper), Soldier (Infantry), Vanguard (Heavy Infantry), Librarian (Medic/Commander), Behemoth (Powered Armor/Tank), Leviathan (Large Vehicle/Command Center).</p>
+                    <p>Project Starfall is a single-player, first-person survival tower defense game set in space. The player takes on the role of a survivor who has crash-landed on a planet with a damaged spaceship and a critical piece of technology: the False Void Generator.</p>
+                    <p>The primary goal is to repair the ship and the generator while defending against relentless waves of alien robots and hostile human factions. Players will explore planets, mine resources, build and upgrade bases and defenses, and manage their ship to survive and potentially thrive across multiple planetary locations.</p>
+                    <p>The game emphasizes a challenging survival experience where strategic base construction, resource management, and proficient first-person combat are key to enduring the escalating threats. Each planetary expedition offers new opportunities and dangers, pushing the player to adapt and enhance their capabilities continually.</p>
                 </div>
 
             </section>
@@ -375,6 +253,7 @@
     </div>
 
     <script>
+        // --- JS from index.html (Welcome Popup, Sidebar Toggle, Nav, Filters, Footer) ---
         const initialLogonScreen = document.getElementById('initial-logon-screen');
         const initialLogOutput = document.getElementById('initial-log-output');
         const logonGraphCanvas = document.getElementById('logon-graph-canvas');
@@ -388,15 +267,15 @@
             { text: "Core processor calibration: COMPLETE", class: "info" },
             { text: "Establishing secure connection to user profile...", class: "system" },
             { text: "User: Kiegan. Authentication successful.", class: "system" },
-            { text: "Loading portfolio interface modules...", class: "info" },
-            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" }, // User's requested line
+            { text: "Loading databank entry viewer...", class: "info" }, 
+            { text: "Bullying Mi-hwa the beloved <3", class: "mihwa" },
             { text: "Interface protocols online. Welcome, Operator.", class: "system" },
         ];
 
-        const typingSpeed = 50; 
-        const linePause = 250; 
-        const graphAnimationDuration = 2000; 
-        const totalIntroDuration = 4500; 
+        const typingSpeed = 25; // Made text faster
+        const linePause = 150; // Reduced pause for faster overall sequence
+        const graphAnimationDuration = 2500; // Slightly longer for more visual effect
+        const totalIntroDuration = 3500; // Total time intro is visible
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -409,30 +288,39 @@
             const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
 
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
-            graphCtx.strokeStyle = 'var(--accent-cyan)';
-            graphCtx.lineWidth = 2;
+
+            // Colorful animated line graph using a gradient
+            const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
+            gradient.addColorStop(0, 'var(--accent-cyan)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
+            gradient.addColorStop(1, 'var(--accent-cyan-dark)');
+            
+            graphCtx.strokeStyle = gradient;
+            graphCtx.lineWidth = 3; // Slightly thicker line
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight / 2);
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const y = graphHeight / 2 + Math.sin(x * 0.1 + elapsedTime * 0.005) * (graphHeight / 4);
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001); // More dynamic wave
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            if (progress > 0.3 && progress < 0.8) {
-                graphCtx.fillStyle = 'var(--accent-orange)';
-                for(let i = 0; i < 3; i++) {
-                    if (Math.random() < progress * 0.5) { 
+            // More colorful "activity spikes"
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700' /* Gold */, '#FF69B4' /* HotPink */];
+                for(let i = 0; i < 5; i++) { // More spikes
+                    if (Math.random() < progress * 0.6) { 
+                        graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const spikeY = graphHeight - (Math.random() * graphHeight * 0.3 * progress);
-                        const spikeHeight = Math.random() * 20 * progress + 5;
-                        graphCtx.fillRect(spikeX, spikeY - spikeHeight, 3, spikeHeight);
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); // Spikes above and below
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.3)';
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)'; // Softer axis
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight);
             graphCtx.lineTo(graphWidth, graphHeight);
@@ -480,6 +368,14 @@
         }
 
         function runInitialLogonSequence() {
+            // Check if intro has played this session
+            if (sessionStorage.getItem('introPlayed')) {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded');
+                initializePageFunctions();
+                return; // Skip intro
+            }
+
             let currentLineIndex = 0;
             function nextInitialLine() {
                 if (initialLogOutput && currentLineIndex < initialLogLines.length) {
@@ -501,60 +397,31 @@
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded');
                 initializePageFunctions(); 
+                sessionStorage.setItem('introPlayed', 'true'); // Mark intro as played for this session
             }, totalIntroDuration);
         }
         
         function initializePageFunctions() {
             setActiveNavLink();
-            filterProjects(); 
+            // filterProjects(); // No project grid on this page
             startFooterStatusCycle(); 
             updateScanTime(); 
             setInterval(updateScanTime, 1000 * 60);
-
-            const contactForm = document.querySelector('#main-content form'); 
-            if (contactForm && contactForm.closest('section[id="contact"]')) { 
-                contactForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert("TRANSMISSION SENT. AWAITING RESPONSE. (This is a demo - no data was actually sent)");
-                    this.reset();
-                });
-            }
+            // No contact form on this specific document page
         }
         
         function setActiveNavLink() {
-            const currentPath = window.location.pathname.split("/").pop() || "index.html";
-            const currentPageName = currentPath === "" ? "index.html" : currentPath;
+            const parentPage = "project_starfall_databank.html"; 
             document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
                 link.classList.remove('active');
                 const linkHref = link.getAttribute('href');
                 const linkPath = linkHref ? linkHref.split("/").pop() : ""; 
-                if (linkPath === currentPageName) {
+                if (linkPath === parentPage) {
                     link.classList.add('active');
                 }
             });
         }
 
-        const searchInput = document.getElementById('search-input');
-        const categoryFilter = document.getElementById('category-filter');
-        function filterProjects() {
-            const projectGrid = document.getElementById('project-grid');
-            if (!projectGrid) return; 
-            const projectCards = projectGrid.querySelectorAll('.project-card');
-            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
-            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
-
-            projectCards.forEach(card => {
-                const title = (card.dataset.title || '').toLowerCase();
-                const description = (card.dataset.description || '').toLowerCase();
-                const category = (card.dataset.category || '').toLowerCase();
-                
-                const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
-                const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
-                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
-            });
-        }
-        if (searchInput) searchInput.addEventListener('keyup', filterProjects);
-        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
 
         if(document.getElementById('currentYear')) {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
