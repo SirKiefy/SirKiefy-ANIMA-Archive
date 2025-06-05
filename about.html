@@ -1,10 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sirkiefy's Portfolio Terminal v5.1 - About</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* --- Paste ALL CSS from index.html here --- */
+        :root {
+            --bg-darkest: #050608;
+            --bg-dark: #0a0c0f;
+            --bg-panel: #101419;
+            --bg-card: #181c22;
+            --border-subtle: #303841;
+            --border-medium: #4a4e50;
+            --text-primary: #c5c6c7;
+            --text-secondary: #9ea4a8;
+            --text-muted: #787c82;
+            --accent-orange: #f07c3a;
+            --accent-orange-dark: #d96f32;
+            --accent-cyan: #00e0e0;
+            --accent-cyan-dark: #00b8b8;
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 0px; 
+        }
+        body {
+            font-family: 'Inter', sans-serif; background-color: var(--bg-dark);
+            color: var(--text-primary); margin: 0; padding: 0; box-sizing: border-box;
+            overflow-x: hidden; 
+        }
+        .font-terminal { font-family: 'Share Tech Mono', monospace; }
+        .text-accent-orange { color: var(--accent-orange); }
+        .border-accent-orange { border-color: var(--accent-orange); }
+        .bg-accent-orange { background-color: var(--accent-orange); }
+        .text-accent-cyan { color: var(--accent-cyan); }
+        .border-accent-cyan { border-color: var(--accent-cyan); }
+        .block-element { border-radius: 0px !important; }
+
+        #standby-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-darkest);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10001; text-align: center; padding: 20px;
+        }
+        #standby-title {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange); margin-bottom: 10px;
+            text-shadow: 0 0 5px var(--accent-orange-dark);
+        }
+        #standby-message {
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary); margin-bottom: 40px;
+        }
+        #logon-button {
+            font-family: 'Share Tech Mono', monospace; background-color: var(--accent-cyan);
+            color: var(--bg-darkest); border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px; font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
+        }
+        #logon-button:hover {
+            background-color: var(--accent-cyan-dark); color: var(--bg-darkest);
+            box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
+        }
+
+        #initial-logon-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10000; padding: 20px; box-sizing: border-box; 
+            font-family: 'Share Tech Mono', monospace;
+        }
+        #logon-content-container {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 900px; height: 80%; max-height: 700px;
+            border: 1px solid var(--border-medium); background-color: rgba(10,12,15,0.7);
+            padding: 20px; gap: 20px;
+        }
+        #initial-log-output {
+            color: var(--accent-cyan); font-size: clamp(0.9rem, 2vw, 1.1rem);
+            width: 100%; height: 50%; overflow-y: auto; white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.3); padding: 10px; border: 1px solid var(--border-subtle);
+        }
+        #initial-log-output .log-line.system { color: var(--text-primary); }
+        #initial-log-output .log-line.info { color: var(--accent-cyan); }
+        #initial-log-output .log-line.warning { color: var(--accent-orange); }
+        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        
+        #logon-graph-container {
+            width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle); padding: 10px; display: flex;
+            align-items: center; justify-content: center;
+        }
+        #logon-graph-canvas { max-width: 100%; max-height: 100%; }
+
+        @keyframes subtle-pulse {
+            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
+            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        }
+
+        #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
+        
+        body.loaded #standby-screen { display: none; } 
+        body.loaded #initial-logon-screen { display: none; } 
+        body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
+        body.loaded #main-content-wrapper { display: block; }
+        body.loaded #sidebar-toggle { display: block; }
+
+        #sidebar { 
+            width: var(--sidebar-width); background-color: var(--bg-darkest);
+            border-right: 1px solid var(--border-subtle); padding: 24px; height: 100vh;
+            position: fixed; top: 0; left: 0; flex-direction: column; overflow-y: auto;
+            transition: transform 0.3s ease-in-out; transform: translateX(0); z-index: 1000;
+        }
+        body.sidebar-collapsed #sidebar { transform: translateX(-100%); }
+        .sidebar-title { 
+            font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 24px;
+            text-align: center; color: var(--accent-orange); font-weight: bold;
+        }
+        .main-nav a { 
+            display: block; padding: 10px 15px; margin-bottom: 6px; text-transform: uppercase;
+            border-left: 3px solid transparent; background-color: var(--bg-panel);
+            color: var(--text-secondary);
+            transition: color 0.2s ease, border-left-color 0.2s ease, background-color 0.2s ease;
+        }
+        .main-nav a:hover { 
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card);
+        }
+        .main-nav a.active { 
+            color: var(--accent-orange); border-left-color: var(--accent-orange);
+            background-color: var(--bg-card); font-weight: bold;
+        }
+        .sidebar-controls { 
+            margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-subtle);
+        }
+        .sidebar-controls h3 { 
+            font-family: 'Share Tech Mono', monospace; font-size: 1rem;
+            color: var(--text-secondary); margin-bottom: 8px;
+        }
+        #search-input, #category-filter { 
+            width: 100%; padding: 8px; background-color: var(--bg-panel);
+            border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
+        }
+        #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
+
+        #sidebar-toggle { 
+            position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
+            background-color: var(--accent-orange); color: var(--bg-darkest); border: none;
+            padding: 8px 12px; cursor: pointer; font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem; transition: left 0.3s ease-in-out, background-color 0.2s ease;
+            writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg);
+            height: auto; line-height: 1;
+        }
+        #sidebar-toggle:hover { background-color: var(--accent-orange-dark); }
+        body.sidebar-collapsed #sidebar-toggle { left: var(--sidebar-width-collapsed); }
+        
+        #main-content-wrapper { 
+            margin-left: var(--sidebar-width); padding: 0;
+            width: calc(100% - var(--sidebar-width));
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+        body.sidebar-collapsed #main-content-wrapper {
+            margin-left: var(--sidebar-width-collapsed);
+            width: calc(100% - var(--sidebar-width-collapsed));
+        }
+        #main-content { padding: 32px; }
+        
+        .section-panel { 
+            background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+            padding: 24px; margin-bottom: 32px;
+        }
+        .section-title { 
+            font-size: 1.75rem; padding-bottom: 12px; border-bottom: 1px solid var(--border-medium);
+            margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .status-indicator { 
+            display: inline-block; width: 12px; height: 12px;
+            background-color: var(--accent-cyan); margin-right: 8px;
+            vertical-align: middle;
+            animation: pulse-cyan 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-cyan { 
+            0%, 100% { box-shadow: 0 0 3px var(--accent-cyan), 0 0 5px var(--accent-cyan); opacity: 1; } 
+            50% { box-shadow: 0 0 8px var(--accent-cyan-dark), 0 0 12px var(--accent-cyan-dark); opacity: 0.6; } 
+        }
+        .footer-terminal { 
+            background-color: var(--bg-panel); text-align: center; padding: 24px;
+            border-top: 1px solid var(--border-subtle); font-size: 0.875rem;
+            color: var(--text-muted); margin-top: 32px;
+        }
+        #security-status-text { 
+            display: inline-block; animation: glow-security-text 2.5s infinite alternate ease-in-out;
+        }
+        @keyframes glow-security-text { 
+            from { color: var(--accent-cyan); text-shadow: 0 0 2px var(--accent-cyan), 0 0 4px var(--accent-cyan), 0 0 6px var(--accent-cyan-dark); }
+            to { color: var(--accent-orange); text-shadow: 0 0 3px var(--accent-orange-dark), 0 0 6px var(--accent-orange-dark), 0 0 9px var(--accent-orange); }
+        }
+        .content-block { margin-bottom: 1.5rem; line-height: 1.7; }
+        .content-block h3 { font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 1.25rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.25rem;}
+        .content-block ul { list-style: none; padding-left: 0; }
+        .content-block li { margin-bottom: 0.5rem; padding-left: 1.5em; position: relative; }
+        .content-block li::before {
+            content: '>>'; 
+            position: absolute; left: 0; color: var(--accent-orange);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .back-button {
+            display: inline-block; padding: 8px 16px; margin-bottom: 20px; 
+            background-color: var(--accent-orange); color: var(--bg-darkest);
+            font-family: 'Share Tech Mono', monospace; text-transform: uppercase;
+            letter-spacing: 1px; border: 1px solid var(--accent-orange-dark);
+            cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease;
+            text-decoration: none;
+        }
+        .back-button:hover {
+            background-color: var(--accent-orange-dark); color: var(--bg-darkest);
+            text-decoration: none;
+        }
+        @media (max-width: 768px) { 
+            #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
+            body.sidebar-collapsed #sidebar { display: none; }
+            #main-content-wrapper { margin-left: 0 !important; width: 100% !important; }
+            #main-content { padding: 16px; }
+            #sidebar-toggle { display: none; }
+            #logon-content-container { height: 90%; max-height: none; gap: 10px;}
+            #initial-log-output { height: 60%; font-size: clamp(0.8rem, 2vw, 1rem); }
+            #logon-graph-container { height: 30%; }
+            #standby-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+            #standby-message { font-size: clamp(0.9rem, 2vw, 1.3rem); }
+            #logon-button { font-size: clamp(1rem, 2.5vw, 1.5rem); padding: 12px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="standby-screen">
+        <h1 id="standby-title" class="block-element">SIRKIEFY PORTFOLIO</h1>
+        <p id="standby-message" class="block-element">SYSTEM STANDBY // AWAITING USER AUTHENTICATION</p>
+        <button id="logon-button" class="block-element">ACCESS TERMINAL</button>
+    </div>
+
+    <div id="initial-logon-screen">
+        <div id="logon-content-container" class="block-element">
+            <div id="initial-log-output" class="block-element"></div>
+            <div id="logon-graph-container" class="block-element">
+                <canvas id="logon-graph-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <button id="sidebar-toggle" class="block-element font-terminal">CONSOLE</button>
+
+    <aside id="sidebar" class="block-element">
+        <div class="sidebar-title font-terminal">SIRKIEFY_CONSOLE</div> 
+        <nav class="main-nav font-terminal">
+            <a href="index.html" class="block-element">Home_Interface</a>
+            <a href="about.html" class="block-element">User_Profile // About</a> 
+            <a href="projects.html" class="block-element">Project_Files // Portfolio</a> 
+            <a href="hobbies.html" class="block-element">Personal_Logs // Hobbies</a> 
+            <a href="project_everfield_databank.html" class="block-element">DB // Project Everfield</a>
+            <a href="project_starfall_databank.html" class="block-element">DB // Project Starfall</a>
+            <a href="contact.html" class="block-element">Comms_Link // Contact</a>
+        </nav>
+        <div class="sidebar-controls">
+            <h3>// ARCHIVE_QUERY</h3>
+            <input type="text" id="search-input" class="font-terminal block-element" placeholder="Search Archives...">
+            <h3>// CATEGORY_SORT</h3>
+            <select id="category-filter" class="font-terminal block-element">
+                <option value="all">All Categories</option>
+                <option value="sfx">SFX</option>
+                <option value="3d-model">3D Modelling</option>
+                <option value="pixel-art">Pixel Art</option> 
+                <option value="game-dev">Game Development</option>
+                <option value="world-build">World Building</option>
+            </select>
+        </div>
+    </aside>
+
+    <div id="main-content-wrapper">
+        <main id="main-content">
+            <!-- Go Back Button -->
+            <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button>
+            
             <section id="about-user" class="section-panel block-element"> 
                 <h2 class="section-title text-accent-orange font-terminal">// USER_PROFILE :: SIRKIEFY</h2>
 
                 <div class="content-block">
                     <h3>Core Identification</h3>
                     <ul>
-                        <li><strong>Designation:</strong> Kiegan </li>
+                        <li><strong>Designation:</strong> Sirkiefy</li>
                         <li><strong>Current Age:</strong> 20 years</li>
                         <li><strong>Academic Status:</strong> University Student</li>
                         <li><strong>Primary Specializations:</strong> Special Effects (SFX) Design, 3D Modelling & Asset Creation, Pixel Art</li>
@@ -36,3 +322,294 @@
                     <p class="font-terminal text-accent-cyan mt-4">// End of Profile Transmission.</p>
                 </div>
             </section>
+            <footer class="footer-terminal block-element">
+                <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // --- Paste ENTIRE SCRIPT from index.html (portfolio_website_final_index_v4_back_button) here ---
+        const standbyScreen = document.getElementById('standby-screen');
+        const logonButton = document.getElementById('logon-button');
+        const initialLogonScreen = document.getElementById('initial-logon-screen');
+        const initialLogOutput = document.getElementById('initial-log-output');
+        const logonGraphCanvas = document.getElementById('logon-graph-canvas');
+        const bodyElement = document.body;
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        // Go back button will be fetched dynamically within initializePageFunctions
+
+        const initialLogLines = [
+            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
+            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
+            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
+            { text: "Establishing secure link to user profile...", class: "system" },
+            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
+            { text: "Loading portfolio interface v5.1...", class: "info" },
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
+            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
+        ];
+
+        const typingSpeed = 10; 
+        const linePause = 70; 
+        const graphAnimationDuration = 3500; 
+        const totalIntroDuration = 5000; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; 
+
+        let graphCtx;
+        let graphWidth, graphHeight;
+        let graphStartTime;
+
+        function drawAnimatedGraph(timestamp) {
+            if (!graphCtx) return;
+            if (!graphStartTime) graphStartTime = timestamp;
+            const elapsedTime = timestamp - graphStartTime;
+            const progress = Math.min(elapsedTime / graphAnimationDuration, 1);
+
+            graphCtx.clearRect(0, 0, graphWidth, graphHeight);
+            const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
+            gradient.addColorStop(0, 'var(--accent-cyan)');
+            gradient.addColorStop(0.5, 'var(--accent-orange)');
+            gradient.addColorStop(1, 'var(--accent-cyan-dark)');
+            
+            graphCtx.strokeStyle = gradient;
+            graphCtx.lineWidth = 3; 
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight / 2);
+
+            for (let x = 0; x < graphWidth * progress; x++) {
+                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                graphCtx.lineTo(x, y);
+            }
+            graphCtx.stroke();
+
+            if (progress > 0.2) {
+                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
+                for(let i = 0; i < 5; i++) { 
+                    if (Math.random() < progress * 0.6) { 
+                        graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
+                        const spikeX = Math.random() * graphWidth * progress;
+                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
+                    }
+                }
+            }
+            
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
+            graphCtx.beginPath();
+            graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
+            graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
+            graphCtx.stroke();
+
+            if (progress < 1) {
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function setupGraphCanvas() {
+            if (logonGraphCanvas) {
+                const container = logonGraphCanvas.parentElement;
+                logonGraphCanvas.width = container.clientWidth - 20; 
+                logonGraphCanvas.height = container.clientHeight - 20;
+                graphWidth = logonGraphCanvas.width;
+                graphHeight = logonGraphCanvas.height;
+                graphCtx = logonGraphCanvas.getContext('2d');
+                document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+                requestAnimationFrame(drawAnimatedGraph);
+            }
+        }
+
+        function typeLogLine(text, className, outputContainer, callback) {
+            if (!outputContainer) return;
+            const lineElem = document.createElement('div'); 
+            lineElem.className = `log-line ${className}`;
+            outputContainer.appendChild(lineElem);
+            let charIndex = 0;
+
+            function typeChar() {
+                if (charIndex < text.length) {
+                    lineElem.textContent += text.charAt(charIndex);
+                    charIndex++;
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    setTimeout(typeChar, typingSpeed);
+                } else {
+                    outputContainer.scrollTop = outputContainer.scrollHeight;
+                    if (callback) setTimeout(callback, linePause);
+                }
+            }
+            typeChar();
+        }
+
+        function playIntroAnimation() {
+            if (!initialLogonScreen) { 
+                console.warn("Initial logon screen not found. Cannot play intro.");
+                loadMainInterfaceDirectly();
+                return;
+            }
+            initialLogonScreen.style.display = 'flex';
+
+            let currentLineIndex = 0;
+            function nextInitialLine() {
+                if (initialLogOutput && currentLineIndex < initialLogLines.length) {
+                    const line = initialLogLines[currentLineIndex];
+                    typeLogLine(line.text, line.class, initialLogOutput, nextInitialLine);
+                    currentLineIndex++;
+                } 
+            }
+
+            if (initialLogOutput) {
+                initialLogOutput.innerHTML = ''; 
+                nextInitialLine();
+                setupGraphCanvas(); 
+            } else {
+                 console.error("Initial log output element not found for intro animation.");
+            }
+
+            setTimeout(() => {
+                if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+                bodyElement.classList.add('loaded'); 
+                initializePageFunctions(); 
+                localStorage.setItem(introKey, 'true'); 
+            }, totalIntroDuration);
+        }
+
+        function loadMainInterfaceDirectly() {
+            if (standbyScreen) standbyScreen.style.display = 'none';
+            if (initialLogonScreen) initialLogonScreen.style.display = 'none';
+            bodyElement.classList.add('loaded');
+            initializePageFunctions();
+        }
+        
+        function initializePageFunctions() {
+            setActiveNavLink();
+            filterProjects(); 
+            startFooterStatusCycle(); 
+            updateScanTime(); 
+            setInterval(updateScanTime, 1000 * 60);
+
+            const contactForm = document.querySelector('#main-content form'); 
+            if (contactForm && contactForm.closest('section[id="contact"]')) { 
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert("Message submitted. (This is a demo feature)");
+                    this.reset();
+                });
+            }
+
+            const pageSpecificGoBackButton = document.getElementById('go-back-button');
+            if (pageSpecificGoBackButton) {
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || history.length <= 1) {
+                    pageSpecificGoBackButton.style.display = 'none';
+                } else {
+                    pageSpecificGoBackButton.addEventListener('click', () => {
+                        history.back();
+                    });
+                }
+            }
+        }
+        
+        function setActiveNavLink() {
+            const currentPath = window.location.pathname.split("/").pop() || "index.html";
+            const currentPageName = currentPath === "" ? "index.html" : currentPath;
+            document.querySelectorAll('#sidebar .main-nav a').forEach(link => {
+                link.classList.remove('active');
+                const linkHref = link.getAttribute('href');
+                let linkPath = linkHref ? linkHref.split("/").pop() : ""; 
+                if (linkPath === "" && (linkHref === "./" || linkHref === "index.html" || linkHref === "")) {
+                    linkPath = "index.html";
+                }
+                if (linkPath === currentPageName) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+        function filterProjects() {
+            const projectGrid = document.getElementById('project-grid'); 
+            if (!projectGrid) return; 
+            const projectCards = projectGrid.querySelectorAll('.project-card'); 
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+            const selectedCategory = categoryFilter ? categoryFilter.value : "all";
+
+            projectCards.forEach(card => {
+                const title = (card.dataset.title || '').toLowerCase();
+                const description = (card.dataset.description || '').toLowerCase(); 
+                const category = (card.dataset.category || '').toLowerCase();
+                
+                const matchesSearch = searchTerm === "" || title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = selectedCategory === 'all' || category.includes(selectedCategory);
+                card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+            });
+        }
+        if (searchInput) searchInput.addEventListener('keyup', filterProjects);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterProjects);
+
+        if(document.getElementById('currentYear')) {
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+        function updateScanTime() {
+            const scanTimeElem = document.getElementById('lastScanTime');
+            if (scanTimeElem) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' });
+                const dateString = now.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC'});
+                scanTimeElem.textContent = `${dateString} ${timeString} UTC`;
+            }
+        }
+        
+        const securityStatusMessages = [
+            "System Integrity: Optimal", "Network Channels: Secure",
+            "Threat Analysis: Nominal", "Data Encryption: Maximum",
+            "Perimeter Monitoring: Active" 
+        ];
+        let currentStatusIndex = 0;
+        function startFooterStatusCycle() {
+            const statusElement = document.getElementById('security-status-text');
+            if (statusElement) {
+                statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                setInterval(() => {
+                    currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
+                    statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                }, 30000); 
+            }
+        }
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                bodyElement.classList.toggle('sidebar-collapsed');
+                if (bodyElement.classList.contains('sidebar-collapsed')) {
+                    sidebarToggle.innerHTML = 'C<br>N<br>S<br>L'; 
+                } else {
+                    sidebarToggle.innerHTML = 'CONSOLE';
+                }
+            });
+        }
+        
+        window.onload = () => {
+            if (standbyScreen && logonButton) {
+                if (localStorage.getItem(introKey)) { 
+                    loadMainInterfaceDirectly();
+                } else {
+                    logonButton.addEventListener('click', () => {
+                        if (standbyScreen) standbyScreen.style.display = 'none';
+                        playIntroAnimation();
+                    });
+                }
+            } else {
+                if (localStorage.getItem(introKey)) {
+                     loadMainInterfaceDirectly();
+                } else {
+                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
+                    loadMainInterfaceDirectly();
+                     localStorage.setItem(introKey, 'true'); 
+                }
+            }
+        };
+    </script>
+</body>
+</html>
