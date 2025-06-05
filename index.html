@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sirkiefy's Portfolio Terminal v5.0</title>
+    <title>Sirkiefy's Portfolio Terminal v5.1</title> <!-- Version Update -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -37,55 +37,40 @@
         .border-accent-cyan { border-color: var(--accent-cyan); }
         .block-element { border-radius: 0px !important; }
 
-        /* Standby Screen */
         #standby-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: var(--bg-darkest);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10001; /* Highest z-index */
-            text-align: center;
-            padding: 20px;
+            z-index: 10001; text-align: center; padding: 20px;
         }
         #standby-title {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            color: var(--accent-orange);
-            margin-bottom: 10px;
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--accent-orange); margin-bottom: 10px;
             text-shadow: 0 0 5px var(--accent-orange-dark);
         }
         #standby-message {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: clamp(1rem, 2.5vw, 1.5rem);
-            color: var(--text-secondary);
-            margin-bottom: 40px;
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary); margin-bottom: 40px;
         }
         #logon-button {
-            font-family: 'Share Tech Mono', monospace;
-            background-color: var(--accent-cyan);
-            color: var(--bg-darkest);
-            border: 2px solid var(--accent-cyan-dark);
-            padding: 15px 30px;
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace; background-color: var(--accent-cyan);
+            color: var(--bg-darkest); border: 2px solid var(--accent-cyan-dark);
+            padding: 15px 30px; font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
             transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 0 10px rgba(0, 224, 224, 0.5);
         }
         #logon-button:hover {
-            background-color: var(--accent-cyan-dark);
-            color: var(--bg-darkest);
+            background-color: var(--accent-cyan-dark); color: var(--bg-darkest);
             box-shadow: 0 0 15px rgba(0, 224, 224, 0.8);
         }
 
-        /* Initial Full-Screen Log-on Animation (Played AFTER button click) */
         #initial-logon-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; 
-            display: none; /* Initially hidden, shown by JS */
-            flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10000;
-            padding: 20px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
+            background-color: #000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10000; padding: 20px; box-sizing: border-box; 
+            font-family: 'Share Tech Mono', monospace;
         }
         #logon-content-container {
             display: flex; flex-direction: column; align-items: center;
@@ -115,11 +100,10 @@
             to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
         }
 
-        /* Main UI Elements (Initially hidden until body.loaded) */
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
         
-        body.loaded #standby-screen { display: none; } /* Hide standby when loaded */
-        body.loaded #initial-logon-screen { display: none; } /* Hide logon animation when fully loaded */
+        body.loaded #standby-screen { display: none; } 
+        body.loaded #initial-logon-screen { display: none; } 
         body.loaded #sidebar, body.loaded #main-content-wrapper, body.loaded #sidebar-toggle { display: flex; }
         body.loaded #main-content-wrapper { display: block; }
         body.loaded #sidebar-toggle { display: block; }
@@ -290,11 +274,25 @@
         }
         .document-view-content p { margin-bottom: 1rem; }
         .document-view-content strong { color: var(--text-primary); font-weight: 600; }
-         .back-link {
-            display: inline-block; margin-bottom: 1.5rem; color: var(--accent-orange);
-            text-decoration: none; font-family: 'Share Tech Mono', monospace;
+         .back-link, .back-button { /* Combined styles for back navigation */
+            display: inline-block;
+            padding: 8px 16px;
+            margin-bottom: 20px; 
+            background-color: var(--accent-orange);
+            color: var(--bg-darkest);
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--accent-orange-dark);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            text-decoration: none; /* Ensure links also look like buttons */
         }
-        .back-link:hover { text-decoration: underline; color: var(--accent-orange-dark); }
+        .back-link:hover, .back-button:hover {
+            background-color: var(--accent-orange-dark);
+            color: var(--bg-darkest);
+            text-decoration: none;
+        }
         .project-image-placeholder { 
             background-color: #252a31; height: 180px; display: flex;
             align-items: center; justify-content: center; color: #565c64;
@@ -310,6 +308,8 @@
             margin-right: 0.25rem; 
             margin-bottom: 0.25rem; 
         }
+
+
         @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
@@ -373,6 +373,9 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
+            <!-- Go Back Button (will be added to specific page content) -->
+            <!-- <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button> -->
+
             <!-- Page Specific Content for index.html -->
             <section id="hero" class="hero-section section-panel block-element">
                 <h1 class="hero-title font-terminal text-accent-orange">
@@ -406,7 +409,7 @@
             <!-- End Page Specific Content -->
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.0 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
@@ -420,6 +423,7 @@
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
+        const goBackButton = document.getElementById('go-back-button'); // Get the back button if it exists on THIS page
 
         const initialLogLines = [
             { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
@@ -427,16 +431,16 @@
             { text: "CPU calibration sequence: INITIALIZED", class: "info" },
             { text: "Establishing secure link to user profile...", class: "system" },
             { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
-            { text: "Loading portfolio interface v5.0...", class: "info" },
-            { text: "[ Monitoring Mi-hwa's activities... ]", class: "mihwa" }, // Keeping this as per previous context
+            { text: "Loading portfolio interface v5.1...", class: "info" },
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
             { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
 
-        const typingSpeed = 15; 
-        const linePause = 100; 
-        const graphAnimationDuration = 3000; 
-        const totalIntroDuration = 4500; 
-        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_0'; // Unique key for localStorage
+        const typingSpeed = 10; // Faster typing
+        const linePause = 75;  // Shorter pause
+        const graphAnimationDuration = 3500; // Graph animation timing
+        const totalIntroDuration = 5000; // Total intro display time: 5 seconds
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; // Versioned key
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -524,8 +528,12 @@
         }
 
         function playIntroAnimation() {
-            if (!initialLogonScreen) return;
-            initialLogonScreen.style.display = 'flex'; // Show the animation screen
+            if (!initialLogonScreen) { // Should not happen if standby screen was present
+                console.warn("Initial logon screen not found. Cannot play intro.");
+                loadMainInterfaceDirectly(); // Load main content as a fallback
+                return;
+            }
+            initialLogonScreen.style.display = 'flex';
 
             let currentLineIndex = 0;
             function nextInitialLine() {
@@ -546,9 +554,9 @@
 
             setTimeout(() => {
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
-                bodyElement.classList.add('loaded'); // Show main content
+                bodyElement.classList.add('loaded'); 
                 initializePageFunctions(); 
-                localStorage.setItem(introKey, 'true'); // Mark intro as played
+                localStorage.setItem(introKey, 'true'); 
             }, totalIntroDuration);
         }
 
@@ -572,6 +580,14 @@
                     e.preventDefault();
                     alert("Message submitted. (This is a demo feature)");
                     this.reset();
+                });
+            }
+
+            // Back button functionality (check if button exists on the current page)
+            const pageSpecificGoBackButton = document.getElementById('go-back-button');
+            if (pageSpecificGoBackButton) {
+                pageSpecificGoBackButton.addEventListener('click', () => {
+                    history.back();
                 });
             }
         }
@@ -655,36 +671,29 @@
             });
         }
         
-        // Initial Page Load Logic
         window.onload = () => {
-            if (logonButton) {
-                logonButton.addEventListener('click', () => {
-                    if (standbyScreen) standbyScreen.style.display = 'none'; // Hide standby screen
-                    playIntroAnimation();
-                });
-            } else {
-                // Fallback if logon button isn't found (e.g. direct navigation to an internal page after initial logon)
-                // This part needs to be robust. If a user bookmarks an internal page,
-                // they shouldn't see the standby screen.
-                // The 'loaded' class would typically be set after the intro.
-                // If we are on an internal page and the intro hasn't been marked as played "ever",
-                // we might want to still force the standby screen or a quick redirect to index.html.
-                // For simplicity now, if no logon button, load directly IF intro has been played.
-                // Otherwise, user might be stuck on a blank internal page.
-                // A better approach for direct internal page access might be needed if intro is mandatory first.
-                if (localStorage.getItem(introKey)) {
+            if (standbyScreen && logonButton) {
+                if (localStorage.getItem(introKey)) { // Check if intro has EVER been played
                     loadMainInterfaceDirectly();
                 } else {
-                    // If intro hasn't been played EVER and they land on an internal page,
-                    // they are at the standby screen by default, so logonButton listener should handle it.
-                    // If standbyScreen is not visible, it implies an issue.
-                    if (standbyScreen && standbyScreen.style.display !== 'none') {
-                        // Standby is visible, do nothing, wait for button click.
-                    } else {
-                         // Fallback: If somehow standby is not shown and intro not played, load main.
-                         console.warn("Fallback: Loading main interface without intro due to unexpected state.");
-                         loadMainInterfaceDirectly();
-                    }
+                    // Standby screen is visible by default, wait for logon button click
+                    logonButton.addEventListener('click', () => {
+                        if (standbyScreen) standbyScreen.style.display = 'none';
+                        playIntroAnimation();
+                    });
+                }
+            } else {
+                // This case should ideally not be reached if the HTML structure is correct for the first load.
+                // If it is, it means the page structure might be missing the standby screen.
+                // For robustness, try to load the main interface if intro has been played, 
+                // otherwise, there isn't a button to trigger the intro.
+                if (localStorage.getItem(introKey)) {
+                     loadMainInterfaceDirectly();
+                } else {
+                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
+                    loadMainInterfaceDirectly();
+                     // As a fallback, still mark intro as played to avoid issues on subsequent loads of this potentially misconfigured page
+                     localStorage.setItem(introKey, 'true'); 
                 }
             }
         };
