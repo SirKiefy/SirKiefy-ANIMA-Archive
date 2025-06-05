@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sirkiefy's Portfolio Terminal v5.2</title>
+    <title>Sirkiefy's Portfolio Terminal v5.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -21,7 +21,7 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
-            --accent-red: #ff4d4d; /* Added red for specific text */
+            --accent-red: #ff4d4d; 
             --sidebar-width: 280px;
             --sidebar-width-collapsed: 0px; 
         }
@@ -87,7 +87,7 @@
         #initial-log-output .log-line.system { color: var(--text-primary); }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
-        #initial-log-output .log-line.mihwa { color: var(--accent-red); font-weight: bold; animation: subtle-pulse-red 1.5s infinite alternate; } /* Changed color to red */
+        #initial-log-output .log-line.mihwa { color: var(--accent-red); font-weight: bold; animation: subtle-pulse-red 1.5s infinite alternate; }
         
         #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
@@ -96,11 +96,10 @@
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
 
-        @keyframes subtle-pulse-red { /* New animation for red text */
+        @keyframes subtle-pulse-red {
             from { opacity: 0.7; text-shadow: 0 0 3px var(--accent-red), 0 0 5px var(--accent-red); }
             to { opacity: 1; text-shadow: 0 0 6px var(--accent-red), 0 0 8px #ff7f7f; }
         }
-
 
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
         
@@ -147,6 +146,24 @@
             border: 1px solid var(--border-subtle); color: var(--text-primary); margin-bottom: 12px;
         }
         #search-input:focus, #category-filter:focus { outline: none; border-color: var(--accent-orange); }
+        #replay-intro-button {
+            background-color: var(--bg-panel);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan-dark);
+            padding: 8px;
+            width: 100%;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        #replay-intro-button:hover {
+            background-color: var(--accent-cyan);
+            color: var(--bg-darkest);
+        }
+
 
         #sidebar-toggle { 
             position: fixed; top: 15px; left: var(--sidebar-width); z-index: 1001;
@@ -370,6 +387,7 @@
                 <option value="game-dev">Game Development</option>
                 <option value="world-build">World Building</option>
             </select>
+            <button id="replay-intro-button" class="block-element">Replay Intro</button>
         </div>
     </aside>
 
@@ -411,7 +429,7 @@
             <!-- End Page Specific Content -->
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.2 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.3 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
@@ -425,24 +443,24 @@
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        // Go back button is page-specific, get it in initializePageFunctions
+        const replayIntroButton = document.getElementById('replay-intro-button');
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT SEQUENCE v5.2...", class: "system" },
+            { text: "SYSTEM BOOT SEQUENCE v5.3...", class: "system" },
             { text: "Initializing neural network interface...", class: "info" },
             { text: "Calibrating quantum entanglement matrix...", class: "info" },
             { text: "Accessing user profile: Sirkiefy...", class: "system" },
             { text: "Profile authentication: GRANTED.", class: "system" },
             { text: "Loading portfolio datastreams...", class: "info" },
-            { text: "[Acquiring job for the very easily bullied Mi-Hwa]", class: "mihwa" }, // Red colored text
+            { text: "[Acquiring job for the very easily bullied Mi-Hwa]", class: "mihwa" }, 
             { text: "Interface online. Welcome, Sirkiefy.", class: "system" },
         ];
 
         const typingSpeed = 10; 
-        const linePause = 50; // Further reduced for faster overall sequence to fit all text
-        const graphAnimationDuration = 3000; 
-        const totalIntroDuration = 5000; // 5 seconds total
-        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_2_logon'; // Unique key for localStorage
+        const linePause = 50; 
+        const graphAnimationDuration = 3500; 
+        const totalIntroDuration = 5000; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_3_logon'; // Updated intro key
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -456,29 +474,28 @@
 
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
             const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
-            // More vibrant gradient
             gradient.addColorStop(0, 'var(--accent-cyan)');
             gradient.addColorStop(0.3, 'var(--accent-orange)');
-            gradient.addColorStop(0.6, '#FFD700'); // Gold
-            gradient.addColorStop(1, '#FF69B4'); // HotPink
+            gradient.addColorStop(0.6, '#FFD700'); 
+            gradient.addColorStop(0.8, 'var(--accent-red)'); // Added red to gradient
+            gradient.addColorStop(1, '#FF69B4'); 
             
             graphCtx.strokeStyle = gradient;
             graphCtx.lineWidth = 3; 
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight / 2 + (Math.random() - 0.5) * 10); // Start with some jitter
+            graphCtx.moveTo(0, graphHeight / 2 + (Math.random() - 0.5) * 10); 
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                // More complex and varied waveform
                 const y = graphHeight / 2 + 
                           Math.sin(x * 0.03 + elapsedTime * 0.004) * (graphHeight / 3.5) * Math.cos(elapsedTime * 0.0005 + x * 0.01) +
-                          (Math.random() - 0.5) * 5 * progress; // Add some random noise that increases with progress
+                          (Math.random() - 0.5) * 5 * progress; 
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
             if (progress > 0.1) {
                 const spikeColors = ['var(--accent-orange-dark)', 'var(--accent-cyan-dark)', '#DAA520', '#C71585', 'var(--accent-red)'];
-                for(let i = 0; i < 7; i++) { // Increased number of spikes
+                for(let i = 0; i < 7; i++) { 
                     if (Math.random() < progress * 0.7) { 
                         graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
@@ -490,7 +507,7 @@
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.1)'; // Even softer axis
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.1)';
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
             graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
@@ -510,6 +527,7 @@
                 graphHeight = logonGraphCanvas.height;
                 graphCtx = logonGraphCanvas.getContext('2d');
                 document.documentElement.style.setProperty('--text-muted-rgb', '120, 124, 130');
+                graphStartTime = null; // Reset start time for graph animation
                 requestAnimationFrame(drawAnimatedGraph);
             }
         }
@@ -535,13 +553,20 @@
             typeChar();
         }
 
-        function playIntroAnimation() {
+        function playIntroAnimation(isReplay = false) {
             if (!initialLogonScreen) { 
                 console.warn("Initial logon screen not found. Cannot play intro.");
                 loadMainInterfaceDirectly();
                 return;
             }
+            
+            // Hide main content if it's a replay
+            if (isReplay) {
+                bodyElement.classList.remove('loaded');
+                if(standbyScreen) standbyScreen.style.display = 'none'; // Ensure standby is hidden during replay
+            }
             initialLogonScreen.style.display = 'flex';
+
 
             let currentLineIndex = 0;
             function nextInitialLine() {
@@ -564,7 +589,9 @@
                 if (initialLogonScreen) initialLogonScreen.style.display = 'none';
                 bodyElement.classList.add('loaded'); 
                 initializePageFunctions(); 
-                localStorage.setItem(introKey, 'true'); 
+                if (!isReplay) { // Only set localStorage if it's not a manual replay
+                    localStorage.setItem(introKey, 'true'); 
+                }
             }, totalIntroDuration);
         }
 
@@ -663,7 +690,7 @@
         function startFooterStatusCycle() {
             const statusElement = document.getElementById('security-status-text');
             if (statusElement) {
-                statusElement.textContent = securityStatusMessages[currentStatusIndex];
+                statusElement.textContent = securityStatusMessages[currentStatusIndex]; // Set initial text
                 setInterval(() => {
                     currentStatusIndex = (currentStatusIndex + 1) % securityStatusMessages.length;
                     statusElement.textContent = securityStatusMessages[currentStatusIndex];
@@ -681,29 +708,34 @@
                 }
             });
         }
+
+        if (replayIntroButton) {
+            replayIntroButton.addEventListener('click', () => {
+                // Hide main UI, show standby temporarily then play intro
+                bodyElement.classList.remove('loaded');
+                if (standbyScreen) standbyScreen.style.display = 'none'; // Ensure standby is off before intro
+                if (initialLogonScreen) initialLogonScreen.style.display = 'flex'; // Show intro screen
+                playIntroAnimation(true); // Pass true to indicate it's a replay
+            });
+        }
         
         window.onload = () => {
             if (standbyScreen && logonButton) {
                 if (localStorage.getItem(introKey)) { 
                     loadMainInterfaceDirectly();
                 } else {
-                    // Standby screen is visible by default (body does not have 'loaded' class yet)
                     logonButton.addEventListener('click', () => {
                         if (standbyScreen) standbyScreen.style.display = 'none';
-                        playIntroAnimation();
+                        playIntroAnimation(false); // Not a replay on initial logon
                     });
                 }
             } else {
-                // Fallback if standby screen elements are not found.
-                // This indicates an issue with the HTML template if it's the first load.
-                console.warn("Standby screen or logon button not found.");
                 if (localStorage.getItem(introKey)) {
                      loadMainInterfaceDirectly();
                 } else {
-                    // If intro hasn't been played and no button, play it directly as a last resort
-                    // though this breaks the "button click" requirement if the button is just missing from DOM
-                    console.warn("Attempting to play intro directly as standby elements are missing and intro not marked as played.");
-                    playIntroAnimation(); 
+                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
+                    loadMainInterfaceDirectly();
+                     localStorage.setItem(introKey, 'true'); 
                 }
             }
         };
