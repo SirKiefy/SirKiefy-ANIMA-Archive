@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sirkiefy's Portfolio Terminal v5.1</title>
+    <title>Sirkiefy's Portfolio Terminal v5.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -21,6 +21,7 @@
             --accent-orange-dark: #d96f32;
             --accent-cyan: #00e0e0;
             --accent-cyan-dark: #00b8b8;
+            --accent-red: #ff4d4d; /* Added red for specific text */
             --sidebar-width: 280px;
             --sidebar-width-collapsed: 0px; 
         }
@@ -86,7 +87,7 @@
         #initial-log-output .log-line.system { color: var(--text-primary); }
         #initial-log-output .log-line.info { color: var(--accent-cyan); }
         #initial-log-output .log-line.warning { color: var(--accent-orange); }
-        #initial-log-output .log-line.mihwa { color: var(--accent-orange); font-weight: bold; animation: subtle-pulse 1.5s infinite alternate; }
+        #initial-log-output .log-line.mihwa { color: var(--accent-red); font-weight: bold; animation: subtle-pulse-red 1.5s infinite alternate; } /* Changed color to red */
         
         #logon-graph-container {
             width: 100%; height: 40%; background-color: rgba(0,0,0,0.3);
@@ -95,10 +96,11 @@
         }
         #logon-graph-canvas { max-width: 100%; max-height: 100%; }
 
-        @keyframes subtle-pulse {
-            from { opacity: 0.7; text-shadow: 0 0 2px var(--accent-orange); }
-            to { opacity: 1; text-shadow: 0 0 5px var(--accent-orange-dark); }
+        @keyframes subtle-pulse-red { /* New animation for red text */
+            from { opacity: 0.7; text-shadow: 0 0 3px var(--accent-red), 0 0 5px var(--accent-red); }
+            to { opacity: 1; text-shadow: 0 0 6px var(--accent-red), 0 0 8px #ff7f7f; }
         }
+
 
         #sidebar, #main-content-wrapper, #sidebar-toggle { display: none; } 
         
@@ -373,7 +375,7 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
-            <!-- Go Back Button (Common for all sub-pages, not usually on index.html itself) -->
+            <!-- Go Back Button (Common for all sub-pages, typically not on index.html itself unless it makes sense in your flow) -->
             <!-- <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button> -->
             
             <!-- Page Specific Content for index.html -->
@@ -409,7 +411,7 @@
             <!-- End Page Specific Content -->
             <footer class="footer-terminal block-element">
                 <p>&copy; <span id="currentYear"></span> Sirkiefy. All rights reserved. <span id="security-status-text">System integrity maintained.</span></p>
-                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.1 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
+                <p class="font-terminal text-xs">PORTFOLIO INTERFACE v5.2 // LAST SYSTEM CHECK: <span id="lastScanTime"></span></p>
             </footer>
         </main>
     </div>
@@ -423,24 +425,24 @@
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        // Go back button will be fetched dynamically within initializePageFunctions
+        // Go back button is page-specific, get it in initializePageFunctions
 
         const initialLogLines = [
-            { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
-            { text: "Memory diagnostics: ALL CLEAR", class: "info" },
-            { text: "CPU calibration sequence: INITIALIZED", class: "info" },
-            { text: "Establishing secure link to user profile...", class: "system" },
-            { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
-            { text: "Loading portfolio interface v5.1...", class: "info" },
-            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
-            { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
+            { text: "SYSTEM BOOT SEQUENCE v5.2...", class: "system" },
+            { text: "Initializing neural network interface...", class: "info" },
+            { text: "Calibrating quantum entanglement matrix...", class: "info" },
+            { text: "Accessing user profile: Sirkiefy...", class: "system" },
+            { text: "Profile authentication: GRANTED.", class: "system" },
+            { text: "Loading portfolio datastreams...", class: "info" },
+            { text: "[Acquiring job for the very easily bullied Mi-Hwa]", class: "mihwa" }, // Red colored text
+            { text: "Interface online. Welcome, Sirkiefy.", class: "system" },
         ];
 
         const typingSpeed = 10; 
-        const linePause = 70; // Adjusted for faster overall text display
-        const graphAnimationDuration = 3500; // Extended graph animation a bit for visual balance
-        const totalIntroDuration = 5000; 
-        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; 
+        const linePause = 50; // Further reduced for faster overall sequence to fit all text
+        const graphAnimationDuration = 3000; 
+        const totalIntroDuration = 5000; // 5 seconds total
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_2_logon'; // Unique key for localStorage
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -454,35 +456,41 @@
 
             graphCtx.clearRect(0, 0, graphWidth, graphHeight);
             const gradient = graphCtx.createLinearGradient(0, 0, graphWidth * progress, 0);
+            // More vibrant gradient
             gradient.addColorStop(0, 'var(--accent-cyan)');
-            gradient.addColorStop(0.5, 'var(--accent-orange)');
-            gradient.addColorStop(1, 'var(--accent-cyan-dark)');
+            gradient.addColorStop(0.3, 'var(--accent-orange)');
+            gradient.addColorStop(0.6, '#FFD700'); // Gold
+            gradient.addColorStop(1, '#FF69B4'); // HotPink
             
             graphCtx.strokeStyle = gradient;
             graphCtx.lineWidth = 3; 
             graphCtx.beginPath();
-            graphCtx.moveTo(0, graphHeight / 2);
+            graphCtx.moveTo(0, graphHeight / 2 + (Math.random() - 0.5) * 10); // Start with some jitter
 
             for (let x = 0; x < graphWidth * progress; x++) {
-                const y = graphHeight / 2 + Math.sin(x * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
+                // More complex and varied waveform
+                const y = graphHeight / 2 + 
+                          Math.sin(x * 0.03 + elapsedTime * 0.004) * (graphHeight / 3.5) * Math.cos(elapsedTime * 0.0005 + x * 0.01) +
+                          (Math.random() - 0.5) * 5 * progress; // Add some random noise that increases with progress
                 graphCtx.lineTo(x, y);
             }
             graphCtx.stroke();
 
-            if (progress > 0.2) {
-                const spikeColors = ['var(--accent-orange)', 'var(--accent-cyan)', '#FFD700', '#FF69B4'];
-                for(let i = 0; i < 5; i++) { 
-                    if (Math.random() < progress * 0.6) { 
+            if (progress > 0.1) {
+                const spikeColors = ['var(--accent-orange-dark)', 'var(--accent-cyan-dark)', '#DAA520', '#C71585', 'var(--accent-red)'];
+                for(let i = 0; i < 7; i++) { // Increased number of spikes
+                    if (Math.random() < progress * 0.7) { 
                         graphCtx.fillStyle = spikeColors[Math.floor(Math.random() * spikeColors.length)];
                         const spikeX = Math.random() * graphWidth * progress;
-                        const spikeYBase = graphHeight / 2 + Math.sin(spikeX * 0.05 + elapsedTime * 0.003) * (graphHeight / 3) * Math.sin(elapsedTime * 0.001);
-                        const spikeHeight = (Math.random() * 25 * progress + 8) * (Math.random() > 0.5 ? 1 : -1); 
+                        const spikeYBase = graphHeight / 2 + 
+                                           Math.sin(spikeX * 0.03 + elapsedTime * 0.004) * (graphHeight / 3.5) * Math.cos(elapsedTime * 0.0005 + spikeX * 0.01);
+                        const spikeHeight = (Math.random() * 30 * progress + 10) * (Math.random() > 0.5 ? 1 : -1); 
                         graphCtx.fillRect(spikeX - 1.5, spikeYBase - (spikeHeight / 2), 3, spikeHeight);
                     }
                 }
             }
             
-            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.2)';
+            graphCtx.strokeStyle = 'rgba(var(--text-muted-rgb, 120, 124, 130), 0.1)'; // Even softer axis
             graphCtx.beginPath();
             graphCtx.moveTo(0, graphHeight); graphCtx.lineTo(graphWidth, graphHeight);
             graphCtx.moveTo(0, 0); graphCtx.lineTo(0, graphHeight);
@@ -585,7 +593,6 @@
 
             const pageSpecificGoBackButton = document.getElementById('go-back-button');
             if (pageSpecificGoBackButton) {
-                // Hide back button on index.html or if no history
                 if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || history.length <= 1) {
                     pageSpecificGoBackButton.style.display = 'none';
                 } else {
@@ -680,18 +687,23 @@
                 if (localStorage.getItem(introKey)) { 
                     loadMainInterfaceDirectly();
                 } else {
+                    // Standby screen is visible by default (body does not have 'loaded' class yet)
                     logonButton.addEventListener('click', () => {
                         if (standbyScreen) standbyScreen.style.display = 'none';
                         playIntroAnimation();
                     });
                 }
             } else {
+                // Fallback if standby screen elements are not found.
+                // This indicates an issue with the HTML template if it's the first load.
+                console.warn("Standby screen or logon button not found.");
                 if (localStorage.getItem(introKey)) {
                      loadMainInterfaceDirectly();
                 } else {
-                    console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
-                    loadMainInterfaceDirectly();
-                     localStorage.setItem(introKey, 'true'); 
+                    // If intro hasn't been played and no button, play it directly as a last resort
+                    // though this breaks the "button click" requirement if the button is just missing from DOM
+                    console.warn("Attempting to play intro directly as standby elements are missing and intro not marked as played.");
+                    playIntroAnimation(); 
                 }
             }
         };
