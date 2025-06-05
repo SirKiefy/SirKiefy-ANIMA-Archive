@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sirkiefy's Portfolio Terminal v5.1</title> <!-- Version Update -->
+    <title>Sirkiefy's Portfolio Terminal v5.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -274,7 +274,7 @@
         }
         .document-view-content p { margin-bottom: 1rem; }
         .document-view-content strong { color: var(--text-primary); font-weight: 600; }
-         .back-link, .back-button { /* Combined styles for back navigation */
+         .back-link, .back-button { 
             display: inline-block;
             padding: 8px 16px;
             margin-bottom: 20px; 
@@ -286,7 +286,7 @@
             border: 1px solid var(--accent-orange-dark);
             cursor: pointer;
             transition: background-color 0.2s ease, color 0.2s ease;
-            text-decoration: none; /* Ensure links also look like buttons */
+            text-decoration: none; 
         }
         .back-link:hover, .back-button:hover {
             background-color: var(--accent-orange-dark);
@@ -373,9 +373,9 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
-            <!-- Go Back Button (will be added to specific page content) -->
+            <!-- Go Back Button (Common for all sub-pages, not usually on index.html itself) -->
             <!-- <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button> -->
-
+            
             <!-- Page Specific Content for index.html -->
             <section id="hero" class="hero-section section-panel block-element">
                 <h1 class="hero-title font-terminal text-accent-orange">
@@ -423,7 +423,7 @@
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        const goBackButton = document.getElementById('go-back-button'); // Get the back button if it exists on THIS page
+        // Go back button will be fetched dynamically within initializePageFunctions
 
         const initialLogLines = [
             { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
@@ -436,11 +436,11 @@
             { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
 
-        const typingSpeed = 10; // Faster typing
-        const linePause = 75;  // Shorter pause
-        const graphAnimationDuration = 3500; // Graph animation timing
-        const totalIntroDuration = 5000; // Total intro display time: 5 seconds
-        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; // Versioned key
+        const typingSpeed = 10; 
+        const linePause = 70; // Adjusted for faster overall text display
+        const graphAnimationDuration = 3500; // Extended graph animation a bit for visual balance
+        const totalIntroDuration = 5000; 
+        const introKey = 'portfolioIntroPlayed_Sirkiefy_v5_1'; 
 
         let graphCtx;
         let graphWidth, graphHeight;
@@ -528,9 +528,9 @@
         }
 
         function playIntroAnimation() {
-            if (!initialLogonScreen) { // Should not happen if standby screen was present
+            if (!initialLogonScreen) { 
                 console.warn("Initial logon screen not found. Cannot play intro.");
-                loadMainInterfaceDirectly(); // Load main content as a fallback
+                loadMainInterfaceDirectly();
                 return;
             }
             initialLogonScreen.style.display = 'flex';
@@ -583,12 +583,16 @@
                 });
             }
 
-            // Back button functionality (check if button exists on the current page)
             const pageSpecificGoBackButton = document.getElementById('go-back-button');
             if (pageSpecificGoBackButton) {
-                pageSpecificGoBackButton.addEventListener('click', () => {
-                    history.back();
-                });
+                // Hide back button on index.html or if no history
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || history.length <= 1) {
+                    pageSpecificGoBackButton.style.display = 'none';
+                } else {
+                    pageSpecificGoBackButton.addEventListener('click', () => {
+                        history.back();
+                    });
+                }
             }
         }
         
@@ -673,26 +677,20 @@
         
         window.onload = () => {
             if (standbyScreen && logonButton) {
-                if (localStorage.getItem(introKey)) { // Check if intro has EVER been played
+                if (localStorage.getItem(introKey)) { 
                     loadMainInterfaceDirectly();
                 } else {
-                    // Standby screen is visible by default, wait for logon button click
                     logonButton.addEventListener('click', () => {
                         if (standbyScreen) standbyScreen.style.display = 'none';
                         playIntroAnimation();
                     });
                 }
             } else {
-                // This case should ideally not be reached if the HTML structure is correct for the first load.
-                // If it is, it means the page structure might be missing the standby screen.
-                // For robustness, try to load the main interface if intro has been played, 
-                // otherwise, there isn't a button to trigger the intro.
                 if (localStorage.getItem(introKey)) {
                      loadMainInterfaceDirectly();
                 } else {
                     console.warn("Standby screen or logon button not found, and intro not played. Defaulting to direct load.");
                     loadMainInterfaceDirectly();
-                     // As a fallback, still mark intro as played to avoid issues on subsequent loads of this potentially misconfigured page
                      localStorage.setItem(introKey, 'true'); 
                 }
             }
