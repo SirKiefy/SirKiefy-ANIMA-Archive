@@ -222,7 +222,7 @@
         }
         .project-card p { 
             margin-bottom: 0.5rem; color: var(--text-secondary); 
-            font-size: 0.9rem; /* Slightly smaller text for cards */
+            font-size: 0.9rem; 
         }
         .project-image-placeholder { 
             background-color: #252a31; height: 180px; display: flex;
@@ -230,15 +230,34 @@
             font-family: 'Share Tech Mono', monospace; margin-bottom: 1rem;
         }
         .project-categories span { 
-            display: inline-block; background-color: var(--bg-darkest); /* Darker background for tags */
+            display: inline-block; background-color: var(--bg-darkest); 
             border: 1px solid var(--border-subtle); 
             font-family: 'Share Tech Mono', monospace; 
             font-size: 0.75rem; 
-            color: var(--text-muted); /* Muted color for tags */
+            color: var(--text-muted); 
             padding: 0.125rem 0.5rem; 
             margin-right: 0.25rem; 
-            margin-bottom: 0.5rem; /* Increased bottom margin for tags */
+            margin-bottom: 0.5rem; 
         }
+        /* Back Button Style */
+        .back-button {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-bottom: 20px; /* Space below the button */
+            background-color: var(--accent-orange);
+            color: var(--bg-darkest);
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--accent-orange-dark);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .back-button:hover {
+            background-color: var(--accent-orange-dark);
+            color: var(--bg-darkest);
+        }
+
         @media (max-width: 768px) { 
             #sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); transform: translateX(0) !important; }
             body.sidebar-collapsed #sidebar { display: none; }
@@ -300,6 +319,9 @@
 
     <div id="main-content-wrapper">
         <main id="main-content">
+            <!-- Go Back Button -->
+            <button id="go-back-button" class="back-button block-element">&lt;&lt; PREVIOUS PAGE</button>
+
             <!-- Page Specific Content for projects.html -->
             <section id="projects-archive" class="section-panel block-element">
                 <h2 class="section-title text-accent-orange font-terminal">// PROJECT_FILES :: PORTFOLIO_SHOWCASE</h2>
@@ -312,7 +334,7 @@
                         <div class="project-image-placeholder h-48 block-element">
                             &lt;STARFALL_CONCEPT_ART&gt;
                         </div>
-                        <div class="p-4"> <!-- Adjusted padding -->
+                        <div class="p-4"> 
                             <h3 class="project-title"><a href="project_starfall_databank.html">Project Starfall: GDD</a></h3>
                             <div class="project-categories mt-2 mb-2">
                                 <span class="block-element">Game Design</span>
@@ -403,6 +425,7 @@
         const bodyElement = document.body;
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
+        const goBackButton = document.getElementById('go-back-button'); // Get the back button
 
         const initialLogLines = [
             { text: "SYSTEM BOOT PROTOCOL ACTIVATED...", class: "system" },
@@ -411,7 +434,7 @@
             { text: "Establishing secure link to user profile...", class: "system" },
             { text: "User: Sirkiefy. Profile authenticated.", class: "system" },
             { text: "Loading portfolio interface v5.0...", class: "info" },
-            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, // Updated "cringe" line
+            { text: "[ UI Theme Sync: COMPLETE. ]", class: "mihwa" }, 
             { text: "Interface loaded. Welcome, Sirkiefy.", class: "system" },
         ];
 
@@ -557,6 +580,13 @@
                     this.reset();
                 });
             }
+
+            // Back button functionality
+            if (goBackButton) {
+                goBackButton.addEventListener('click', () => {
+                    history.back();
+                });
+            }
         }
         
         function setActiveNavLink() {
@@ -639,30 +669,22 @@
         }
         
         window.onload = () => {
-            // Check if standby screen and logon button exist
             if (standbyScreen && logonButton) {
-                 // If intro has already been played EVER, skip standby and logon button, load main interface.
                 if (localStorage.getItem(introKey)) {
                     loadMainInterfaceDirectly();
                 } else {
-                    // Otherwise, standby screen is visible by default (due to no 'loaded' class on body yet).
-                    // Add listener to logon button.
                     logonButton.addEventListener('click', () => {
                         if (standbyScreen) standbyScreen.style.display = 'none';
                         playIntroAnimation();
                     });
                 }
             } else {
-                // Fallback: If standby screen elements are not found (e.g. user manually removed them from an internal page)
-                // And intro has been played, load directly. Otherwise, something is wrong with template.
                 if (localStorage.getItem(introKey)) {
                      loadMainInterfaceDirectly();
                 } else {
-                    // This case implies the template is broken if standby screen is missing AND intro hasn't played.
-                    // For robustness, try to load main content anyway.
                     console.warn("Standby screen or logon button not found, and intro not played. Attempting to load main content directly.");
                     loadMainInterfaceDirectly();
-                     localStorage.setItem(introKey, 'true'); // Mark as played to avoid loops if possible.
+                     localStorage.setItem(introKey, 'true'); 
                 }
             }
         };
